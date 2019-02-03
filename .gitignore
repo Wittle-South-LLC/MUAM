@@ -1,0 +1,3 @@
+# Top level GIT ignore
+mysql-dev/**
+mysql-test/**

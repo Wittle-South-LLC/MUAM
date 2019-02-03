@@ -1,0 +1,67 @@
+#!/bin/bash
+# app-env - Sets up application environment variables based
+#           on the value of NODE_ENV
+
+# This section is for global environmet variables that
+# generally do not change across dev/test/prod. They can
+# be overwritten in the environment-specific section later
+export APP_DB_NAME="muam"
+export OPENAPI_SPEC="/app/server/src/spec/muam.yaml"
+export REACT_APP_API_PATH="/api/v1"
+
+if [ "$NODE_ENV" == "development" ]; then
+  echo "Setting up development environment variables"
+  export HOST='eric.wittlesouth.local'
+  # Value below must match containerPort in kube-env/dev-api-server.yml
+  export APPSERVER_CONTAINER_PORT=8081
+  # Value below must match nodePort in kube-env/dev-api-server.yml
+  export APPSERVER_SERVICE_PORT=31310
+  export APP_DB_ACCOUNT="dev"
+  export APP_DB_PASSWORD="dev"
+  export APP_DB_SERVER="muam-mysql-dev:3306"
+  # Generate a new secret key with this python command: binascii.hexlify(os.urandom(24))
+  export SECRET_KEY=b'57d4585302cb1a8dc3beaa03a8de90b82efb9a98057b9c01'
+  export REACT_APP_BASE_URL="http://kube.wittlesouth.local:${APPSERVER_SERVICE_PORT}"
+  export APP_LOG_LEVEL="info"
+elif [ "$NODE_ENV" == "test" ] || [ "$NODE_ENV" == "jenkins" ]; then
+  echo "Setting up testing environment variables"
+  export TEST_HOST="kube.wittlesouth.local"
+  export MYSQL_ROOT_PASSWORD=onlyeric
+  export MYSQL_PORT=31301
+  export APP_DB_ACCOUNT="test"
+  export APP_DB_PASSWORD="test"
+  export APP_DB_SERVER="muam-mysql-test:3306"
+  export APP_DB_SERVICE_PORT=31301
+  # Value below must match containerPort in kube-env/test-api-server.yml
+  export APPSERVER_CONTAINER_PORT=8081
+  # Value below must match nodePort in kube-env/test-api-server.yml
+  export APPSERVER_SERVICE_PORT=31311
+  export COVERAGE_FILE=/coverage/.coverage.server
+  export TEST_CONNECT_STRING="mysql+mysqldb://${APP_DB_ACCOUNT}:${APP_DB_PASSWORD}@${TEST_HOST}:${APP_DB_SERVICE_PORT}/${APP_DB_NAME}?charset=utf8mb4&binary_prefix=True"
+  export SECRET_KEY=b'967c90a5f41262439c8da376069b953c0d31e30a7c92d56e'
+  export TEST_URL="http://${TEST_HOST}:${APPSERVER_SERVICE_PORT}${REACT_APP_API_PATH}"
+elif [ "$NODE_ENV" == "production" ]; then
+  echo "Settup up environment variables for production"
+else
+  echo "Invalide value for NODE_ENV: $NODE_ENV"
+fi
+# Overrides for jenkins
+if [ "$NODE_ENV" == "jenkins" ]; then
+  echo "--> Overriding for Jenkins environment"
+  # Set test host URL
+  export TEST_HOST='muam-jenkins-test-server.wittlesouth'
+  # Set jenkins database test server
+  export APP_DB_SERVER="muam-jenkins-test-database.wittlesouth"
+  # Value below must match containerPort in kube-env/test-api-server.yml
+  export APPSERVER_CONTAINER_PORT=8081
+  # Since Jenkins tests will run in a container, the service port should
+  # match the container port
+  export APPSERVER_SERVICE_PORT=8081
+  # Create connect string
+  export TEST_CONNECT_STRING="mysql+mysqldb://${APP_DB_ACCOUNT}:${APP_DB_PASSWORD}@${APP_DB_SERVER}/${APP_DB_NAME}?charset=utf8mb4&binary_prefix=True"
+  # Construct the test URL
+  export TEST_URL="http://${TEST_HOST}:${APPSERVER_CONTAINER_PORT}${REACT_APP_API_PATH}"
+  # Set NODE_ENV back to "test", now that Jenkins overrides are complete
+  export NODE_ENV="test"
+fi
+alias dsrestart="curl -H 'Content-type: application/json' -X POST -d '{\"key\":\"Eric\"}' ${REACT_APP_BASE_URL}${REACT_APP_API_PATH}/shutdown"

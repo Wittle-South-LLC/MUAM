@@ -1,0 +1,18 @@
+{
+    "python.linting.pylintPath": "${workspaceRoot}/server/bin/pylint",
+    "python.pythonPath": "server/bin/python",
+    "python.venvPath": "~/server",
+    "files.exclude": {
+        "server/lib/**": true,      // VirtualEnv libraries
+        "server/bin/**": true,      // VirtualEnv binaries
+        "server/man/**": true,      // VirtualEnv manual binaries
+        "server/.Python": true,     // Python stuff
+        "server/pip-selfcheck.json": true,     // pip stuff
+        "server/include/**": true,  // VirtualEnv include files
+        ".vscode/**": true,         // Visual Studio Code workspace settings
+        "mysql-dev/**": true,  // MySQL development database files
+        "mysql-test/**": true, // Mysql test database files
+        "web/.nyc_output/**": true, // Coverage files
+        "web/node_modules/**": true // Libraries for node
+    }
+}

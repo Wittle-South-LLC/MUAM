@@ -1,0 +1,6 @@
+# Ignore virtualenv artifacts
+bin/**
+include/**
+lib/**
+man/**
+.Python
