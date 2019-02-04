@@ -8,6 +8,12 @@
 export APP_DB_NAME="muam"
 export OPENAPI_SPEC="/app/server/src/spec/muam.yaml"
 export REACT_APP_API_PATH="/api/v1"
+export APP_PW_RESET_SUBJECT='MUAM Password Reset Code'
+export APP_PW_RESET_FROM='admin@wittlesouth.com'
+export APP_PW_RESET_MAILHOST='mail.wittlesouth.com'
+# TODO: Move these to secrets
+export APP_PW_RESET_FROM_PW='onlyeric'
+export APP_SHUTDOWN_KEY='Eric'
 
 if [ "$NODE_ENV" == "development" ]; then
   echo "Setting up development environment variables"
