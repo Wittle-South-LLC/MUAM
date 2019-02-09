@@ -87,7 +87,7 @@ if [ "$run_nose" -gt "0" ] || [ "$run_integration" -gt "0" ]; then
   # Issue the server shutdown command, which should cause the Kubernetes service
   # to restart, ensuring that we're running the most recent server code
   echo "export run_coverage=$run_coverage" > server/coverage/runType.bash
-  echo "export COVERAGE_FILE='/coverage/server.coverage'" >> server/coverage/runType.bash
+  echo "export COVERAGE_FILE='/app/server/coverage/server.coverage'" >> server/coverage/runType.bash
   if [ -f server/coverage/server.coverage ]; then
     rm server/coverage/server.coverage
   fi

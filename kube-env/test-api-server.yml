@@ -51,7 +51,7 @@ spec:
     spec:
       containers:
       - command: ["/app/server/src/server-loop"]
-        image: wittlesouth/api_server:1.3
+        image: wittlesouth/api_server:1.4
         name: muam-test-server
         env:
         - name: NODE_ENV

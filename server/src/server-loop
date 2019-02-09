@@ -17,8 +17,28 @@ SERVER_EXIT=0
 while [ "$SERVER_EXIT" -eq "0" ]; do
     # Set up application environment based on NODE_ENV value
     source /app/bin/app-env
-    echo "dev-server-loop: starting server..."
-    python3.7 /app/server/src/server.py
-    SERVER_EXIT=$?
-    echo "dev-server-loop: server exited with result: ${SERVER_EXIT}!"
+    # The script bin/testme will write 'run_coverage' into 
+    # coverage/runType.bash. Based on the value 'run_coverage', we'll
+    # either invoke the server directly, or invoke it in the python
+    # coverage tool
+    source /app/server/coverage/runType.bash
+    echo "Run coverage = $run_coverage"
+    if [ "$run_coverage" -gt "0" ]; then
+        echo "Launching coverage run of server"
+        coverage run -a --source /app/server/src,/app/server/src/dm,/app/server/src/api,/app/server/src/util /app/server/src/server.py
+        SERVER_EXIT=$?
+        echo "Listing contents of /coverage"
+        ls -al /app/server/coverage
+        cd /app/server/coverage
+        echo "About to run coverage report"
+        coverage report -m --skip-covered > coverage.report
+        # Need to set run coverage back to 0, so that when the server restarts,
+        # it doesn't clear the coverage results
+        echo "export run_coverage=0" > /app/server/coverage/runType.bash
+    else
+        echo "dev-server-loop: starting server..."
+        python3.7 /app/server/src/server.py
+        SERVER_EXIT=$?
+        echo "dev-server-loop: server exited with result: ${SERVER_EXIT}!"
+    fi
 done
