@@ -15,9 +15,7 @@ def post(body):
         return api_error(400, 'DUPLICATE_USER_NAME', body['username'])
     current_app.logger.debug('user = ' + str(body))
     new_user = User(username=body['username'], source='Local')
-    for key in vars(new_user).items():
-        if key in body:
-            setattr(new_user, key, body[key])
+    new_user.apply_update(body)
     new_user.hash_password(body['password'])
     try:
         g.db_session.add(new_user)

@@ -47,7 +47,7 @@ def post(body):
                         reset_user.reset_code + "</strong></body></html>", 'html'))
     server = smtplib.SMTP(os.environ['APP_PW_RESET_MAILHOST'])
     server.starttls()
-    server.login('service', os.environ['APP_PW_RESET_FROM_PW'])
+    server.login(os.environ['APP_PW_RESET_FROM_USER'], os.environ['APP_PW_RESET_FROM_PW'])
     server.sendmail(msg['From'], msg['To'], msg.as_string())
 
     # Add a refresh token (not an access_token) so that we confirm that the identity we generated

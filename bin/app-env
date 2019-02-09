@@ -9,9 +9,10 @@ export APP_DB_NAME="muam"
 export OPENAPI_SPEC="/app/server/src/spec/muam.yaml"
 export REACT_APP_API_PATH="/api/v1"
 export APP_PW_RESET_SUBJECT='MUAM Password Reset Code'
-export APP_PW_RESET_FROM='admin@wittlesouth.com'
+export APP_PW_RESET_FROM='service@wittlesouth.com'
 export APP_PW_RESET_MAILHOST='mail.wittlesouth.com'
 # TODO: Move these to secrets
+export APP_PW_RESET_FROM_USER='service'
 export APP_PW_RESET_FROM_PW='onlyeric'
 export APP_SHUTDOWN_KEY='Eric'
 
@@ -71,3 +72,4 @@ if [ "$NODE_ENV" == "jenkins" ]; then
   export NODE_ENV="test"
 fi
 alias dsrestart="curl -H 'Content-type: application/json' -X POST -d '{\"key\":\"Eric\"}' ${REACT_APP_BASE_URL}${REACT_APP_API_PATH}/shutdown"
+alias tlog="kubectl logs \$(kubectl get pod -l \"app=muam-test-server\" -o jsonpath='{.items[0].metadata.name}')"

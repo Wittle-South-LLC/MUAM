@@ -1,7 +1,7 @@
 """Module to handle /groups API endpoint"""
 import uuid
 from flask import g, current_app, request
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask_jwt_extended import jwt_required
 from dm.Group import Group
 from util.api_util import api_error
@@ -21,9 +21,7 @@ def post(body):
     # If we get here, then we have a valid create request
     current_app.logger.debug('groups.post -> group = ' + str(body))
     new_group = Group(name=body['name'], source='Local')
-    for key in vars(new_group).items():
-        if key in body:
-            setattr(new_group, key, body[key])
+    new_group.apply_update(body)
     try:
         g.db_session.add(new_group)
         g.db_session.commit()
@@ -37,6 +35,7 @@ def search(search_text):
     my_search = '%'
     if search_text:
         my_search = '%' + search_text + '%'
+    current_app.logger.debug('groups.search my_search = {}'.format(my_search))
     group_list = g.db_session.query(Group)\
                   .filter(Group.name.like(my_search))\
                   .order_by(Group.name)\
@@ -61,6 +60,7 @@ def delete(group_id):
 @jwt_required
 def put(group_id, body):
     """Method to handle PUT verb for /groups/{group_id} endpoint"""
+    current_app.logger.debug('groups.put group_id = {}, body = {}'.format(group_id, str(body)))
     binary_uuid = uuid.UUID(group_id).bytes
     update_group = g.db_session.query(Group).filter(Group.group_id == binary_uuid).one_or_none()
     if not update_group:
@@ -81,4 +81,5 @@ def get(group_id):
     if not find_group:
         return api_error(404, 'GROUP_ID_NOT_FOUND', group_id)
     ret = find_group.dump(deep=True)
+    current_app.logger.debug('groups.get ret = {}'.format(str(ret)))
     return ret, 200

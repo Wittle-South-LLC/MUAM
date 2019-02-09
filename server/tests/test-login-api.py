@@ -5,6 +5,7 @@
 # tests.
 """test-login-api.py - Tests of login APIs"""
 import logging
+import jwt
 from .TestUtil import get_response_with_jwt, get_new_session,\
                       log_response_error
 
@@ -75,11 +76,14 @@ def test_initial_login_jwt():
     }
     resp = get_response_with_jwt(TEST_SESSION, 'POST', '/login', login_data)
     log_response_error(resp, True)
-    json = resp.json()
     assert resp.status_code == 200
     assert 'csrf_access_token' in resp.cookies
     assert 'access_token_cookie' in TEST_SESSION['session'].cookies
     assert 'refresh_token_cookie' in TEST_SESSION['session'].cookies
+    claims = jwt.decode(TEST_SESSION['session'].cookies['access_token_cookie'], verify=False)
+    LOGGER.debug('claims = ' + str(claims))
+    assert 'user_claims' in claims
+    assert 'user_id' in claims['user_claims']
 
 def test_shutdown_bad_key():
     """--> Test shutdown with bad key for code coverage"""

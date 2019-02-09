@@ -1,16 +1,15 @@
 """User.py - Module containing the user class for the data model"""
-import uuid
-import datetime
-from sqlalchemy import Column, DateTime, JSON, String, text
+import logging
+from sqlalchemy import Column, DateTime, inspect, JSON, String
 from sqlalchemy.dialects.mysql import BINARY
 from sqlalchemy.orm import relationship
 from passlib.apps import custom_app_context as pwd_context
 from .base import Base
 
+LOGGER=logging.getLogger('appLogger')
+
 class User(Base):
     """Data model object representing application user"""
-    __tablename__ = 'User'
-    __table_args__ = {'mysql_charset':'utf8'}
     user_id = Column(BINARY(16), primary_key=True)
     username = Column(String(32), index=True, unique=True)
     first_name = Column(String(80)) # User first name
@@ -22,21 +21,12 @@ class User(Base):
     source = Column(String(32)) # One of Local, Facebook, LDAP currently
     reset_code = Column(String(6)) # Code for resetting password
     reset_expires = Column(DateTime) # Expiration timestamp for refresh code
-    record_created = Column(DateTime,
-                            server_default=text('CURRENT_TIMESTAMP'))
-    record_updated = Column(DateTime,
-                            server_default=text('CURRENT_TIMESTAMP'),
-                            onupdate=datetime.datetime.now)
     user_groups = relationship('UserGroup', cascade='all, delete-orphan')
 
     def __init__(self, **kwargs):
         """Initializes the ID for newly constructed objects"""
-        super(User, self).__init__(**kwargs)
-        self.user_id = uuid.uuid4().bytes
-
-    def get_uuid(self):
-        """Returns the text version of the UUID, the binary version is stored in the database"""
-        return str(uuid.UUID(bytes=self.user_id))
+        super().__init__(**kwargs)
+        self.assign_id()
 
     def get_groups(self):
         result = []
