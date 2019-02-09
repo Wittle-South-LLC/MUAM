@@ -27,7 +27,7 @@ class User(Base):
     record_updated = Column(DateTime,
                             server_default=text('CURRENT_TIMESTAMP'),
                             onupdate=datetime.datetime.now)
-    user_groups = relationship('UserGroups', cascade='all, delete-orphan')
+    user_groups = relationship('UserGroup', cascade='all, delete-orphan')
 
     def __init__(self, **kwargs):
         """Initializes the ID for newly constructed objects"""

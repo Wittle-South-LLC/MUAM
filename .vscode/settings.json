@@ -9,6 +9,7 @@
         "server/.Python": true,     // Python stuff
         "server/pip-selfcheck.json": true,     // pip stuff
         "server/include/**": true,  // VirtualEnv include files
+        "**/__pycache__/**": true,  // Python cache files
         ".vscode/**": true,         // Visual Studio Code workspace settings
         "mysql-dev/**": true,  // MySQL development database files
         "mysql-test/**": true, // Mysql test database files

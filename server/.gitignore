@@ -1,9 +1,11 @@
 # Ignore virtualenv artifacts
 bin/**
+coverage/**
 include/**
 lib/**
 man/**
 src/api/__pycache__
 src/dm/__pycache__
 src/util/__pycache__
+tests/__pycache__
 .Python

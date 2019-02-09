@@ -12,23 +12,23 @@ from dm.User import User
 from dm.UserGroup import UserGroup
 from dm.Group import Group
 
-def post(login_data):
+def post(body):
     """handles POST verb for /login endpoint"""
 
     # Need to confirm that either username & password are provided, or
     # access_token for a Facebook login.
-    if ('username' not in login_data or 'password' not in login_data)\
-       and 'access_token' not in login_data:
+    if ('username' not in body or 'password' not in body)\
+       and 'access_token' not in body:
         return api_error(400, 'MISSING_USERNAME_API_KEY')
 
     # Get user based on username / password or access_token
-    if 'username' in login_data:
+    if 'username' in body:
 
         # Look up the user and verify that the password is correct
         user = g.db_session.query(User)\
-                           .filter(User.username == login_data['username'])\
+                           .filter(User.username == body['username'])\
                            .one_or_none()
-        if not user or not user.verify_password(login_data['password']):
+        if not user or not user.verify_password(body['password']):
             return api_error(401, 'INVALID_USERNAME_PASSWORD')
 
     # Now at this point, we should always have a valid user object,

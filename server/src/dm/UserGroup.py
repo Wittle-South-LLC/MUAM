@@ -20,10 +20,10 @@ class UserGroup(Base):
                             server_default=text('CURRENT_TIMESTAMP'),
                             onupdate=datetime.datetime.now)
     user = relationship('User', back_populates='user_groups',
-                        primaryjoin="UserGroup.user_id = User.user_id",
+                        primaryjoin="UserGroup.user_id == User.user_id",
                         foreign_keys="UserGroup.user_id")
     group = relationship('Group', back_populates='user_groups',
-                         primaryjoin="UserGroup.group_id = Group.group_id",
+                         primaryjoin="UserGroup.group_id == Group.group_id",
                          foreign_keys="UserGroup.group_id")
 
     def dump(self, parent):
