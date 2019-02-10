@@ -1,6 +1,7 @@
 """Module to handle /groups API endpoint"""
 import uuid
 from flask import g, current_app, request
+from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask_jwt_extended import jwt_required
 from dm.Group import Group
@@ -30,16 +31,26 @@ def post(body):
     return {'group_id': new_group.get_uuid()}, 201
 
 @jwt_required
-def search(search_text):
+def search(search_text = None, gid = None):
     """Method to handle GET verb with no URL parameters"""
     my_search = '%'
     if search_text:
         my_search = '%' + search_text + '%'
     current_app.logger.debug('groups.search my_search = {}'.format(my_search))
-    group_list = g.db_session.query(Group)\
-                  .filter(Group.name.like(my_search))\
-                  .order_by(Group.name)\
-                  .all()
+    current_app.logger.debug('groups.search gid = {}'.format(str(gid)))
+    group_list = None
+    if gid:
+        group_list = g.db_session.query(Group)\
+                    .filter(and_(Group.name.like(my_search), Group.gid == gid))\
+                    .order_by(Group.name)\
+                    .all()
+    else:
+        group_list = g.db_session.query(Group)\
+                    .filter(Group.name.like(my_search))\
+                    .order_by(Group.name)\
+                    .all()
+    if not group_list:
+        return 'NO_GROUPS_FOUND', 404
     ret = []
     for group in group_list:
         ret.append(group.dump())

@@ -193,6 +193,7 @@ paths:
         - Groups
       parameters:
         - $ref: '#/components/parameters/search_text'
+        - $ref: '#/components/parameters/gid'
       responses:
         '200':
           description: List of groups found
@@ -216,8 +217,9 @@ paths:
         required: true
         schema:
           type: string
-          minLength: 4
-          maxLength: 400
+          format: uuid
+          minLength: 12
+          maxLength: 40
     get:
       summary: Get information for a group by group_id
       tags:
@@ -226,7 +228,7 @@ paths:
         '200':
           description: Group found and details returned successfully
           content:
-            applicattion/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/GroupFull'
         '400':
@@ -256,7 +258,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Group'
+              $ref: '#/components/schemas/GroupFull'
         required: true
     delete:
       summary: Delete a group by group ID
@@ -326,7 +328,7 @@ paths:
   /users/{user_id}:
     parameters:
       - name: user_id
-        description: Group ID (UUID) on which the operation should be performed
+        description: User ID (UUID) on which the operation should be performed
         in: path
         required: true
         schema:
@@ -341,7 +343,7 @@ paths:
         '200':
           description: User details returned successfully
           content:
-            applicattion/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/UserExtended'
         '400':
@@ -409,6 +411,15 @@ components:
       description: String to filter search with
       schema:
         type: string
+        maxLength: 40
+    gid:
+      in: query
+      name: gid
+      required: false
+      description: GID (numeric group id) to filter group searches with
+      schema:
+        type: integer
+        format: int32
   schemas:
     Error:
       type: object
@@ -465,6 +476,27 @@ components:
           description: Full message (with stack trace)
           minLength: 2
           maxLength: 4000
+    GroupList:
+      type: object
+      description: List representation of Group
+      properties:
+        group_id:
+          type: string
+          x-wsag-model-id: true
+          nullable: false
+          format: uuid
+          description: Unique group identifier
+          minLength: 12
+          maxLength: 40
+          example: b5665877-f9ee-4074-a38b-39219cde6b4d
+        is_owner:
+          type: boolean
+          description: Indicates if the user is the owner of this group
+          example: false
+        is_admin:
+          type: boolean
+          description: Indicates if the user is an administrator of this group
+          example: false
     GroupShort:
       type: object
       x-wsag-create: Group
@@ -478,9 +510,12 @@ components:
           nullable: false
           readOnly: true
           description: Unique group identifier
-          example: SBDRF-SDRVJ-KSDFL-SDRFS
+          minLength: 12
+          maxLength: 40
+          example: b5665877-f9ee-4074-a38b-39219cde6b4d
         gid:
           type: integer
+          format: int32
           nullable: true
           description: Numeric group ID (LDAP)
           example: 104
@@ -532,9 +567,31 @@ components:
       x-wsag-test-data: False
       allOf:
         - $ref: '#/components/schemas/Group'
-        - type: array
-          items:
-            $ref: '#/components/schemas/UserShort'
+        - type: object
+          properties:
+            users:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserList'
+    UserList:
+      type: object
+      properties:
+        user_id:
+          type: string
+          x-wsag-model-id: true
+          description: Unique user identifier
+          format: uuid
+          minLength: 12
+          maxLength: 40
+          example: b5665877-f9ee-4074-a38b-39219cde6b67
+        is_owner:
+          type: boolean
+          description: Indicates if the user is the owner of this group
+          example: false
+        is_admin:
+          type: boolean
+          description: Indicates if the user is an administrator of this group
+          example: false
     UserShort:
       type: object
       required:
@@ -545,6 +602,9 @@ components:
           x-wsag-model-id: true
           description: Unique user identifier
           readOnly: True
+          minLength: 12
+          maxLength: 40
+          example: b5665877-f9ee-4074-a38b-39219cde6b67
         username:
           type: string
           description: Login user name
@@ -631,12 +691,19 @@ components:
               minLength: 8
               maxLength: 32
               example: 'testing123'
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/GroupList'
     UserExtended:
       x-wsag-extended: User
       description: User with related objects list
       allOf:
         - $ref: '#/components/schemas/UserShort'
         - $ref: '#/components/schemas/UserCore'
-        - type: array
-          items:
-            $ref: '#/components/schemas/Group'
+        - type: object
+          properties:
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/GroupList'

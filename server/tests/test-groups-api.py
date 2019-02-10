@@ -73,14 +73,24 @@ def test_list():
     assert len(json) == 1
     assert json[0]['name'] == 'unit_test_group'
 
-def test_list_with_query():
-    """--> Test list groups with query"""
+def test_list_with_text():
+    """--> Test list groups with query text"""
     resp = get_response_with_jwt(TEST_SESSION, 'GET', '/groups?search_text=unit')
     log_response_error(resp)
     assert resp.status_code == 200
     LOGGER.debug('Response text = %s', resp.text)
     json = resp.json()
     LOGGER.debug('Response json = %s', str(json))
+    assert len(json) == 1
+    assert json[0]['name'] == 'unit_test_group'
+
+def test_list_with_gid():
+    """--> Test list groups with query gid"""
+    resp = get_response_with_jwt(TEST_SESSION, 'GET', '/groups?gid=300')
+    log_response_error(resp)
+    assert resp.status_code == 200
+    LOGGER.debug('Response text = %s', resp.text)
+    json = resp.json()
     assert len(json) == 1
     assert json[0]['name'] == 'unit_test_group'
 
