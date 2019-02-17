@@ -15,6 +15,8 @@
 export PYTHONPATH=/app/server/lib/python3.7/site-packages
 SERVER_EXIT=0
 while [ "$SERVER_EXIT" -eq "0" ]; do
+    # Set up local development environment variables
+    source /app/bin/local-env
     # Set up application environment based on NODE_ENV value
     source /app/bin/app-env
     # The script bin/testme will write 'run_coverage' into 

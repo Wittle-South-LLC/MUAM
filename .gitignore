@@ -1,3 +1,5 @@
 # Top level GIT ignore
 mysql-dev/**
 mysql-test/**
+bin/local-env
+

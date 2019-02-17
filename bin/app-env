@@ -15,38 +15,45 @@ export APP_PW_RESET_MAILHOST='mail.wittlesouth.com'
 export APP_PW_RESET_FROM_USER='service'
 export APP_PW_RESET_FROM_PW='onlyeric'
 export APP_SHUTDOWN_KEY='Eric'
+# Defines the GID of the group that can create users
+export APP_CREATE_USERS_GID=1001
+export APP_CREATE_USERS_NAME='User Admins'
+# Defines the GID of the group that can create groups
+export APP_CREATE_GROUPS_GID=1002
+export APP_CREATE_GROUPS_NAME='Group Admins'
+# Username for admin user
+export APP_ADMIN_USER_USERNAME='admin'
+# TODO: Move default password to secret
+export APP_ADMIN_USER_PASSWORD='testing'
 
 if [ "$NODE_ENV" == "development" ]; then
   echo "Setting up development environment variables"
-  export HOST='eric.wittlesouth.local'
   # Value below must match containerPort in kube-env/dev-api-server.yml
-  export APPSERVER_CONTAINER_PORT=8081
+  export APPSERVER_CPORT=8081
   # Value below must match nodePort in kube-env/dev-api-server.yml
-  export APPSERVER_SERVICE_PORT=31310
-  export APP_DB_ACCOUNT="dev"
-  export APP_DB_PASSWORD="dev"
-  export APP_DB_SERVER="muam-mysql-dev:3306"
+  export APPSERVER_SPORT=31310
+  export APP_DB_ACCOUNT=$MY_DEV_DB_USER
+  export APP_DB_PASSWORD=$MY_DEV_DB_PWD
+  export APP_DB_SERVER="mysql-dev:3306"
   # Generate a new secret key with this python command: binascii.hexlify(os.urandom(24))
   export SECRET_KEY=b'57d4585302cb1a8dc3beaa03a8de90b82efb9a98057b9c01'
-  export REACT_APP_BASE_URL="http://kube.wittlesouth.local:${APPSERVER_SERVICE_PORT}"
+  export REACT_APP_BASE_URL="http://kube.wittlesouth.local:${APPSERVER_SPORT}"
   export APP_LOG_LEVEL="info"
 elif [ "$NODE_ENV" == "test" ] || [ "$NODE_ENV" == "jenkins" ]; then
   echo "Setting up testing environment variables"
-  export TEST_HOST="kube.wittlesouth.local"
-  export MYSQL_ROOT_PASSWORD=onlyeric
-  export MYSQL_PORT=31301
-  export APP_DB_ACCOUNT="test"
-  export APP_DB_PASSWORD="test"
-  export APP_DB_SERVER="muam-mysql-test:3306"
-  export APP_DB_SERVICE_PORT=31301
+  export TEST_HOST=$MY_KUBE_SERVER
+  export APP_DB_ACCOUNT=$MY_TEST_DB_USER
+  export APP_DB_PASSWORD=$MY_TEST_DB_PWD
+  export APP_DB_SERVER="mysql-test:3306"
+  export APP_DB_SPORT=$MY_TEST_DB_SPORT
   # Value below must match containerPort in kube-env/test-api-server.yml
-  export APPSERVER_CONTAINER_PORT=8081
+  export APPSERVER_CPORT=8081
   # Value below must match nodePort in kube-env/test-api-server.yml
-  export APPSERVER_SERVICE_PORT=31311
+  export APPSERVER_SPORT=31311
   export COVERAGE_FILE=/coverage/.coverage.server
-  export TEST_CONNECT_STRING="mysql+mysqldb://${APP_DB_ACCOUNT}:${APP_DB_PASSWORD}@${TEST_HOST}:${APP_DB_SERVICE_PORT}/${APP_DB_NAME}?charset=utf8mb4&binary_prefix=True"
+  export TEST_CONNECT_STRING="mysql+mysqldb://${APP_DB_ACCOUNT}:${APP_DB_PASSWORD}@${TEST_HOST}:${APP_DB_SPORT}/${APP_DB_NAME}?charset=utf8mb4&binary_prefix=True"
   export SECRET_KEY=b'967c90a5f41262439c8da376069b953c0d31e30a7c92d56e'
-  export TEST_URL="http://${TEST_HOST}:${APPSERVER_SERVICE_PORT}${REACT_APP_API_PATH}"
+  export TEST_URL="http://${TEST_HOST}:${APPSERVER_SPORT}${REACT_APP_API_PATH}"
 elif [ "$NODE_ENV" == "production" ]; then
   echo "Settup up environment variables for production"
 else
@@ -60,16 +67,17 @@ if [ "$NODE_ENV" == "jenkins" ]; then
   # Set jenkins database test server
   export APP_DB_SERVER="muam-jenkins-test-database.wittlesouth"
   # Value below must match containerPort in kube-env/test-api-server.yml
-  export APPSERVER_CONTAINER_PORT=8081
+  export APPSERVER_CPORT=8081
   # Since Jenkins tests will run in a container, the service port should
   # match the container port
-  export APPSERVER_SERVICE_PORT=8081
+  export APPSERVER_SPORT=8081
   # Create connect string
   export TEST_CONNECT_STRING="mysql+mysqldb://${APP_DB_ACCOUNT}:${APP_DB_PASSWORD}@${APP_DB_SERVER}/${APP_DB_NAME}?charset=utf8mb4&binary_prefix=True"
   # Construct the test URL
-  export TEST_URL="http://${TEST_HOST}:${APPSERVER_CONTAINER_PORT}${REACT_APP_API_PATH}"
+  export TEST_URL="http://${TEST_HOST}:${APPSERVER_CPORT}${REACT_APP_API_PATH}"
   # Set NODE_ENV back to "test", now that Jenkins overrides are complete
   export NODE_ENV="test"
 fi
 alias dsrestart="curl -H 'Content-type: application/json' -X POST -d '{\"key\":\"Eric\"}' ${REACT_APP_BASE_URL}${REACT_APP_API_PATH}/shutdown"
 alias tlog="kubectl logs \$(kubectl get pod -l \"app=muam-test-server\" -o jsonpath='{.items[0].metadata.name}')"
+alias dlog="kubectl logs \$(kubectl get pod -l \"app=muam-dev-server\" -o jsonpath='{.items[0].metadata.name}')"
