@@ -33,6 +33,10 @@ class Base(object):
         """Applies a dict to the fields in this object"""
         mapper = inspect(type(self))
         for column in mapper.attrs:
+            # Skip columns that are relationships
+            if type(column.class_attribute.property).__name__ == 'RelationshipProperty':
+                continue
+            # If the column exists in the field dictionary, update its value
             if column.key in fields:
                 setattr(self, column.key, fields[column.key])
 

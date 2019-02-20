@@ -46,7 +46,7 @@ def test_group_add_no_authority():
     assert resp.status_code == 401
 
 def test_group_add_api_success():
-    """--> Test add API success"""
+    """--> Test add API success for a new group with no users"""
     #pylint: disable=W0603
     global added_id
     add_json = {
@@ -60,6 +60,33 @@ def test_group_add_api_success():
     json = resp.json()
     assert json['group_id']
     added_id = json['group_id']
+
+# TODO: delete the group I'm adding in this test
+def test_group_add_with_users_success():
+    """--> Test add API success for a new group with users"""
+    # Look up the user ID of the group admin user (created in testme script)
+    resp = get_response_with_jwt(TEST_SESSION, 'GET', '/users?search_text=gadmin')
+    assert resp.status_code == 200
+    json = resp.json()
+    gadmin_userid = json[0]['user_id']
+    #pylint: disable=W0603
+    add_json = {
+        'name': "groupwithusers",
+        'description': 'Group with users for unit testing',
+        'gid': 301,
+        'users': [
+            {
+                'user_id': gadmin_userid,
+                'is_admin': True,
+                'is_owner': False
+            }
+        ]
+    }
+    resp = get_response_with_jwt(TEST_SESSION, 'POST', '/groups', add_json)
+    log_response_error(resp)
+    assert resp.status_code == 201
+    json = resp.json()
+    assert json['group_id']
 
 def test_update():
     """--> Update a group"""

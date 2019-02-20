@@ -186,7 +186,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Group'
+              $ref: '#/components/schemas/GroupFull'
     get:
       summary: Get a list of groups
       tags:
@@ -421,6 +421,28 @@ components:
         type: integer
         format: int32
   schemas:
+    BrowserError:
+      type: object
+      required:
+        - short_message
+        - full_message
+        - user_id
+      properties:
+        user_id:
+          type: string
+          description: Unique user identifier
+          minLength: 2
+          maxLength: 200
+        short_message:
+          type: string
+          description: Short error message
+          minLength: 2
+          maxLength: 80
+        full_message:
+          type: string
+          description: Full message (with stack trace)
+          minLength: 2
+          maxLength: 4000
     Error:
       type: object
       properties:
@@ -454,28 +476,54 @@ components:
           minLength: 8
           maxLength: 120
           example: KLSDJKFJF-LKSJFLKJSDFJ
-    BrowserError:
+    Group:
       type: object
-      required:
-        - short_message
-        - full_message
-        - user_id
-      properties:
-        user_id:
-          type: string
-          description: Unique user identifier
-          minLength: 2
-          maxLength: 200
-        short_message:
-          type: string
-          description: Short error message
-          minLength: 2
-          maxLength: 80
-        full_message:
-          type: string
-          description: Full message (with stack trace)
-          minLength: 2
-          maxLength: 4000
+      x-wsag-create: Group
+      description: Named collection of users
+      allOf:
+        - $ref: '#/components/schemas/GroupShort'
+        - type: object
+          properties:
+            description:
+              type: string
+              nullable: true
+              description: Long description of group
+              minLength: 20
+              maxLength: 3000
+              example: This is a really long description of a group
+            source:
+              type: string
+              nullable: False
+              description: Source of this group (Local or LDAP)
+              enum:
+                - Local
+                - LDAP
+              readOnly: true
+              example: LDAP
+            record_created:
+              type: string
+              format: date
+              description: Record creation date
+              readOnly: True
+              example: '1995-08-19T00:00:00.000Z'
+            record_updated:
+              type: string
+              format: date
+              description: Record update date
+              readOnly: true
+              example: '1995-08-19T00:00:00.001Z'
+    GroupFull:
+      description: Group with all attributes
+      x-wsag-extended: Group
+      x-wsag-test-data: False
+      allOf:
+        - $ref: '#/components/schemas/Group'
+        - type: object
+          properties:
+            users:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserList'
     GroupList:
       type: object
       description: List representation of Group
@@ -525,92 +573,13 @@ components:
           minLength: 4
           maxLength: 80
           example: app-users
-    Group:
-      type: object
-      x-wsag-create: Group
-      description: Named collection of users
-      allOf:
-        - $ref: '#/components/schemas/GroupShort'
-        - type: object
-          properties:
-            description:
-              type: string
-              nullable: true
-              description: Long description of group
-              minLength: 20
-              maxLength: 3000
-              example: This is a really long description of a group
-            source:
-              type: string
-              nullable: False
-              description: Source of this group (Local or LDAP)
-              enum:
-                - Local
-                - LDAP
-              readOnly: true
-              example: LDAP
-            record_created:
-              type: string
-              format: date
-              description: Record creation date
-              readOnly: True
-              example: '1995-08-19T00:00:00.000Z'
-            record_updated:
-              type: string
-              format: date
-              description: Record update date
-              readOnly: true
-              example: '1995-08-19T00:00:00.001Z'
-    GroupFull:
-      description: Group with all attributes
-      x-wsag-extended: Group
+    User:
+      x-wsag-create: User
+      description: User
       x-wsag-test-data: False
       allOf:
-        - $ref: '#/components/schemas/Group'
-        - type: object
-          properties:
-            users:
-              type: array
-              items:
-                $ref: '#/components/schemas/UserList'
-    UserList:
-      type: object
-      properties:
-        user_id:
-          type: string
-          x-wsag-model-id: true
-          description: Unique user identifier
-          format: uuid
-          minLength: 12
-          maxLength: 40
-          example: b5665877-f9ee-4074-a38b-39219cde6b67
-        is_owner:
-          type: boolean
-          description: Indicates if the user is the owner of this group
-          example: false
-        is_admin:
-          type: boolean
-          description: Indicates if the user is an administrator of this group
-          example: false
-    UserShort:
-      type: object
-      required:
-        - username
-      properties:
-        user_id:
-          type: string
-          x-wsag-model-id: true
-          description: Unique user identifier
-          readOnly: True
-          minLength: 12
-          maxLength: 40
-          example: b5665877-f9ee-4074-a38b-39219cde6b67
-        username:
-          type: string
-          description: Login user name
-          minLength: 4
-          maxLength: 32
-          example: 'testing'
+        - $ref: '#/components/schemas/UserShort'
+        - $ref: '#/components/schemas/UserCore'
     UserCore:
       description: User
       type: object
@@ -656,6 +625,18 @@ components:
             - Facebook
           readOnly: true
           example: LDAP
+        create_users:
+          type: boolean
+          description: True if this user can create other users
+          example: false
+        create_groups:
+          type: boolean
+          description: True if this user can create groups
+          example: true
+        grant_privs:
+          type: boolean
+          description: True if this user can change values of create_users or create_groups for other users
+          example: false
         record_created:
           type: string
           format: date
@@ -668,13 +649,56 @@ components:
           description: Record update date
           readOnly: true
           example: '1995-08-19T00:00:00.003Z'
-    User:
-      x-wsag-create: User
-      description: User
-      x-wsag-test-data: False
+    UserExtended:
+      x-wsag-extended: User
+      description: User with related objects list
       allOf:
         - $ref: '#/components/schemas/UserShort'
         - $ref: '#/components/schemas/UserCore'
+        - type: object
+          properties:
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/GroupList'
+    UserList:
+      type: object
+      properties:
+        user_id:
+          type: string
+          x-wsag-model-id: true
+          description: Unique user identifier
+          format: uuid
+          minLength: 12
+          maxLength: 40
+          example: b5665877-f9ee-4074-a38b-39219cde6b67
+        is_owner:
+          type: boolean
+          description: Indicates if the user is the owner of this group
+          example: false
+        is_admin:
+          type: boolean
+          description: Indicates if the user is an administrator of this group
+          example: false
+    UserShort:
+      type: object
+      required:
+        - username
+      properties:
+        user_id:
+          type: string
+          x-wsag-model-id: true
+          description: Unique user identifier
+          readOnly: True
+          minLength: 12
+          maxLength: 40
+          example: b5665877-f9ee-4074-a38b-39219cde6b67
+        username:
+          type: string
+          description: Login user name
+          minLength: 4
+          maxLength: 32
+          example: 'testing'
     UserUpdate:
       x-wsag-create: User
       description: User
@@ -691,18 +715,6 @@ components:
               minLength: 8
               maxLength: 32
               example: 'testing123'
-            groups:
-              type: array
-              items:
-                $ref: '#/components/schemas/GroupList'
-    UserExtended:
-      x-wsag-extended: User
-      description: User with related objects list
-      allOf:
-        - $ref: '#/components/schemas/UserShort'
-        - $ref: '#/components/schemas/UserCore'
-        - type: object
-          properties:
             groups:
               type: array
               items:

@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask_jwt_extended import jwt_required
 from dm.Group import Group
 from dm.UserGroup import UserGroup
+from dm.User import User
 from util.api_util import api_error
 
 @jwt_required
@@ -30,6 +31,18 @@ def post(body):
     new_group.apply_update(body)
     # Ensure that user who created the group is the owner
     new_group.users.append(UserGroup(user=g.user, is_owner=True))
+    # If group has other attached users, process them
+    if 'users' in body:
+        for group_user in body['users']:
+            # Need the binary form of user ID for data model operations
+            binary_user_id = uuid.UUID(group_user['user_id']).bytes
+            # Skip logged in user, who we already added as owner
+            if group_user['user_id'] == binary_user_id:
+                continue
+            # Check to see if the user ID being added exists; if so add it to the group
+            find_user = g.db_session.query(User).filter(User.user_id == binary_user_id).one_or_none()
+            if find_user:
+                new_group.users.append(UserGroup(user=find_user, is_owner=group_user['is_owner'], is_admin=group_user['is_admin']))
     try:
         g.db_session.add(new_group)
         g.db_session.commit()
