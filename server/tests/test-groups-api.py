@@ -12,6 +12,8 @@ added_id = -1
 
 # Ensure we can run tests against a session where needed
 TEST_SESSION = get_new_session()
+MEMBER_SESSION = get_new_session()
+
 
 def setUp():
     """Need a logged in session for this API"""
@@ -22,6 +24,9 @@ def setUp():
     resp = get_response_with_jwt(TEST_SESSION, 'POST', '/login', test_user)
     assert resp.status_code == 200
     assert 'access_token_cookie' in TEST_SESSION['session'].cookies
+    member_user = {'username': 'normal', 'password': 'normal00'}
+    resp = get_response_with_jwt(MEMBER_SESSION, 'POST', '/login', member_user)
+    assert resp.status_code == 200
 
 def test_group_add_no_json():
     """GroupAPIs: Test add API failure due to no json"""
@@ -33,6 +38,12 @@ def test_group_add_no_username():
     add_json = {'gid': 100}
     resp = get_response_with_jwt(None, 'POST', '/groups', add_json)
     assert resp.status_code == 400
+
+def test_group_add_no_authority():
+    """--> Test add API failure due to user having insufficient privileges"""
+    add_json = {'gid': 100, 'name': 'failme'}
+    resp = get_response_with_jwt(MEMBER_SESSION, 'POST', '/groups', add_json)
+    assert resp.status_code == 401
 
 def test_group_add_api_success():
     """--> Test add API success"""
@@ -62,6 +73,14 @@ def test_update():
     log_response_error(resp3)
     assert resp3.json()['name'] == 'unit_test_group'
 
+def test_update_no_authority():
+    """--> Update a group fails if user is not admin for the group"""
+    update_data = {
+        "name": "unit_test_group2"
+    }
+    resp2 = get_response_with_jwt(MEMBER_SESSION, 'PUT', '/groups/' + added_id, update_data)
+    assert resp2.status_code == 401
+
 def test_list():
     """--> Test list groups"""
     resp = get_response_with_jwt(TEST_SESSION, 'GET', '/groups?search_text=')
@@ -70,8 +89,7 @@ def test_list():
     LOGGER.debug('Response text = %s', resp.text)
     json = resp.json()
     LOGGER.debug('Response json = %s', str(json))
-    assert len(json) == 1
-    assert json[0]['name'] == 'unit_test_group'
+    assert len(json) > 1
 
 def test_list_with_text():
     """--> Test list groups with query text"""
@@ -93,6 +111,12 @@ def test_list_with_gid():
     json = resp.json()
     assert len(json) == 1
     assert json[0]['name'] == 'unit_test_group'
+
+def test_delete_no_authority():
+    """--> Test deleting a group fails if user is not owner"""
+    resp = get_response_with_jwt(MEMBER_SESSION, 'DELETE', '/groups/' + added_id)
+    log_response_error(resp)
+    assert resp.status_code == 401
 
 def test_delete():
     """--> Test deleting a group"""

@@ -8,6 +8,7 @@ from flask import jsonify
 API_ERRORS = {
     "MISSING_USERNAME_API_KEY": "Either username or api_key is required, neither were provided",
     "INVALID_USERNAME_PASSWORD": "Invalid username / password combination",
+    "INSUFFICIENT_PRIVILEGES": "User {} does not have required privileges for this operation",
     "EMAIL_NOT_FOUND": 'Email {} not found',
     "REGISTERED_USER_EXISTS": 'A different user is already registered for {}',
     "RESET_CODE_CURRENT": 'There is already a valid reset code for this user',

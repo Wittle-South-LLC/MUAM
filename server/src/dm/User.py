@@ -1,8 +1,8 @@
 """User.py - Module containing the user class for the data model"""
 import logging
-from sqlalchemy import Column, DateTime, inspect, JSON, String
+from sqlalchemy import Boolean, Column, DateTime, inspect, JSON, String
 from sqlalchemy.dialects.mysql import BINARY
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 from passlib.apps import custom_app_context as pwd_context
 from .base import Base
 
@@ -15,13 +15,17 @@ class User(Base):
     first_name = Column(String(80)) # User first name
     last_name = Column(String(80)) # User last name
     full_name = Column(String(120)) # Full name of the person
-    email = Column(String(80), index=True, unique=True)
-    phone = Column(String(20), index=True, unique=True)
-    password_hash = Column(String(128))
+    email = Column(String(80), index=True, unique=True) # Email address
+    phone = Column(String(20), index=True, unique=True) # Phone
+    password_hash = Column(String(128)) # Persistent encrypted password
     source = Column(String(32)) # One of Local, Facebook, LDAP currently
+    create_users = Column(Boolean, default=False) # Can create other users if true
+    create_groups = Column(Boolean, default=False) # Can create groups if true
+    grant_privs = Column(Boolean, default=False) # Can change create_users or create_groups
     reset_code = Column(String(6)) # Code for resetting password
     reset_expires = Column(DateTime) # Expiration timestamp for refresh code
-    user_groups = relationship('UserGroup', cascade='all, delete-orphan')
+#    groups = relationship('UserGroup', backref=backref('user', cascade='all, delete'))
+    groups = relationship('UserGroup', back_populates='user')
 
     def __init__(self, **kwargs):
         """Initializes the ID for newly constructed objects"""
@@ -30,7 +34,7 @@ class User(Base):
 
     def get_groups(self):
         result = []
-        for ug in self.user_groups:
+        for ug in self.groups:
             result.append({
                 'group_uuid': ug.group.get_uuid(),
                 'gid': ug.group.gid,

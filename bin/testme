@@ -95,12 +95,12 @@ if [ "$run_nose" -gt "0" ] || [ "$run_integration" -gt "0" ]; then
   fi
   echo "About to shut down server prior to test run with post to ${TEST_URL}/shutdown"
   curl -H "Content-type: application/json" -X POST -d '{"key":"Eric"}' ${TEST_URL}/shutdown
-  echo "Starting api server on localhost at port $APPSERVER_SERVICE_PORT"
+  echo "Starting api server on $TEST_HOST at port $APPSERVER_SPORT"
 
   # Loop looking for a response from the server API indicating it is up and running
   for i in {1..100}; do
     sleep 1
-    if curl -H "Content-Type: application/json" -X POST -d '{"username": "junk", "password":"junk"}' $TEST_URL; then 
+    if curl -H "Content-Type: application/json" -X POST -d '{"username": "junkout", "password":"junkout00"}' $TEST_URL/login; then 
       server_running=1
       break
     fi
@@ -113,8 +113,17 @@ fi
 
 # If we're running the server, then add the testing user
 if [ "$server_running" -gt "0" ]; then
-  export ADD_USER=$(curl -H "Content-Type: application/json" -X POST -d '{"username": "testing", "password":"testing0", "email": "test@wittle.net", "phone": "9199999999", "first_name": "Test", "last_name": "User", "roles": "Admin", "reCaptchaResponse": "Nothing"}' ${TEST_URL}/users)
-  echo "Add User returned $ADD_USER"
+  python3.7 server/src/muam-useradd.py -u none -p none --username testing --password testing0 \
+                                        --email test@wittle.net --first_name Test --last_name User \
+                                        --create_users --create_groups --grant_priv
+  python3.7 server/src/muam-useradd.py -u testing -p testing0 --username normal --password normal00 \
+                                        --email normal@wittle.net --first_name Normal --last_name User
+  python3.7 server/src/muam-useradd.py -u testing -p testing0 --username gadmin --password gadmin00 \
+                                        --email gadmin@wittle.net --first_name Group --last_name Admin
+  python3.7 server/src/muam-groupadd.py -u testing -p testing0 --name TestGroup --gid 100 \
+                                        --owners testing --users normal --admins gadmin
+#  export ADD_USER=$(curl -H "Content-Type: application/json" -X POST -d '{"username": "testing", "password":"testing0", "email": "test@wittle.net", "phone": "9199999999", "first_name": "Test", "last_name": "User", "create_users": true, "create_groups": true, "grant_priv": true}' ${TEST_URL}/users)
+#  echo "Add User returned $ADD_USER"
 fi
 
 # TEST_URL is used in both nose test and mocha tests now

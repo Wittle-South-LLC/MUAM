@@ -124,9 +124,7 @@ def test_user_list():
     LOGGER.debug('Response text = %s', resp.text)
     json = resp.json()
     LOGGER.debug('Response json = %s', str(json))
-    assert len(json) == 2
-    assert json[0]['username'] in ['testing', 'ilana']
-    assert json[1]['username'] in ['testing', 'ilana']
+    assert len(json) > 3
 
 def test_user_list_with_query():
     """--> Test list users with query"""

@@ -5,11 +5,16 @@ from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask_jwt_extended import jwt_required
 from dm.Group import Group
+from dm.UserGroup import UserGroup
 from util.api_util import api_error
 
 @jwt_required
 def post(body):
     """Method to handle POST verb for /groups enpoint"""
+
+    # Check to see if the user has privileges to create groups
+    if not g.user.create_users:
+        return api_error(401, 'INSUFFICIENT_PRIVILEGES', g.user.username)
 
     # Check if this request would be a duplicate, and if so return an error
     check_group = g.db_session.query(Group).filter(Group.name == body['name']).one_or_none()
@@ -23,6 +28,8 @@ def post(body):
     current_app.logger.debug('groups.post -> group = ' + str(body))
     new_group = Group(name=body['name'], source='Local')
     new_group.apply_update(body)
+    # Ensure that user who created the group is the owner
+    new_group.users.append(UserGroup(user=g.user, is_owner=True))
     try:
         g.db_session.add(new_group)
         g.db_session.commit()
@@ -64,6 +71,17 @@ def delete(group_id):
     delete_group = g.db_session.query(Group).filter(Group.group_id == binary_uuid).one_or_none()
     if not delete_group:
         return api_error(404, 'GROUP_ID_NOT_FOUND', group_id)
+    # Confirm the user is an owner
+    authorized = False
+    for ug in delete_group.users:
+        if ug.user.user_id == g.user.user_id and ug.is_owner:
+            authorized = True
+            break
+    if not authorized:
+        return api_error(401,'INSUFFICIENT_PRIVILEGES', g.user.username)
+    # Delete the UserGroup records for this group
+    for ug in delete_group.users:
+        g.db_session.delete(ug)
     g.db_session.delete(delete_group)
     g.db_session.commit()
     return 'Group deleted', 204
@@ -76,6 +94,14 @@ def put(group_id, body):
     update_group = g.db_session.query(Group).filter(Group.group_id == binary_uuid).one_or_none()
     if not update_group:
         return api_error(404, 'GROUP_ID_NOT_FOUND', group_id)
+    # Confirm the logged in user is an admin or owner
+    authorized = False
+    for ug in update_group.users:
+        if ug.user.user_id == g.user.user_id and (ug.is_admin or ug.is_owner):
+            authorized = True
+            break
+    if not authorized:
+        return api_error(401,'INSUFFICIENT_PRIVILEGES', g.user.username)
     # Now we're good to update the user and their identity person record
     for key, value in body.items():
         if hasattr(update_group, key):

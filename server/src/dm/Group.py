@@ -1,7 +1,7 @@
 """Group.py - Module containing the group class for the data model"""
 from sqlalchemy import Column, Integer, JSON, String, Text
 from sqlalchemy.dialects.mysql import BINARY
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 from .base import Base
 
 class Group(Base):
@@ -11,7 +11,8 @@ class Group(Base):
     name = Column(String(80), index=True, unique=True)
     description = Column(Text)
     source = Column(String(32))     # One of Local, LDAP
-    user_groups = relationship('UserGroup', cascade='all, delete-orphan')
+#    users = relationship('UserGroup', backref=backref('group', cascade='all, delete'))
+    users = relationship('UserGroup', back_populates='group')
 
     def __init__(self, **kwargs):
         """Initializes the ID for newly constructed objects"""

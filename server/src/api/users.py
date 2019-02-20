@@ -6,8 +6,12 @@ from flask_jwt_extended import jwt_required
 from dm.User import User
 from util.api_util import api_error
 
+#@jwt_required
 def post(body):
     """Method to handle POST verb for /users enpoint"""
+
+#    if not g.user.create_users:
+#        return api_error(401, 'INSUFFICIENT_PRIVILEGES', g.user.username)
 
     # Check if the username is already in use, and if so return an error
     check_user = g.db_session.query(User).filter(User.username == body['username']).one_or_none()

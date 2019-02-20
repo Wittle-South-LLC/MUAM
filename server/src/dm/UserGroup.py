@@ -1,4 +1,5 @@
 """UserGroup.py - Module containing the class that links users to groups"""
+import uuid
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, JSON, String
 from sqlalchemy.dialects.mysql import BINARY
 from sqlalchemy.orm import relationship
@@ -8,14 +9,10 @@ class UserGroup(Base):
     """Data model object containing the link between a user and a group"""
     group_id = Column(BINARY(16), ForeignKey('Group.group_id'), primary_key=True)
     user_id = Column(BINARY(16), ForeignKey('User.user_id'), primary_key=True)
-    is_owner = Column(Boolean)
-    is_admin = Column(Boolean)
-    user = relationship('User', back_populates='user_groups',
-                        primaryjoin="UserGroup.user_id == User.user_id",
-                        foreign_keys="UserGroup.user_id")
-    group = relationship('Group', back_populates='user_groups',
-                         primaryjoin="UserGroup.group_id == Group.group_id",
-                         foreign_keys="UserGroup.group_id")
+    is_owner = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
+    user = relationship('User', back_populates='groups')
+    group = relationship('Group', back_populates='users')
 
     def dump(self, parent):
         """Returns dictionary of fields and values"""
