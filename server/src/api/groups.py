@@ -109,16 +109,31 @@ def put(group_id, body):
         return api_error(404, 'GROUP_ID_NOT_FOUND', group_id)
     # Confirm the logged in user is an admin or owner
     authorized = False
+    owner = False
     for ug in update_group.users:
-        if ug.user.user_id == g.user.user_id and (ug.is_admin or ug.is_owner):
-            authorized = True
+        if ug.user.user_id == g.user.user_id:
+            if ug.is_admin:
+                authorized = True
+            if ug.is_owner:
+                authorized = True
+                owner = True
             break
     if not authorized:
         return api_error(401,'INSUFFICIENT_PRIVILEGES', g.user.username)
-    # Now we're good to update the user and their identity person record
-    for key, value in body.items():
-        if hasattr(update_group, key):
-            setattr(update_group, key, value)
+    update_group.apply_update(body)
+    # Process attached usergroup records, update as needed
+    if 'users' in body:
+        for group_user in body['users']:
+            # Need the binary form of user ID for data model operations
+            binary_user_id = uuid.UUID(group_user['user_id']).bytes
+            for ug in update_group.users:
+                if ug.user_id == binary_user_id:
+                    if group_user['is_admin'] != ug.is_admin:
+                        ug.is_admin = group_user['is_admin']
+                        g.db_session.add(ug)
+                    if group_user['is_owner'] != ug.is_owner and owner:
+                        ug.is_owner = group_user['is_owner']
+                        g.db_session.add(ug)
     g.db_session.add_all([update_group])
     g.db_session.commit()
     return 'Group updated', 200

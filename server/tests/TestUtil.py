@@ -44,10 +44,10 @@ def get_response_with_jwt(test_session, method, url, payload=None, use_refresh_c
             args['headers'] = {'X-CSRF-TOKEN': test_session['csrf_token']}
     LOGGER.debug("\nBase URL:\n" + str(BASE_URL))
     LOGGER.debug('args = ' + str(args))
-    LOGGER.debug('test_session = ' + str(test_session))
+#    LOGGER.debug('test_session = ' + str(test_session))
     resp = None
-    if test_session:
-        LOGGER.debug("\nPre-Op Session Cookies:\n" + str(test_session['session'].cookies.get_dict()))
+#    if test_session:
+#        LOGGER.debug("\nPre-Op Session Cookies:\n" + str(test_session['session'].cookies.get_dict()))
     if method == 'GET':
         resp = req.get(BASE_URL + url, **args)
     elif method == 'PUT':
@@ -56,14 +56,14 @@ def get_response_with_jwt(test_session, method, url, payload=None, use_refresh_c
         resp = req.post(BASE_URL + url, **args)
     elif method == 'DELETE':
         resp = req.delete(BASE_URL + url, **args)
-    if test_session:
-        LOGGER.debug("\nPost-Op Session Cookies:\n" + str(test_session['session'].cookies.get_dict()))
-    LOGGER.debug("\nResponse Cookies:\n" + str(resp.cookies.get_dict()))
-    LOGGER.debug("\nResponse Headers:\n" + str(resp.headers))
+#    if test_session:
+#        LOGGER.debug("\nPost-Op Session Cookies:\n" + str(test_session['session'].cookies.get_dict()))
+#    LOGGER.debug("\nResponse Cookies:\n" + str(resp.cookies.get_dict()))
+#    LOGGER.debug("\nResponse Headers:\n" + str(resp.headers))
     if resp and test_session and 'csrf_access_token' in resp.cookies:
-        LOGGER.debug("Setting session csrf_token to " + resp.cookies['csrf_access_token'])
+#        LOGGER.debug("Setting session csrf_token to " + resp.cookies['csrf_access_token'])
         test_session['csrf_token'] = resp.cookies['csrf_access_token']
     if resp and test_session and 'csrf_refresh_token' in resp.cookies:
-        LOGGER.debug("Setting session csrf_refresh_token" + resp.cookies['csrf_refresh_token'])
+#        LOGGER.debug("Setting session csrf_refresh_token" + resp.cookies['csrf_refresh_token'])
         test_session['csrf_refresh_token'] = resp.cookies['csrf_refresh_token']
     return resp

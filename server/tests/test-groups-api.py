@@ -9,11 +9,12 @@ LOGGER = logging.getLogger()
 
 # Have a variable to retain the ID of records added via the API
 added_id = -1
+added_withusers_id = -1
+gadmin_user_id = -1
 
 # Ensure we can run tests against a session where needed
 TEST_SESSION = get_new_session()
 MEMBER_SESSION = get_new_session()
-
 
 def setUp():
     """Need a logged in session for this API"""
@@ -64,19 +65,21 @@ def test_group_add_api_success():
 # TODO: delete the group I'm adding in this test
 def test_group_add_with_users_success():
     """--> Test add API success for a new group with users"""
+    # Things created/looked up in this test will be reused in later tests
+    #pylint: disable=W0603
+    global gadmin_user_id, added_withusers_id
     # Look up the user ID of the group admin user (created in testme script)
     resp = get_response_with_jwt(TEST_SESSION, 'GET', '/users?search_text=gadmin')
     assert resp.status_code == 200
     json = resp.json()
-    gadmin_userid = json[0]['user_id']
-    #pylint: disable=W0603
+    gadmin_user_id = json[0]['user_id']
     add_json = {
         'name': "groupwithusers",
         'description': 'Group with users for unit testing',
         'gid': 301,
         'users': [
             {
-                'user_id': gadmin_userid,
+                'user_id': gadmin_user_id,
                 'is_admin': True,
                 'is_owner': False
             }
@@ -87,6 +90,7 @@ def test_group_add_with_users_success():
     assert resp.status_code == 201
     json = resp.json()
     assert json['group_id']
+    added_withusers_id = json['group_id']
 
 def test_update():
     """--> Update a group"""
@@ -99,6 +103,32 @@ def test_update():
     resp3 = get_response_with_jwt(TEST_SESSION, 'GET', '/groups/' + added_id)
     log_response_error(resp3)
     assert resp3.json()['name'] == 'unit_test_group'
+
+def test_update_with_users():
+    """--> Update a group with users"""
+    #pylint: disable=W0603
+    global gadmin_user_id, added_withusers_id
+    update_data = {
+        'name': "groupwithusers",
+        'users': [
+            {
+                'user_id': gadmin_user_id,
+                'is_admin': False,             # This is the changed value
+                'is_owner': False
+            }
+        ]
+    }
+    resp2 = get_response_with_jwt(TEST_SESSION, 'PUT', '/groups/' + added_withusers_id, update_data)
+    assert resp2.status_code == 200
+    log_response_error(resp2)
+    resp3 = get_response_with_jwt(TEST_SESSION, 'GET', '/groups/' + added_withusers_id)
+    log_response_error(resp3)
+    users = resp3.json()['users']
+    LOGGER.debug('users = {}'.format(str(users)))
+    # There should be one owner and one former admin user in the group at this point
+    assert len(users) == 2
+    assert users[0]['is_admin'] == False
+    assert users[1]['is_admin'] == False
 
 def test_update_no_authority():
     """--> Update a group fails if user is not admin for the group"""
@@ -148,5 +178,8 @@ def test_delete_no_authority():
 def test_delete():
     """--> Test deleting a group"""
     resp = get_response_with_jwt(TEST_SESSION, 'DELETE', '/groups/' + added_id)
+    log_response_error(resp)
+    assert resp.status_code == 204
+    resp = get_response_with_jwt(TEST_SESSION, 'DELETE', '/groups/' + added_withusers_id)
     log_response_error(resp)
     assert resp.status_code == 204

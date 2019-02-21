@@ -28,8 +28,6 @@ def post(body):
         user = g.db_session.query(User)\
                            .filter(User.username == body['username'])\
                            .one_or_none()
-        current_app.logger.info('username: {}'.format(body['username']))
-        current_app.logger.info('password: {}'.format(body['password']))
         if not user or not user.verify_password(body['password']):
             current_app.logger.info('--> Failed user.verify_password')
             return api_error(401, 'INVALID_USERNAME_PASSWORD')

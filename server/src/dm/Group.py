@@ -27,4 +27,12 @@ class Group(Base):
                 ret[key] = self.get_uuid()
             elif not key.startswith('_'):
                 ret[key] = value
+        if deep:
+            ret['users'] = []
+            for ug in self.users:
+                ret['users'].append({
+                    'is_admin': ug.is_admin,
+                    'is_owner': ug.is_owner,
+                    'user_id': ug.user.get_uuid()
+                })
         return ret

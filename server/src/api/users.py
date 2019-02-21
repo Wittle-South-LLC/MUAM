@@ -4,6 +4,8 @@ from flask import g, current_app, request
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required
 from dm.User import User
+from dm.UserGroup import UserGroup
+from dm.Group import Group
 from util.api_util import api_error
 
 #@jwt_required
@@ -21,6 +23,14 @@ def post(body):
     new_user = User(username=body['username'], source='Local')
     new_user.apply_update(body)
     new_user.hash_password(body['password'])
+    if 'groups' in body:
+        for user_group in body['groups']:
+            # Need the binary form of group ID for data model operations
+            binary_group_id = uuid.UUID(user_group['group_id']).bytes
+            # Look up the group by ID
+            find_group = g.db_session.query(Group).filter(Group.group_id == binary_group_id).one_or_none()
+            if find_group:
+                new_user.groups.append(UserGroup(group=find_group, is_owner=user_group['is_owner'], is_admin=user_group['is_admin']))
     try:
         g.db_session.add(new_user)
         g.db_session.commit()

@@ -14,6 +14,7 @@ LOGGER = logging.getLogger()
 
 # Have a variable to retain the ID of records added via the API
 added_id = -1
+added_withgroups_id = -1
 testing_id = -1
 
 # Ensure we can run tests against a session where needed
@@ -78,13 +79,13 @@ def test_user_add_api_success():
     #pylint: disable=W0603
     global added_id
     user_json = {
-        'username': "ilana",
+        'username': "testuser",
         'password': "testing1",
-        'email': "ilana@wittle.net",
-        'first_name': 'Ilana',
-        'last_name': 'Wittle',
-        'full_name': 'Ilana Karen Wittle',
-        'phone': '9195372096'
+        'email': "testuser@wittle.net",
+        'first_name': 'Test',
+        'last_name': 'User',
+        'full_name': 'Test User',
+        'phone': '9997776666'
     }
     resp = get_response_with_jwt(None, 'POST', '/users', user_json)
     log_response_error(resp)
@@ -93,20 +94,52 @@ def test_user_add_api_success():
     assert json['user_id']
     added_id = json['user_id']
 
+def test_user_add_with_groups_success():
+    """--> Test add API success for a user with groups"""
+    #pylint: disable=W0603
+    global testing_group_id, added_withgroups_id
+    # Look up the user ID of the group admin user (created in testme script)
+    resp = get_response_with_jwt(TEST_SESSION, 'GET', '/groups?gid=100')
+    assert resp.status_code == 200
+    json = resp.json()
+    testing_group_id = json[0]['group_id']
+    user_json = {
+        'username': "test2user",
+        'password': "testing2",
+        'email': "testuser2@wittlesouth.com",
+        'first_name': 'Test',
+        'last_name': 'User 2',
+        'full_name': 'Test User 2',
+        'phone': '9998887777',
+        'groups': [
+            {
+                'group_id': testing_group_id,
+                'is_admin': False,
+                'is_owner': False
+            }
+        ]
+    }
+    resp = get_response_with_jwt(None, 'POST', '/users', user_json)
+    log_response_error(resp)
+    assert resp.status_code == 201
+    json = resp.json()
+    assert json['user_id']
+    added_withgroups_id = json['user_id']
+
 def test_self_update():
     """--> Update the same user that is authenticated"""
     # Use a new session
     my_session = get_new_session()
     # Login in with talw
-    login_data = {'username': 'ilana', 'password': 'testing1'}
+    login_data = {'username': 'testuser', 'password': 'testing1'}
     resp1 = get_response_with_jwt(my_session, 'POST', '/login', login_data)
     log_response_error(resp1)
     assert resp1.status_code == 200
     assert 'csrf_access_token' in resp1.cookies
     update_data = {
-        "username": "ilana",
+        "username": "testuser",
         "password": "testing1",
-        "full_name": "Ilana K. Wittle",
+        "full_name": "Test K. User",
         "newPassword": "testing3"
     }
     resp2 = get_response_with_jwt(my_session, 'PUT', '/users/' + added_id, update_data)
@@ -114,7 +147,7 @@ def test_self_update():
     log_response_error(resp2)
     resp3 = get_response_with_jwt(my_session, 'GET', '/users/' + added_id)
     log_response_error(resp3)
-    assert resp3.json()['full_name'] == 'Ilana K. Wittle'
+    assert resp3.json()['full_name'] == 'Test K. User'
 
 def test_user_list():
     """--> Test list users"""
@@ -128,14 +161,14 @@ def test_user_list():
 
 def test_user_list_with_query():
     """--> Test list users with query"""
-    resp = get_response_with_jwt(TEST_SESSION, 'GET', '/users?search_text=ilana')
+    resp = get_response_with_jwt(TEST_SESSION, 'GET', '/users?search_text=testuser')
     log_response_error(resp)
     assert resp.status_code == 200
     LOGGER.debug('Response text = %s', resp.text)
     json = resp.json()
     LOGGER.debug('Response json = %s', str(json))
     assert len(json) == 1
-    assert json[0]['username'] in ['ilana', 'testing']
+    assert json[0]['username'] in ['testuser', 'testing']
 
 def test_delete_user():
     """--> Test deleting a user"""
