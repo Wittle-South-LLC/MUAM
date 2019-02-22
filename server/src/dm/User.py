@@ -51,6 +51,14 @@ class User(Base):
             elif not (key.startswith('_') or
                       key in ['password_hash', 'reset_code', 'reset_expires']):
                 ret[key] = value
+        if deep:
+            ret['groups'] = []
+            for ug in self.groups:
+                ret['groups'].append({
+                    'is_admin': ug.is_admin,
+                    'is_owner': ug.is_owner,
+                    'group_id': ug.group.get_uuid()
+                })
         return ret
 
     def hash_password(self, password):

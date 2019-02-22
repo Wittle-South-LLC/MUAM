@@ -131,23 +131,26 @@ def test_self_update():
     # Use a new session
     my_session = get_new_session()
     # Login in with talw
-    login_data = {'username': 'testuser', 'password': 'testing1'}
+    login_data = {'username': 'test2user', 'password': 'testing2'}
     resp1 = get_response_with_jwt(my_session, 'POST', '/login', login_data)
     log_response_error(resp1)
     assert resp1.status_code == 200
     assert 'csrf_access_token' in resp1.cookies
     update_data = {
-        "username": "testuser",
-        "password": "testing1",
-        "full_name": "Test K. User",
+        "username": "test2user",
+        "password": "testing2",
+        "full_name": "Test K. User 2",
         "newPassword": "testing3"
     }
-    resp2 = get_response_with_jwt(my_session, 'PUT', '/users/' + added_id, update_data)
+    resp2 = get_response_with_jwt(my_session, 'PUT', '/users/' + added_withgroups_id, update_data)
     assert resp2.status_code == 200
     log_response_error(resp2)
-    resp3 = get_response_with_jwt(my_session, 'GET', '/users/' + added_id)
+    resp3 = get_response_with_jwt(my_session, 'GET', '/users/' + added_withgroups_id)
     log_response_error(resp3)
-    assert resp3.json()['full_name'] == 'Test K. User'
+    json3 = resp3.json()
+    LOGGER.debug('json3 = {}'.format(str(json3)))
+    assert json3['full_name'] == 'Test K. User 2'
+    assert json3['groups'][0]['group_id'] == testing_group_id
 
 def test_user_list():
     """--> Test list users"""
@@ -173,6 +176,9 @@ def test_user_list_with_query():
 def test_delete_user():
     """--> Test deleting a user"""
     resp = get_response_with_jwt(TEST_SESSION, 'DELETE', '/users/' + added_id)
+    log_response_error(resp)
+    assert resp.status_code == 204
+    resp = get_response_with_jwt(TEST_SESSION, 'DELETE', '/users/' + added_withgroups_id)
     log_response_error(resp)
     assert resp.status_code == 204
 

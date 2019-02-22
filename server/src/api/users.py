@@ -58,9 +58,14 @@ def delete(user_id):
     """Method to handle DELETE verb for /users/{user_id} endpoint"""
     current_app.logger.debug('Delete user called with user_id = ' + user_id)
     binary_uuid = uuid.UUID(user_id).bytes
+    # Logged in user cannot delete themselves; must have create privilege to be able to delete
+    if binary_uuid == g.user.user_id or not g.user.create_users:
+        return api_error(401,'INSUFFICIENT_PRIVILEGES', g.user.username)
     delete_user = g.db_session.query(User).filter(User.user_id == binary_uuid).one_or_none()
     if not delete_user:
         return api_error(404, 'USER_ID_NOT_FOUND', user_id)
+    for ug in delete_user.groups:
+        g.db_session.delete(ug)
     g.db_session.delete(delete_user)
     g.db_session.commit()
     return 'User deleted', 204
@@ -72,7 +77,7 @@ def put(user_id, body):
     update_user = g.db_session.query(User).filter(User.user_id == binary_uuid).one_or_none()
     if not update_user:
         return api_error(404, 'USER_ID_NOT_FOUND', user_id)
-    if update_user.username != g.user.username:
+    if update_user.username != g.user.username and not g.user.create_users:
         current_app.logger.debug('/users PUT: rejected update to %s by %s' %\
                                  (update_user.username, g.user.username))
         return api_error(401, 'UNAUTHORIZED_USER_EDIT')
