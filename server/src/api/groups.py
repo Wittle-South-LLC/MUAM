@@ -11,7 +11,7 @@ from util.api_util import api_error
 
 @jwt_required
 def post(body):
-    """Method to handle POST verb for /groups enpoint"""
+    """Method to handle POST verb for /groups endpoint"""
 
     # Check to see if the user has privileges to create groups
     if not g.user.create_users:

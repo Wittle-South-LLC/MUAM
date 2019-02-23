@@ -275,6 +275,81 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: User not found
+  /members:
+    post:
+      summary: Create a link between a user and a group
+      tags:
+        - Groups
+      responses:
+        '201':
+          description: Relationship created successfully
+        '400':
+          description: Request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MembershipCreate'
+  /members/{group_id}/{user_id}:
+    parameters:
+      - name: group_id
+        description: Group ID (UUID) on which the operation should be performed
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          minLength: 12
+          maxLength: 40
+      - name: user_id
+        description: User ID (UUID) on which the operation should be performed
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          minLength: 12
+          maxLength: 40
+    put:
+      summary: Update the role fields for a user within a group
+      tags:
+        - Groups
+      responses:
+        '200':
+          description: Roles updated successfully
+        '400':
+          description: Request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or group not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MembershipUpdate'
+        required: true
+    delete:
+      summary: Remove a user from a group
+      tags:
+        - Groups
+      responses:
+        '204':
+          description: User removed from group successfully
+        '400':
+          description: Request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User or group not found
   /users:
     post:
       summary: Create a user
@@ -373,7 +448,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdate'
+              $ref: '#/components/schemas/User'
         required: true
     delete:
       summary: Delete a user by user_id
@@ -573,6 +648,46 @@ components:
           minLength: 4
           maxLength: 80
           example: app-users
+    MembershipCreate:
+      type: object
+      description: Group membership
+      required:
+        - group_id
+        - user_id
+      properties:
+        group_id:
+          type: string
+          nullable: false
+          description: Unique group identifier
+          minLength: 12
+          maxLength: 40
+          example: b5665877-f9ee-4074-a38b-39219cde6b4d
+        user_id:
+          type: string
+          description: Unique user identifier
+          minLength: 12
+          maxLength: 40
+          example: b5665877-f9ee-4074-a38b-39219cde6b67
+        is_owner:
+          type: boolean
+          description: Indicates if the user is the owner of this group
+          example: false
+        is_admin:
+          type: boolean
+          description: Indicates if the user is an administrator of this group
+          example: false
+    MembershipUpdate:
+      type: object
+      description: Group membership
+      properties:
+        is_owner:
+          type: boolean
+          description: Indicates if the user is the owner of this group
+          example: false
+        is_admin:
+          type: boolean
+          description: Indicates if the user is an administrator of this group
+          example: false
     User:
       x-wsag-create: User
       description: User
