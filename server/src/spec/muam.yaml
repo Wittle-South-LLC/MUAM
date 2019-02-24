@@ -589,7 +589,7 @@ components:
               example: '1995-08-19T00:00:00.001Z'
     GroupFull:
       description: Group with all attributes
-      x-wsag-extended: Group
+      x-wsag-update: Group
       x-wsag-test-data: False
       allOf:
         - $ref: '#/components/schemas/Group'
@@ -597,6 +597,7 @@ components:
           properties:
             users:
               type: array
+              x-wsag-linked-objects: Membership
               items:
                 $ref: '#/components/schemas/UserList'
     GroupList:
@@ -605,7 +606,6 @@ components:
       properties:
         group_id:
           type: string
-          x-wsag-model-id: true
           nullable: false
           format: uuid
           description: Unique group identifier
@@ -622,7 +622,6 @@ components:
           example: false
     GroupShort:
       type: object
-      x-wsag-create: Group
       description: Short representation of Group
       required:
         - name
@@ -649,6 +648,7 @@ components:
           maxLength: 80
           example: app-users
     MembershipCreate:
+      x-wsag-create: Membership
       type: object
       description: Group membership
       required:
@@ -773,6 +773,7 @@ components:
         - type: object
           properties:
             groups:
+              x-wsag-linked-object: Membership
               type: array
               items:
                 $ref: '#/components/schemas/GroupList'
@@ -815,7 +816,7 @@ components:
           maxLength: 32
           example: 'testing'
     UserUpdate:
-      x-wsag-create: User
+      x-wsag-update: User
       description: User
       x-wsag-test-data: False
       allOf:
