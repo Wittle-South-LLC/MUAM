@@ -1,5 +1,7 @@
 /* clientState.js - Holds client (non-persistent) state for app */
 import { fromJS, Map } from 'immutable'
+import { config } from './OrimServices'
+import { status } from 'redux-immutable-model'
 
 // State path constants
 export const CLIENT_STATE_PATH = 'clientState'
@@ -20,6 +22,7 @@ export function setNewPath (newPath) {
 }
 
 export function loggedInUser (state) {
+  console.log('loggedInUser returning: ', state.getIn([CLIENT_STATE_PATH, LOGGED_IN_USER]))
   return state.getIn([CLIENT_STATE_PATH, LOGGED_IN_USER])
 }
 
@@ -30,6 +33,11 @@ export function reducer(state = Map({[LOGGED_IN_USER]: undefined}), action) {
                 .set('messageType', action.messageType)
   } else if (action.type === TRANSITION_TO) {
     return state.set('transitionTo', action.newPath)
+  } else if (action.verb === config.verbs.LOGIN && action.status === status.SUCCESS) {
+    console.log('Setting logged in user to: ', action.rimObj)
+    return state.set(LOGGED_IN_USER, action.rimObj)
+  } else if (action.verb === config.verbs.LOGOUT && action.status === status.SUCCESS) {
+    return state.set(LOGGED_IN_USER, undefined)
   } else {
     return state
   }

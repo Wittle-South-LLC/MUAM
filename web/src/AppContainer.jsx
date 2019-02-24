@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { NavLink as RRNavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { Col, Collapse, Container, Navbar, NavbarBrand, NavbarToggler, Nav, NavItem, NavLink, Row } from 'reactstrap'
 import { intlShape, defineMessages } from 'react-intl'
 import { UserService } from './state/OrimServices'
-import { setMessage } from './state/clientState'
+import { loggedInUser, setMessage } from './state/clientState'
 import UserAdmin from './admin/UserAdmin'
 import GroupAdmin from './admin/GroupAdmin'
 import ShowState from './utils/ShowState'
@@ -90,7 +90,7 @@ export default class AppContainer extends React.Component {
 
   // Will return the provided route if the user is authenticated, and a redirect otherwise
   getRoute (authRoute) {
-    let ret = UserService.getCurrent() && UserService.getCurrent().getId() !== UserService._objectClass._NewID
+    let ret = loggedInUser(this.state.reduxState) !== undefined
       ? authRoute
       : () => <Redirect to='/home' />
     return ret
@@ -105,10 +105,8 @@ export default class AppContainer extends React.Component {
 
   render() {
     let locale = this.props.getCurrentLocale()
-    let myUser = UserService.getCurrent()
-    if (locale !== this.currentLocale || myUser !== this.currentUser) {
+    if (locale !== this.currentLocale) {
       this.currentLocale = locale
-      this.currentUser = myUser
       this.init()
     }
     // TODO: Hide internal state
@@ -130,14 +128,14 @@ export default class AppContainer extends React.Component {
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
-              <NavItem><NavLink href="/groups">Groups</NavLink></NavItem>              
-              <NavItem><NavLink href="/users">Users</NavLink></NavItem>              
-              <NavItem><NavLink href="/showstate">Show State</NavLink></NavItem>              
+              <NavItem><NavLink tag={ RRNavLink } exact to="/groups">Groups</NavLink></NavItem>              
+              <NavItem><NavLink tag={ RRNavLink } exact to="/users">Users</NavLink></NavItem>              
+              <NavItem><NavLink tag={ RRNavLink } exact to="/showstate">Show State</NavLink></NavItem>              
             </Nav>
           </Collapse>
         </Navbar>
         <Row>
-          <Col md={ myUser && myUser.getId() !== UserService._objectClass._NewID ? 9 : 12 }
+          <Col md={ loggedInUser(this.state.reduxState) !== undefined ? 9 : 12 }
               className='scroll-vertical'
               id='appMainBody'>
           <Switch>
