@@ -22,14 +22,18 @@ export default class AppContainer extends React.Component {
     this.unsubscribe = undefined
 
     this.componentText = defineMessages({
-      enLocaleDesc: { id: 'container.en_locale_description', defaultMessage: 'English' },
-      frLocaleDesc: { id: 'container.fr_locale_description', defaultMessage: 'French' },
+      enLocaleDesc: { id: 'AppContainer.en_locale_description', defaultMessage: 'English' },
+      frLocaleDesc: { id: 'AppContainer.fr_locale_description', defaultMessage: 'French' },
+      brandTitle: { id: 'AppContainer.brandTitle', defaultMessage: 'MUAM' },
+      groupsLink: { id: 'AppContainer.groupsLink', defaultMessage: 'Groups' },
+      showStateLink: { id: 'AppContainer.showStateLink', defaultMessage: 'Show State' },
+      usersLink: { id: 'AppContainer.usersLink', defaultMessage: 'Users' },
       containerGreetingStatus: {
-        id: 'container.greeting_status',
+        id: 'AppContainer.greeting_status',
         defaultMessage: 'Administer users and groups for Wittle South Ventures applications'
       },
       containerTitle: {
-        id: 'container.title',
+        id: 'AppContainer.title',
         defaultMessage: 'wittlesouth.com User Administration'
       }
     })
@@ -102,6 +106,7 @@ export default class AppContainer extends React.Component {
   }
 
   render() {
+    let formatMessage = this.context.intl.formatMessage
     let locale = this.props.getCurrentLocale()
     if (locale !== this.currentLocale) {
       this.currentLocale = locale
@@ -122,13 +127,13 @@ export default class AppContainer extends React.Component {
     return (
       <Container fluid={true} id="appName">
         <Navbar color="light" light expand="md">
-          <NavbarBrand href="/">MUAM</NavbarBrand>
+          <NavbarBrand tag={ RRNavLink } exact to="/home">{formatMessage(this.componentText.brandTitle)}</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
-              <NavItem><NavLink tag={ RRNavLink } exact to="/groups">Groups</NavLink></NavItem>              
-              <NavItem><NavLink tag={ RRNavLink } exact to="/users">Users</NavLink></NavItem>              
-              <NavItem><NavLink tag={ RRNavLink } exact to="/showstate">Show State</NavLink></NavItem>              
+              <NavItem><NavLink tag={ RRNavLink } exact to="/groups">{formatMessage(this.componentText.groupsLink)}</NavLink></NavItem>              
+              <NavItem><NavLink tag={ RRNavLink } exact to="/users">{formatMessage(this.componentText.usersLink)}</NavLink></NavItem>              
+              <NavItem><NavLink tag={ RRNavLink } exact to="/showstate">{formatMessage(this.componentText.showStateLink)}</NavLink></NavItem>              
             </Nav>
           </Collapse>
         </Navbar>
