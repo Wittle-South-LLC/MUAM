@@ -42,8 +42,6 @@ export default class AppContainer extends React.Component {
       reduxState: props.store.getState(),
       isOpen: false
     }
-    console.log('UserService.getStatePath() = ', UserService.getStatePath())
-    console.log('this.state.reduxState = ', this.state.reduxState.toJS())
     UserService.setState(props.store.getState().get(UserService.getStatePath()))
 
     this.currentLocale = props.getCurrentLocale()
@@ -111,11 +109,11 @@ export default class AppContainer extends React.Component {
     }
     // TODO: Hide internal state
     let msgData = this.state.reduxState.getIn(['clientState', 'message'])
-    let msgType = this.state.reduxState.getIn(['clientState', 'messageType'])
+    // let msgType = this.state.reduxState.getIn(['clientState', 'messageType'])
     if (msgData.toJS) {
       msgData = msgData.toJS()
-    } else if (msgData.message) {
-      msgType = 'Error'
+//    } else if (msgData.message) {
+//       msgType = 'Error'
     } else if (!(msgData.id && msgData.defaultMessage)) {
       console.log('Container.render() Note: message is not valid', msgData)
     } else {

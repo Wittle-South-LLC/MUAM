@@ -19,6 +19,11 @@ export default class Home extends React.Component {
       loginUsername: undefined,
       loginPassword: undefined
     }
+
+    // Message components
+    this.componentText = defineMessages({
+      loginButtonText: { id: 'home.loginButton', defaultMessage: 'Login' }
+    })
   }
   handleChange (e) {
     if (e.target.id === 'username') {
@@ -31,30 +36,31 @@ export default class Home extends React.Component {
     this.context.dispatch(UserService.login(this.state.loginUsername, this.state.loginPassword))
   }
   render () {
+    let formatMessage = this.context.intl.formatMessage
     const homeContent = <p>Home</p>
     return (
       <div>
-        { loggedInUser(this.context.reduxState) != undefined
+        { loggedInUser(this.context.reduxState) !== undefined
           ? homeContent
           : <Card>
               <CardTitle>Please log in</CardTitle>
               <CardBody>
                 <Form className="form">
                   <FormGroup onSubmit={this.handleLogin}>
-                    <Label for="username">Username</Label>
+                    <Label for="username">{formatMessage(UserService.msgs.usernameLabel)}</Label>
                     <Input type='text' name='username' id='username'
-                           placeholder='User name...'
+                           placeholder={formatMessage(UserService.msgs.usernamePlaceholder)}
                            value={this.state.loginUsername || ''}
                            onChange={this.handleChange} />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="password">Password</Label>
+                    <Label for="password">{formatMessage(UserService.msgs.usernameLabel)}</Label>
                     <Input type='password' name='password' id='password'
-                           placeholder='Password...'
+                           placeholder={formatMessage(UserService.msgs.passwordPlaceholder)}
                            value={this.state.loginPassword || ''}
                            onChange={this.handleChange} />
                   </FormGroup>
-                  <Button onClick={this.handleLogin}>Login</Button>
+                  <Button onClick={this.handleLogin}>{formatMessage(this.componentText.loginButtonText)}</Button>
                 </Form>
               </CardBody>
             </Card>

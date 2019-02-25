@@ -1,16 +1,26 @@
 /* UserService.js - Customized service for User objects */
 import { callAPI, BaseRIMService } from 'redux-immutable-model'
 import User from './User'
+import { defineMessages } from 'react-intl'
 
 export default class CustomUserService extends BaseRIMService {
   constructor(config) {
     super(User, config)
+
+    // Method bindings
     this.login = this.login.bind(this)
     this.logout = this.logout.bind(this)
+
+    // Internationalization Messages
+    this.msgs = defineMessages({
+      usernameLabel: { id: 'User.usernameLabel', defaultMessage: 'Username' },
+      usernamePlaceholder: { id: 'User.usernamePlaceholder', defaultMessage: 'Username...' },
+      passwordLabel: { id: 'User.passwordLabel', defaultMessage: 'Password' },
+      passwordPlaceholder: { id: 'User.passwordPlaceholder', defaultMessage: 'Password...' }
+    })
   }
 
   reducer(state, action) {
-    console.log('CustomUserService.reducer this = ', this)
     return super.reducer(state, action)
   }
 

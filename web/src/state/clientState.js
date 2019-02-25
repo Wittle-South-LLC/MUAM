@@ -22,7 +22,6 @@ export function setNewPath (newPath) {
 }
 
 export function loggedInUser (state) {
-  console.log('loggedInUser returning: ', state.getIn([CLIENT_STATE_PATH, LOGGED_IN_USER]))
   return state.getIn([CLIENT_STATE_PATH, LOGGED_IN_USER])
 }
 
@@ -34,7 +33,6 @@ export function reducer(state = Map({[LOGGED_IN_USER]: undefined}), action) {
   } else if (action.type === TRANSITION_TO) {
     return state.set('transitionTo', action.newPath)
   } else if (action.verb === config.verbs.LOGIN && action.status === status.SUCCESS) {
-    console.log('Setting logged in user to: ', action.rimObj)
     return state.set(LOGGED_IN_USER, action.rimObj)
   } else if (action.verb === config.verbs.LOGOUT && action.status === status.SUCCESS) {
     return state.set(LOGGED_IN_USER, undefined)

@@ -21,10 +21,6 @@ const myGetApiPath = (verb) => {
   return undefined
 }
 
-console.log('API_URL = ', process.env.API_URL)
-console.log('REACT_APP_API_URL = ', process.env.REACT_APP_API_URL)
-console.log('config.getFetchURL = ', config.getFetchURL())
-
 // Need to add a getApiPath function to the configuration handle login / logout
 config.setGetApiPath(myGetApiPath)
 

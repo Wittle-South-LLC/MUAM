@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 // Below this line are post app generation
 import { addLocaleData } from 'react-intl'
@@ -26,7 +26,6 @@ class App extends Component {
     this.updateLocale = this.updateLocale.bind(this)
 
     // Instantiate the Redux state machine for core data model
-    console.log('baseApp = ', baseApp)
     this.store = createStore(baseApp,
                              baseApp(undefined, {}),
                              applyMiddleware(thunkMiddleware))

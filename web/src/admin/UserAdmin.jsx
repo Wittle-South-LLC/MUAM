@@ -6,10 +6,16 @@ import { intlShape, defineMessages } from 'react-intl'
 export default class UserAdmin extends React.Component {
   constructor (props, context) {
     super(props, context)
+
+    // Message components
+    this.componentText = defineMessages({
+      pageTitle: { id: 'UserAdmin.title', defaultMessage: 'User Administration' }
+    })
   }
   render () {
+    let formatMessage = this.context.intl.formatMessage
     return (
-      <p>UserAdmin</p>
+      <p>{formatMessage(this.componentText.pageTitle)}</p>
     )
   }
 }
