@@ -27,15 +27,7 @@ export default class CustomUserService extends BaseRIMService {
   // Add action to perform login
   login (username, password) {
     const myUser = new User({username: username, password: password}, false, false, true)
-    console.log('myUser = ', myUser)
     this.setById(myUser)
-    console.log('myUser id = ', myUser.getId())
-    if (this.getById(myUser.getId())) {
-      console.log('myUser IS in the service')
-    } else {
-      console.log('myUser is NOT in the service')
-    }
-    console.log('Passing this: ', this)
     return callAPI(this, this.config.verbs.LOGIN, 'POST', myUser)
   }
 

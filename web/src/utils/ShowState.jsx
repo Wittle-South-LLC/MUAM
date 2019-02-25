@@ -16,7 +16,7 @@ export default class ShowState extends React.Component {
         console.log('this.context.state.get(%s) is undefined!', member.key)
       } else {
         stateView.push(
-          <TabPane>
+          <TabPane key={member.key}>
               <pre>{JSON.stringify(this.context.reduxState.get(member.key).toJS(), undefined, 4)}</pre>
           </TabPane>
         )
