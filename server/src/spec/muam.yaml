@@ -16,6 +16,15 @@ paths:
       responses:
         '200':
           description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
         '400':
           description: Request error
           content:
@@ -42,9 +51,16 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GroupFull'
+                type: object
+                properties:
+                  Users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  Groups:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GroupFull'
   /logout:
     post:
       summary: Remove authentication and exit the application

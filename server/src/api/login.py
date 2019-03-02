@@ -42,7 +42,7 @@ def post(body):
     refresh_token = create_refresh_token(identity=user.get_uuid())
 
     # Build the response data by dumping the user data
-    resp = jsonify({})
+    resp = jsonify({'Users': [user.dump()]})
 
     # Set the tokens we created as cookies in the response
     set_access_cookies(resp, access_token, int(datetime.timedelta(minutes=30).total_seconds()))
@@ -63,7 +63,14 @@ def post(body):
 @jwt_refresh_token_required
 def search():
     """Handles GET verb for /login endpoint"""
-    data = []
+    users = []
+    sq_user_groups = g.db_session.query(UserGroup.group_id).filter(UserGroup.user_id == g.user.user_id).subquery()
+    user_q = g.db_session.query(User).join(UserGroup, UserGroup.user_id == User.user_id)\
+                         .filter(UserGroup.group_id.in_(sq_user_groups)).all()
+    for user in user_q:
+        users.append(user.dump(deep=False))
+    groups = []
     for ug in g.user.groups:
-        data.append(ug.group.dump(deep=True))
-    return data, 200
+        groups.append(ug.group.dump(deep=True))
+    result = {'Groups': groups, 'Users': users}
+    return result, 200

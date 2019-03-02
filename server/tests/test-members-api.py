@@ -15,6 +15,9 @@ user_id = -1
 # Ensure we can run tests against an authenticated session where needed
 TEST_SESSION = get_new_session()
 
+# Set up logger
+LOGGER = logging.getLogger()
+
 def setUp():
     """Need a logged in session for this API, as well as a user and group ID"""
     # Authenticate a user for the TEST_SESSION
@@ -58,8 +61,10 @@ def test_update_memmbership():
     resp2 = get_response_with_jwt(TEST_SESSION,'GET', '/groups/' + group_id)
     assert resp2.status_code == 200
     resp2_users = resp2.json()['users']
+    LOGGER.debug('resp2_users = ' + str(resp2_users))
     assert (resp2_users[0]['user_id'] == user_id and resp2_users[0]['is_admin']) or\
-           (resp2_users[1]['user_id'] == user_id and resp2_users[1]['is_admin'])
+           (resp2_users[1]['user_id'] == user_id and resp2_users[1]['is_admin']) or\
+           (resp2_users[2]['user_id'] == user_id and resp2_users[1]['is_admin'])
 
 def test_delete_membership():
     """--> Test delete membership API"""
