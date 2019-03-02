@@ -1,5 +1,5 @@
 /* UserService.js - Customized service for User objects */
-import { callAPI, BaseRIMService } from 'redux-immutable-model'
+import { callAPI, BaseRIMService, status } from 'redux-immutable-model'
 import User from './User'
 import { defineMessages } from 'react-intl'
 
@@ -21,7 +21,18 @@ export default class CustomUserService extends BaseRIMService {
   }
 
   reducer(state, action) {
-    return super.reducer(state, action)
+    let newState = super.reducer(state, action)
+    // If we've logged in successfully, the new user object we created with username/password
+    // is no longer needed, so it should be deleted
+    if (action.verb === this.config.verbs.LOGIN && action.status === status.SUCCESS) {
+      newState = this.deleteId(User._NewID)
+    }
+    return newState
+  }
+
+  // Add action to perform hydrate
+  hydrate(user) {
+    return callAPI(this, this.config.verbs.HYDRATE, 'GET', user)
   }
 
   // Add action to perform login

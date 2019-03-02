@@ -4,7 +4,7 @@ import { NavLink as RRNavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { Col, Collapse, Container, Navbar, NavbarBrand, NavbarToggler, Nav, NavItem, NavLink, Row } from 'reactstrap'
 import { intlShape, defineMessages } from 'react-intl'
 import { UserService } from './state/OrimServices'
-import { loggedInUser, setMessage } from './state/clientState'
+import { loggedInUser, needsHydrate, setMessage } from './state/clientState'
 import UserAdmin from './admin/UserAdmin'
 import GroupAdmin from './admin/GroupAdmin'
 import ShowState from './utils/ShowState'
@@ -51,6 +51,14 @@ export default class AppContainer extends React.Component {
     this.currentLocale = props.getCurrentLocale()
     this.currentUser = UserService.getCurrent()
     this.init()
+  }
+
+  componentDidUpdate() {
+    console.log('AppContainer.componentDidUpdate(): state = ', this.state.reduxState)
+    if (needsHydrate(this.state.reduxState)) {
+//      console.log('loggedInUser = ', loggedInUser(this.state.reduxState))
+      this.props.store.dispatch(UserService.hydrate(loggedInUser(this.state.reduxState)))
+    }
   }
 
   // Put the Redux state and dispatch method into context
