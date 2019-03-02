@@ -54,9 +54,7 @@ export default class AppContainer extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log('AppContainer.componentDidUpdate(): state = ', this.state.reduxState)
     if (needsHydrate(this.state.reduxState)) {
-//      console.log('loggedInUser = ', loggedInUser(this.state.reduxState))
       this.props.store.dispatch(UserService.hydrate(loggedInUser(this.state.reduxState)))
     }
   }
