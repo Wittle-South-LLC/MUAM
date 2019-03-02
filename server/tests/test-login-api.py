@@ -85,6 +85,15 @@ def test_initial_login_jwt():
     assert 'user_claims' in claims
     assert 'user_id' in claims['user_claims']
 
+def test_hydrate():
+    """--> Test that we get groups for hydrate API (/login with GET)"""
+    resp = get_response_with_jwt(TEST_SESSION, 'GET', '/login', None, True)
+    log_response_error(resp, True)
+    assert resp.status_code == 200
+    json = resp.json()
+    assert len(json) == 1
+    assert json[0]['name'] == 'TestGroup'
+
 def test_shutdown_bad_key():
     """--> Test shutdown with bad key for code coverage"""
     resp = get_response_with_jwt(None, 'POST', '/shutdown', {'key': 'Junk'})

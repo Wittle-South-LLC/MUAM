@@ -56,3 +56,14 @@ def post(body):
     # return adds a custom header which is one component of CORS security to
     # allow access to the cookie
     return resp, 200, {'Access-Control-Expose-Headers': 'Set-Cookie, Content-Type'}
+
+# The /login enpoint with the GET verb is intended to be used by client apps
+# to reload the user's application data when needed (e.g. after an application
+# refresh, or browser restart)
+@jwt_refresh_token_required
+def search():
+    """Handles GET verb for /login endpoint"""
+    data = []
+    for ug in g.user.groups:
+        data.append(ug.group.dump(deep=True))
+    return data, 200

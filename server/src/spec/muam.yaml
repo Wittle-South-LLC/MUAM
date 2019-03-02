@@ -29,6 +29,22 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Login'
+    get:
+      summary: Return set of application data for logged in user
+      tags:
+        - Authentication
+      description: >
+        Returns complete set of application data provided by this service for
+        the logged in user.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupFull'
   /logout:
     post:
       summary: Remove authentication and exit the application
