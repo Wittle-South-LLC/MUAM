@@ -55,6 +55,8 @@ if 'owner_list' in opts and opts.owner_list != None:
         user = my_session.query(User).filter(User.username == user_name).one_or_none()
         if user:
             new_group.users.append(UserGroup(user=user, is_owner=True))
+else:
+    new_group.users.append(UserGroup(user=user, is_owner=True))
 if 'admin_list' in opts and opts.admin_list != None:
     admin_list = opts.admin_list.split(',')
     for user_name in admin_list:
