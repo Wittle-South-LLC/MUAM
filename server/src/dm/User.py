@@ -49,7 +49,7 @@ class User(Base):
             if key == 'user_id':
                 ret[key] = self.get_uuid()
             elif not (key.startswith('_') or
-                      key in ['password_hash', 'reset_code', 'reset_expires']):
+                      key in ['password_hash', 'reset_code', 'reset_expires', 'groups']):
                 ret[key] = value
         if deep:
             ret['groups'] = []
