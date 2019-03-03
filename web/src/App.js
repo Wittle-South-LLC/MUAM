@@ -11,6 +11,7 @@ import { createStore, applyMiddleware } from 'redux'
 import { BrowserRouter } from 'react-router-dom'
 import baseApp from './state/baseApp'
 import AppContainer from './AppContainer'
+import '@fortawesome/fontawesome-pro/css/all.css'
 
 // Get browser language, found in comment here: https://stackoverflow.com/questions/673905/best-way-to-determine-users-locale-within-browser
 const getLang = () => navigator.language || navigator.browserLanguage || ( navigator.languages || [ "en" ] )[ 0 ]

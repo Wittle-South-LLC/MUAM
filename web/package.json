@@ -57,6 +57,7 @@
     "@babel/node": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
+    "@fortawesome/fontawesome-pro": "^5.7.2",
     "babel-plugin-istanbul": "^5.1.1",
     "deep-diff": "^1.0.2",
     "handlebars": "^4.1.0",
