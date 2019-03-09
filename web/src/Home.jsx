@@ -37,7 +37,8 @@ export default class Home extends React.Component {
   }
   render () {
     let formatMessage = this.context.intl.formatMessage
-    const homeContent = <p>Home</p>
+    const lUser = loggedInUser(this.context.reduxState)
+    const homeContent = lUser ? <p>Welcome {UserService.getById(lUser.getId()).getFirstName()}!</p> : <p>Home</p>
     return (
       <div>
         { loggedInUser(this.context.reduxState) !== undefined
