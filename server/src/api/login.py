@@ -72,5 +72,10 @@ def search():
     groups = []
     for ug in g.user.groups:
         groups.append(ug.group.dump(deep=True))
-    result = {'Groups': groups, 'Users': users}
+    members = []
+    member_q = g.db_session.query(UserGroup).filter(UserGroup.user_id == g.user.user_id).all()
+    for member in member_q:
+        members.append(member.dump())
+    current_app.logger.debug('Members object is {}'.format(str(members)))
+    result = {'Groups': groups, 'Users': users, 'Membership': members}
     return result, 200

@@ -91,9 +91,10 @@ def test_hydrate():
     log_response_error(resp, True)
     assert resp.status_code == 200
     json = resp.json()
-    assert len(json) == 2
+    assert len(json) == 3
     assert json['Groups'][0]['name'] == 'TestGroup' or\
            json['Groups'][1]['name'] == 'TestGroup'
+    assert len(json['Membership']) == 2
 
 def test_shutdown_bad_key():
     """--> Test shutdown with bad key for code coverage"""

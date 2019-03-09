@@ -61,6 +61,10 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/GroupFull'
+                  Memberships:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MembershipCreate'
   /logout:
     post:
       summary: Remove authentication and exit the application
