@@ -15,7 +15,7 @@ from dm.DataModel import get_session
 from dm.User import User                     #pylint: disable=W0611
 
 # Try loading logging configuration, see if we can manage it directly
-with open('/app/server/src/server_logging.yaml', 'r') as f:
+with open(os.environ['APP_LOGGING_CONFIG'], 'r') as f:
     config = yaml.safe_load(f.read())
     logging.config.dictConfig(config)
 

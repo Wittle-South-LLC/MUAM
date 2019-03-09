@@ -13,14 +13,11 @@ export REACT_APP_API_PATH="/api/v1"
 export APP_PW_RESET_SUBJECT='MUAM Password Reset Code'
 export APP_PW_RESET_FROM='service@wittlesouth.com'
 export APP_PW_RESET_MAILHOST='mail.wittlesouth.com'
+export APP_LOGGING_CONFIG='/app/server/src/server_logging.yaml'
 # TODO: Move these to secrets
 export APP_PW_RESET_FROM_USER='service'
 export APP_PW_RESET_FROM_PW='onlyeric'
 export APP_SHUTDOWN_KEY='Eric'
-# Username for admin user
-export APP_ADMIN_USER_USERNAME='admin'
-# TODO: Move default password to secret
-export APP_ADMIN_USER_PASSWORD='testing'
 
 if [ "$NODE_ENV" == "development" ]; then
   echo "Setting up development environment variables"
