@@ -56,6 +56,10 @@ spec:
         env:
         - name: NODE_ENV
           value: "test"
+        - name: ACCESS_CONTROL_ORIGIN
+          value: "http://eric.wittlesouth.local:3000"
+        - name: COOKIE_DOMAIN
+          value: ".wittlesouth.local"
         ports:
         - containerPort: 8081
           name: muam-test-srv
