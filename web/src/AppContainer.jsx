@@ -144,7 +144,7 @@ export default class AppContainer extends React.Component {
           </Collapse>
         </Navbar>
         <Row>
-          <Col md={ loggedInUser(this.state.reduxState) !== undefined ? 9 : 12 }
+          <Col md={ loggedInUser(this.state.reduxState) !== undefined ? 12 : 6 }
               className='scroll-vertical'
               id='appMainBody'>
           <Switch>
