@@ -1,4 +1,4 @@
-/* UserService.js - Customized service for User objects */
+/* CustomUserService.js - Customized service for User objects */
 import { callAPI, BaseRIMService, status } from 'redux-immutable-model'
 import User from './User'
 import { defineMessages } from 'react-intl'
