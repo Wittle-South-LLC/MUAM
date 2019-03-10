@@ -77,5 +77,5 @@ def search():
     for member in member_q:
         members.append(member.dump())
     current_app.logger.debug('Members object is {}'.format(str(members)))
-    result = {'Groups': groups, 'Users': users, 'Membership': members}
+    result = {'Groups': groups, 'Users': users, 'Memberships': members}
     return result, 200
