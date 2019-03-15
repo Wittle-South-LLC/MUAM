@@ -60,6 +60,6 @@ export default class CustomMembershipService extends BaseRIMService {
           : state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId()], new Map({[membership.getUserId()]: membership}))
       }
     }
-    return state
+    return this.setState(state)
   }
 }

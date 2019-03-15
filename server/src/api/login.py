@@ -68,12 +68,12 @@ def search():
     user_q = g.db_session.query(User).join(UserGroup, UserGroup.user_id == User.user_id)\
                          .filter(UserGroup.group_id.in_(sq_user_groups)).all()
     for user in user_q:
-        users.append(user.dump(deep=False))
+        users.append(user.dump(deep=True))
     groups = []
     for ug in g.user.groups:
         groups.append(ug.group.dump(deep=True))
     members = []
-    member_q = g.db_session.query(UserGroup).filter(UserGroup.user_id == g.user.user_id).all()
+    member_q = g.db_session.query(UserGroup).filter(UserGroup.group_id.in_(sq_user_groups)).all()
     for member in member_q:
         members.append(member.dump())
     current_app.logger.debug('Members object is {}'.format(str(members)))

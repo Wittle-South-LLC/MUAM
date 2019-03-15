@@ -1,10 +1,12 @@
 /* GroupAdmin.jsx - Main page for group administration */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Badge, Button, Card, CardBody, CardTitle, Form, FormGroup, Input, Label, ListGroup,
-        ListGroupItem, ListGroupItemHeading, ListGroupItemText } from 'reactstrap'
-import { GroupService } from '../state/OrimServices'
+import { Badge, Button, Card, CardBody, CardText, CardTitle, Col,
+         ListGroup, ListGroupItem,
+         ListGroupItemHeading, ListGroupItemText, Row } from 'reactstrap'
 import { intlShape, defineMessages } from 'react-intl'
+import { GroupService, MembershipService } from '../state/OrimServices'
+import MemberList from './MemberList'
 
 export default class GroupAdmin extends React.Component {
   constructor (props, context) {
@@ -32,7 +34,6 @@ export default class GroupAdmin extends React.Component {
     while (!idElement.id && idElement.parentNode) {
       idElement = idElement.parentNode
     }
-    console.log('idElement.id = ', idElement.id)
     this.setState({
       selectedGroupId: idElement.id
     })
@@ -57,27 +58,44 @@ export default class GroupAdmin extends React.Component {
                      id={group.getId()} onClick={this.onSelect}
                      active={group.getId() === this.state.selectedGroupId}>
         <ListGroupItemHeading>
-          {group.getName() + "  "}
+          {group.getName() + "  [" + group.getGid() + "]  " }
           <Badge pill>{group.getUsers().size + " users"}</Badge>
+          <i className="fa fa-minus float-right"/>
         </ListGroupItemHeading>
         <ListGroupItemText>
           {group.getDescription()}
         </ListGroupItemText>
       </ListGroupItem>
     )
+    let rightStuff = <Card>
+      <CardBody>
+        <CardTitle>Group Administration Instructions</CardTitle>
+        <CardText>Select a group to see the list of users</CardText>
+      </CardBody>
+    </Card>
     return (
-      <Card md={this.state.selectedGroupId ? 6 : 12}>
-        <CardBody>
-          <CardTitle>{formatMessage(this.iText.pageTitle)}</CardTitle>
-          <ListGroup>
-            {groupsLGItems}
-          </ListGroup>
-          <Button outline size="sm"><i className="fa fa-plus" onClick={this.startAdd}/></Button>
-          <Button outline size="sm" disabled={this.state.selectedGroupId === undefined}>
-            <i className="fa fa-minus" onClick={this.startDelete}/>
-          </Button>
-        </CardBody>
-      </Card>
+      <Row>
+        <Col md={6}>
+          <Card>
+            <CardBody>
+              <CardTitle>{formatMessage(this.iText.pageTitle)}<i className="fa fa-plus float-right"></i></CardTitle>
+              <ListGroup>
+                {groupsLGItems}
+              </ListGroup>
+              <Button outline size="xs"><i className="fa fa-plus" onClick={this.startAdd}/></Button>
+              <Button outline size="xs" disabled={this.state.selectedGroupId === undefined}>
+                <i className="fa fa-minus" onClick={this.startDelete}/>
+              </Button>
+            </CardBody>
+          </Card>
+        </Col>
+        <Col md={6}>
+          {this.state.selectedGroupId 
+            ? <MemberList listType="Users" list={MembershipService.getMembersForGroup(this.state.selectedGroupId)}></MemberList>
+            : rightStuff
+          }
+        </Col>
+      </Row>
     )
   }
 }

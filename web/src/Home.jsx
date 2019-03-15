@@ -5,6 +5,7 @@ import { intlShape, defineMessages } from 'react-intl'
 import { Button, Card, CardTitle, CardBody, Form, FormGroup, Input, Label } from 'reactstrap'
 import { loggedInUser } from './state/clientState'
 import { UserService } from './state/OrimServices'
+import User from './state/User'
 
 export default class Home extends React.Component {
   constructor (props, context) {
@@ -48,16 +49,16 @@ export default class Home extends React.Component {
               <CardBody>
                 <Form className="form">
                   <FormGroup onSubmit={this.handleLogin}>
-                    <Label for="username">{formatMessage(UserService.msgs.usernameLabel)}</Label>
+                    <Label for="username">{formatMessage(User.msgs.usernameLabel)}</Label>
                     <Input type='text' name='username' id='username'
-                           placeholder={formatMessage(UserService.msgs.usernamePlaceholder)}
+                           placeholder={formatMessage(User.msgs.usernamePlaceholder)}
                            value={this.state.loginUsername || ''}
                            onChange={this.handleChange} />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="password">{formatMessage(UserService.msgs.usernameLabel)}</Label>
+                    <Label for="password">{formatMessage(User.msgs.usernameLabel)}</Label>
                     <Input type='password' name='password' id='password'
-                           placeholder={formatMessage(UserService.msgs.passwordPlaceholder)}
+                           placeholder={formatMessage(User.msgs.passwordPlaceholder)}
                            value={this.state.loginPassword || ''}
                            onChange={this.handleChange} />
                   </FormGroup>

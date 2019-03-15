@@ -56,7 +56,7 @@ paths:
                   Users:
                     type: array
                     items:
-                      $ref: '#/components/schemas/User'
+                      $ref: '#/components/schemas/UserExtended'
                   Groups:
                     type: array
                     items:
