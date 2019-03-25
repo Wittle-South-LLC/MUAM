@@ -5,6 +5,17 @@ import { defineMessages } from 'react-intl'
 export default class Group extends OrimGroup {
   constructor(createFrom, dirtyVal = false, fetchingVal = false, newVal = false) {
     super (createFrom, dirtyVal, fetchingVal, newVal)
+
+    this.getFetchPayload = this.getFetchPayload.bind(this)
+  }
+
+  // This should not be necessary in a subclass; it should be standard behavior
+  getFetchPayload(verb) {
+    if (verb === 'SAVE_UPDATE') {
+      return this.getUpdatePayload()
+    } else if (verb === 'CREATE') {
+      return this.getCreatePayload()
+    }
   }
 
   // Internationalization Messages

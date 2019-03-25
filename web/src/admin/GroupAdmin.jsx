@@ -7,6 +7,7 @@ import { Badge, Button, Card, CardBody, CardText, CardTitle, Col,
 import { intlShape, defineMessages } from 'react-intl'
 import { GroupService, MembershipService } from '../state/OrimServices'
 import MemberList from './MemberList'
+import GroupEdit from './GroupEdit'
 
 export default class GroupAdmin extends React.Component {
   constructor (props, context) {
@@ -15,8 +16,9 @@ export default class GroupAdmin extends React.Component {
     // Method bindings
     this.onSelect = this.onSelect.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
-    this.startDelete = this.startDelete.bind(this)
     this.startAdd = this.startAdd.bind(this)
+    this.startDelete = this.startDelete.bind(this)
+    this.startEdit = this.startEdit.bind(this)
 
     // Internationalized text
     this.iText = defineMessages({
@@ -50,6 +52,10 @@ export default class GroupAdmin extends React.Component {
     console.log('Starting to delete')
     e.stopPropagation()
   }
+  startEdit (e) {
+    this.context.dispatch(GroupService.startEdit(e.target.id))
+    e.stopPropagation()
+  }
   render () {
     let formatMessage = this.context.intl.formatMessage
     let groupsList = GroupService.getObjectArray()
@@ -60,7 +66,8 @@ export default class GroupAdmin extends React.Component {
         <ListGroupItemHeading>
           {group.getName() + "  [" + group.getGid() + "]  " }
           <Badge pill>{group.getUsers().size + " users"}</Badge>
-          <i className="fa fa-minus float-right"/>
+          <i className="fas fa-edit float-right" onClick={this.startEdit} id={group.getId()} />
+          <i className="fa fa-minus float-right" onClick={this.startDelete} id={group.getId()} />
         </ListGroupItemHeading>
         <ListGroupItemText>
           {group.getDescription()}
@@ -73,6 +80,11 @@ export default class GroupAdmin extends React.Component {
         <CardText>Select a group to see the list of users</CardText>
       </CardBody>
     </Card>
+    if (GroupService.getEditingId()) {
+      rightStuff = <GroupEdit group={GroupService.getById(GroupService.getEditingId())} />
+    } else if (this.state.selectedGroupId) {
+      rightStuff = <MemberList listType="Users" list={MembershipService.getMembersForGroup(this.state.selectedGroupId)}></MemberList>
+    }
     return (
       <Row>
         <Col md={6}>
@@ -90,10 +102,7 @@ export default class GroupAdmin extends React.Component {
           </Card>
         </Col>
         <Col md={6}>
-          {this.state.selectedGroupId 
-            ? <MemberList listType="Users" list={MembershipService.getMembersForGroup(this.state.selectedGroupId)}></MemberList>
-            : rightStuff
-          }
+          {rightStuff}
         </Col>
       </Row>
     )
