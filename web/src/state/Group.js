@@ -9,15 +9,6 @@ export default class Group extends OrimGroup {
     this.getFetchPayload = this.getFetchPayload.bind(this)
   }
 
-  // This should not be necessary in a subclass; it should be standard behavior
-  getFetchPayload(verb) {
-    if (verb === 'SAVE_UPDATE') {
-      return this.getUpdatePayload()
-    } else if (verb === 'CREATE') {
-      return this.getCreatePayload()
-    }
-  }
-
   // Internationalization Messages
   static msgs = defineMessages({
     descriptionLabel: { id: 'Group.descriptionLabel', defaultMessage: 'Description' },

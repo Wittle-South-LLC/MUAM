@@ -8,16 +8,12 @@ export default class User extends OrimUser {
     super (createFrom, dirtyVal, fetchingVal, newVal)
   }
 
-  getFetchPayload (action) {
-    switch (action.verb) {
+  getFetchPayload (verb) {
+    switch (verb) {
       case defaultVerbs.LOGIN:
         return { username: this.getUsername(), password: this.getPassword() }
-      case defaultVerbs.CREATE:
-        return this.getCreatePayload()
-      case defaultVerbs.UPDATE:
-        return this.getUpdatePayload()
       default:
-        return {}
+        return super.getFetchPayload(verb)
     }
   }
 
