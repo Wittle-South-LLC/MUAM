@@ -68,7 +68,7 @@ def delete(user_id):
         g.db_session.delete(ug)
     g.db_session.delete(delete_user)
     g.db_session.commit()
-    return 'User deleted', 204
+    return {'result': 'User deleted'}, 204
 
 @jwt_required
 def put(user_id, body):
@@ -90,7 +90,7 @@ def put(user_id, body):
             update_user.hash_password(value)
     g.db_session.add_all([update_user])
     g.db_session.commit()
-    return 'User updated', 200
+    return {'result': 'User updated'}, 200
 
 @jwt_required
 def get(user_id):

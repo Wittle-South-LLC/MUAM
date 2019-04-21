@@ -1,11 +1,14 @@
 /* UserAdmin.jsx - User administration */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Badge, Button, Card, CardBody, CardText, CardTitle, Col, ListGroup,
+import { Badge, Card, CardBody, CardText, CardTitle, Col, ListGroup,
          ListGroupItem, ListGroupItemHeading, ListGroupItemText,
          Row } from 'reactstrap'
 import { defineMessages, intlShape } from 'react-intl'
-import { GroupService, MembershipService, UserService } from '../state/OrimServices'
+import { MembershipService, UserService } from '../state/OrimServices'
+import User from '../state/User'
+import ActiveCard from '../components/ActiveCard'
+import UserEdit from './UserEdit'
 import MemberList from './MemberList'
 
 export default class UserAdmin extends React.Component {
@@ -22,6 +25,11 @@ export default class UserAdmin extends React.Component {
     })
     this.state = {
       selectedUserId: undefined
+    }
+    if (UserService.isEditing()) {
+      this.state.selectedUserId = UserService.getEditingId()
+    } else if (UserService.isCreating()) {
+      this.state.selectedUserId = UserService._NewID
     }
   }
   onSelect (e) {
@@ -57,21 +65,20 @@ export default class UserAdmin extends React.Component {
         <CardText>Select a user to see the list of groups</CardText>
       </CardBody>
     </Card>
+    const leftSide = UserService.isEditing() || UserService.isCreating()
+      ? <UserEdit user={UserService.getById(UserService.isCreating() ? User._NewID : UserService.getEditingId())}>
+        </UserEdit>
+      : <ListGroup>
+          {usersLGItems}
+        </ListGroup>
     return (
       <Row>
         <Col md={6}>
-          <Card>
-            <CardBody>
-              <CardTitle>{formatMessage(this.iText.pageTitle)}<i className="fa fa-plus float-right"></i></CardTitle>
-              <ListGroup>
-                {usersLGItems}
-              </ListGroup>
-              <Button outline size="xs"><i className="fa fa-plus" onClick={this.startAdd}/></Button>
-              <Button outline size="xs" disabled={this.state.selectedGroupId === undefined}>
-                <i className="fa fa-minus" onClick={this.startDelete}/>
-              </Button>
-            </CardBody>
-          </Card>
+          <ActiveCard title={formatMessage(this.iText.pageTitle)}
+                      service={UserService}
+                      selectedId={this.state.selectedUserId}>
+            {leftSide}
+          </ActiveCard>
         </Col>
         <Col md={6}>
           {this.state.selectedUserId 

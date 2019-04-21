@@ -94,9 +94,6 @@ describe('User: testing RimObject actions', () => {
   it ('isPasswordValid() returns true for valid Password', () => {
     chai.expect(testObj.isPasswordValid()).to.equal(true)
   })
-  it ('isGroupsValid() returns true for valid Groups', () => {
-    chai.expect(testObj.isGroupsValid()).to.equal(true)
-  })
   it ('isUsernameValid() returns true for valid Username', () => {
     chai.expect(testObj.isUsernameValid()).to.equal(true)
   })
@@ -130,11 +127,6 @@ describe('User: testing RimObject actions', () => {
     chai.expect(invalidObj.isValid()).to.equal(false)
     chai.expect(invalidObj.isPasswordValid()).to.equal(false)
   })
-  it ('isGroupsValid() returns false for invalid Groups', () => {
-    const invalidObj = testObj.updateField(TCLASS._GroupsKey, undefined)
-    chai.expect(invalidObj.isValid()).to.equal(false)
-    chai.expect(invalidObj.isGroupsValid()).to.equal(false)
-  })
   it ('isUsernameValid() returns false for invalid Username', () => {
     const invalidObj = testObj.updateField(TCLASS._UsernameKey, undefined)
     chai.expect(invalidObj.isValid()).to.equal(false)
@@ -161,7 +153,7 @@ describe('User: testing RimObject actions', () => {
     chai.expect(invalidObj.isLastNameValid()).to.equal(false)
   })
   it ('isPhoneValid() returns false for invalid Phone', () => {
-    const invalidObj = testObj.updateField(TCLASS._PhoneKey, undefined)
+    const invalidObj = testObj.updateField(TCLASS._PhoneKey, 'X')
     chai.expect(invalidObj.isValid()).to.equal(false)
     chai.expect(invalidObj.isPhoneValid()).to.equal(false)
   })

@@ -94,7 +94,7 @@ def test_hydrate():
     assert len(json) == 3
     assert json['Groups'][0]['name'] == 'TestGroup' or\
            json['Groups'][1]['name'] == 'TestGroup'
-    assert len(json['Memberships']) == 2
+    assert len(json['Memberships']) == 5
 
 def test_shutdown_bad_key():
     """--> Test shutdown with bad key for code coverage"""

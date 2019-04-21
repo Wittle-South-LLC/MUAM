@@ -763,6 +763,7 @@ components:
         phone:
           type: string
           description: Phone number
+          nullable: true
           minLength: 10
           maxLength: 20
           example: '+1 (919) 999-9999'
@@ -778,14 +779,17 @@ components:
           example: LDAP
         create_users:
           type: boolean
+          default: false
           description: True if this user can create other users
           example: false
         create_groups:
           type: boolean
+          default: false
           description: True if this user can create groups
           example: true
         grant_privs:
           type: boolean
+          default: false
           description: True if this user can change values of create_users or create_groups for other users
           example: false
         record_created:
@@ -810,6 +814,7 @@ components:
           properties:
             groups:
               x-wsag-linked-object: Membership
+              nullable: true
               type: array
               items:
                 $ref: '#/components/schemas/GroupList'
@@ -869,5 +874,7 @@ components:
               example: 'testing123'
             groups:
               type: array
+              nullable: true
+              x-wsag-linked-object: Membership
               items:
                 $ref: '#/components/schemas/GroupList'
