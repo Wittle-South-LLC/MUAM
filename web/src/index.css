@@ -16,3 +16,18 @@ code {
 .fa-pl {
   padding-left: 5px;
 }
+
+/*
+.iconCardHeader {
+  display: flex;
+  flex-direction: row;
+}
+
+.iconCard {
+  align-self: flex-end;
+}
+*/
+
+.inlineBreadcrumb {
+  display: inline-block;
+}

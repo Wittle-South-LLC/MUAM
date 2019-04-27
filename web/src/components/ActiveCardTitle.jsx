@@ -5,7 +5,7 @@ import { CardTitle } from 'reactstrap'
 export default class ActiveCardTitle extends React.Component {
   render () {
     return (
-      <CardTitle>
+      <CardTitle className="iconCardHeader">
         {this.props.children}
         {this.props.onAdd && <i className="fa fa-plus fa-pl fa-pull-right" onClick={this.props.onAdd}></i>}
         {this.props.onCancel && <i className="fa fa-undo fa-pl fa-pull-right" onClick={this.props.onCancel}></i>}

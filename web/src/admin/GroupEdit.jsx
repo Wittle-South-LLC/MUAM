@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { Button, Card, CardBody, CardTitle, Form, FormGroup, Input, Label } from 'reactstrap'
 import { intlShape, defineMessages } from 'react-intl'
 import Group from '../state/Group'
-import { GroupService, MembershipService } from '../state/OrimServices'
+import { GroupService } from '../state/OrimServices'
 
 export default class GroupEdit extends React.Component {
   constructor (props, context) {

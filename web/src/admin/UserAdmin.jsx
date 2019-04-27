@@ -1,14 +1,16 @@
 /* UserAdmin.jsx - User administration */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Badge, Card, CardBody, CardText, CardTitle, Col, ListGroup,
-         ListGroupItem, ListGroupItemHeading, ListGroupItemText,
-         Row } from 'reactstrap'
+import { Badge, Breadcrumb, BreadcrumbItem, Card, CardBody, CardText,
+         CardTitle, Col, ListGroup, ListGroupItem, ListGroupItemHeading,
+         ListGroupItemText, Row } from 'reactstrap'
 import { defineMessages, intlShape } from 'react-intl'
 import { MembershipService, UserService } from '../state/OrimServices'
 import User from '../state/User'
 import ActiveCard from '../components/ActiveCard'
 import UserEdit from './UserEdit'
+import UserDetail from './UserDetail'
+import GroupSearch from './GroupSearch'
 import MemberList from './MemberList'
 
 export default class UserAdmin extends React.Component {
@@ -17,6 +19,7 @@ export default class UserAdmin extends React.Component {
 
     // Method bindings
     this.onSelect = this.onSelect.bind(this)
+    this.onClear = this.onClear.bind(this)
 
     // Message components
     this.iText = defineMessages({
@@ -42,9 +45,15 @@ export default class UserAdmin extends React.Component {
       selectedUserId: idElement.id
     })
   }
+  onClear () {
+    this.setState({
+      selectedUserId: undefined
+    })
+  }
   render () {
     let formatMessage = this.context.intl.formatMessage
     let usersList = UserService.getObjectArray()
+    let selectedUser = UserService.getById(this.state.selectedUserId)
     let usersLGItems = usersList.map((user) =>
       <ListGroupItem className="justify-content-between" key={user.getId()}
                      id={user.getId()} onClick={this.onSelect}
@@ -65,16 +74,27 @@ export default class UserAdmin extends React.Component {
         <CardText>Select a user to see the list of groups</CardText>
       </CardBody>
     </Card>
-    const leftSide = UserService.isEditing() || UserService.isCreating()
+    var leftSide = UserService.isEditing() || UserService.isCreating()
       ? <UserEdit user={UserService.getById(UserService.isCreating() ? User._NewID : UserService.getEditingId())}>
         </UserEdit>
       : <ListGroup>
           {usersLGItems}
         </ListGroup>
+    if (this.state.selectedUserId && (!UserService.isEditing() || UserService.isCreating())) {
+      leftSide = <UserDetail user={selectedUser} />
+    }
+    const myTitle= selectedUser
+      ? <Breadcrumb className="inlineBreadcrumb">
+          <BreadcrumbItem onClick={this.onClear}>{formatMessage(this.iText.pageTitle)}</BreadcrumbItem>
+          <BreadcrumbItem active>{selectedUser.getUsername()}</BreadcrumbItem>
+        </Breadcrumb>
+      : <Breadcrumb className="inlineBreadcrumb">
+          <BreadcrumbItem active>{formatMessage(this.iText.pageTitle)}</BreadcrumbItem>
+        </Breadcrumb>
     return (
       <Row>
         <Col md={6}>
-          <ActiveCard title={formatMessage(this.iText.pageTitle)}
+          <ActiveCard title={myTitle}
                       service={UserService}
                       selectedId={this.state.selectedUserId}>
             {leftSide}
@@ -82,7 +102,10 @@ export default class UserAdmin extends React.Component {
         </Col>
         <Col md={6}>
           {this.state.selectedUserId 
-            ? <MemberList listType="Groups" list={MembershipService.getMembersForUser(this.state.selectedUserId)}></MemberList>
+            ? <div>
+                <MemberList listType="Groups" list={MembershipService.getMembersForUser(this.state.selectedUserId)}></MemberList>
+                <GroupSearch />
+              </div>
             : rightStuff
           }
         </Col>

@@ -2,6 +2,8 @@
 import { Map } from 'immutable'
 import { BaseRIMService, status } from 'redux-immutable-model'
 import Membership from './Membership'
+import User from './User'
+import Group from './Group'
 
 export default class CustomMembershipService extends BaseRIMService {
   constructor(config) {
@@ -45,6 +47,17 @@ export default class CustomMembershipService extends BaseRIMService {
 
   getMembersForUser(userId) {
     return this._state.getIn([CustomMembershipService._UserIdMap, userId])
+  }
+
+  newGroupForUser(user, groupId) {
+    const newMembership = new Membership({
+      [User._IdentityKey]: user.getId(),
+      [Group._IdentityKey]: groupId,
+      [Membership._IsAdminKey]: false,
+      [Membership._IsOwnerKey]: false
+    }, false, false, true)
+    this.setById(newMembership)
+    return newMembership
   }
 
   reducer (state = this.getInitialState(), action) {

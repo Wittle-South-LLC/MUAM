@@ -46,16 +46,16 @@ def test_create_membership():
         'is_admin': False,
         'is_owner': False
     }
-    resp = get_response_with_jwt(TEST_SESSION, 'POST', '/members', member_data)
+    resp = get_response_with_jwt(TEST_SESSION, 'POST', '/memberships', member_data)
     assert resp.status_code == 201
 
-def test_update_memmbership():
+def test_update_membership():
     """--> Test update membership API"""
     update_data = {
         'is_admin': True,
         'is_owner': False
     }
-    api_url = '/members/{}/{}'.format(group_id, user_id)
+    api_url = '/memberships/{}/{}'.format(group_id, user_id)
     resp = get_response_with_jwt(TEST_SESSION, 'PUT', api_url, update_data)
     assert resp.status_code == 200
     resp2 = get_response_with_jwt(TEST_SESSION,'GET', '/groups/' + group_id)
@@ -68,6 +68,6 @@ def test_update_memmbership():
 
 def test_delete_membership():
     """--> Test delete membership API"""
-    api_url = '/members/{}/{}'.format(group_id, user_id)
+    api_url = '/memberships/{}/{}'.format(group_id, user_id)
     resp = get_response_with_jwt(TEST_SESSION, 'DELETE', api_url)
     assert resp.status_code == 204

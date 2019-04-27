@@ -311,7 +311,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: User not found
-  /members:
+  /memberships:
     post:
       summary: Create a link between a user and a group
       tags:
@@ -330,7 +330,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/MembershipCreate'
-  /members/{group_id}/{user_id}:
+  /memberships/{group_id}/{user_id}:
     parameters:
       - name: group_id
         description: Group ID (UUID) on which the operation should be performed

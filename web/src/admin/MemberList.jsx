@@ -1,7 +1,7 @@
 /* MemberList.jsx - List of members of a group, or groups for a user */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Card, CardBody, CardText, CardTitle, Table } from 'reactstrap'
+import { Card, CardBody, CardTitle, Table } from 'reactstrap'
 import { defineMessages, intlShape } from 'react-intl'
 import { UserService, GroupService } from '../state/OrimServices'
 import User from '../state/User'
@@ -34,7 +34,7 @@ export default class MemberList extends React.Component {
           <th>{formatMessage(Membership.msgs.isOwnerLabel)}</th>
         </tr>
     const rows = []
-    this.props.list.map((membership, itemId) => {
+    this.props.list.forEach((membership, itemId) => {
       let item = this.props.listType === "Users"
         ? UserService.getById(itemId)
         : GroupService.getById(itemId)
