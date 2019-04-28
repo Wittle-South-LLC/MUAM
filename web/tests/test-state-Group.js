@@ -70,9 +70,6 @@ describe('Group: testing RimObject actions', () => {
     chai.expect(testObj.getName()).to.equal('app-users')
   })
   // Test validators - valid data
-  it ('isUsersValid() returns true for valid Users', () => {
-    chai.expect(testObj.isUsersValid()).to.equal(true)
-  })
   it ('isDescriptionValid() returns true for valid Description', () => {
     chai.expect(testObj.isDescriptionValid()).to.equal(true)
   })
@@ -80,11 +77,6 @@ describe('Group: testing RimObject actions', () => {
     chai.expect(testObj.isNameValid()).to.equal(true)
   })
   // Test validators - invalid data
-  it ('isUsersValid() returns false for invalid Users', () => {
-    const invalidObj = testObj.updateField(TCLASS._UsersKey, undefined)
-    chai.expect(invalidObj.isValid()).to.equal(false)
-    chai.expect(invalidObj.isUsersValid()).to.equal(false)
-  })
   it ('isDescriptionValid() returns false for invalid Description', () => {
     const invalidObj = testObj.updateField(TCLASS._DescriptionKey, 'X')
     chai.expect(invalidObj.isValid()).to.equal(false)

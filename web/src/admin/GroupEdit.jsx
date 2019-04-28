@@ -2,10 +2,10 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Button, Card, CardBody, CardTitle, Form, FormGroup, Input, Label } from 'reactstrap'
+import { Col, Form, FormFeedback, FormGroup, Input, Label, Row } from 'reactstrap'
 import { intlShape, defineMessages } from 'react-intl'
-import Group from '../state/Group'
 import { GroupService } from '../state/OrimServices'
+import Group from '../state/Group'
 
 export default class GroupEdit extends React.Component {
   constructor (props, context) {
@@ -32,36 +32,45 @@ export default class GroupEdit extends React.Component {
   render () {
     let formatMessage = this.context.intl.formatMessage
     return (
-      <Card>
-        <CardBody>
-          <CardTitle>{formatMessage(this.iText.pageTitle)}</CardTitle>
-          <Form>
+      <Form>
+        <Row form>
+          <Col md={6}>
             <FormGroup>
               <Label for="name">{formatMessage(Group.msgs.nameLabel)}</Label>
               <Input type="text" name="name" id="name"
                      placeholder={formatMessage(Group.msgs.namePlaceholder)}
                      value={this.props.group.getName()}
+                     invalid={!this.props.group.isNameValid()}
                      onChange={this.handleChange} />
+              <FormFeedback>{formatMessage(Group.msgs.nameInvalid)}</FormFeedback>
             </FormGroup>
+          </Col>
+          <Col md={6}>
             <FormGroup>
               <Label for="gid">{formatMessage(Group.msgs.gidLabel)}</Label>
               <Input type="number" name="gid" id="gid"
                      placeholder={formatMessage(Group.msgs.gidPlaceholder)}
                      value={this.props.group.getGid()}
+                     invalid={!this.props.group.isGidValid()}
                      onChange={this.handleChange} />
+              <FormFeedback>{formatMessage(Group.msgs.gidInvalid)}</FormFeedback>
             </FormGroup>
+          </Col>
+        </Row>
+        <Row form>
+          <Col md={12}>
             <FormGroup>
               <Label for="description">{formatMessage(Group.msgs.descriptionLabel)}</Label>
               <Input type="textarea" name="description" id="description"
                      placeholder={formatMessage(Group.msgs.descriptionPlaceholder)}
                      value={this.props.group.getDescription()}
+                     invalid={!this.props.group.isDescriptionValid()}
                      onChange={this.handleChange} />
+              <FormFeedback>{formatMessage(Group.msgs.descriptionInvalid)}</FormFeedback>
             </FormGroup>
-            <Button onClick={this.onSubmit}>{formatMessage(this.iText.saveGroup)}</Button>
-            <Button>{formatMessage(this.iText.cancelEdit)}</Button>
-          </Form>
-        </CardBody>
-      </Card>
+          </Col>
+        </Row>
+      </Form>
     )
   }
 }
@@ -72,7 +81,5 @@ GroupEdit.propTypes = {
 
 GroupEdit.contextTypes = {
   dispatch: PropTypes.func,
-  intl: intlShape,
-  reduxState: PropTypes.object.isRequired,
-  router: PropTypes.object
+  intl: intlShape
 }

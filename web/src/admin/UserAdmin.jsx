@@ -61,7 +61,6 @@ export default class UserAdmin extends React.Component {
         <ListGroupItemHeading>
           {user.getFullName() + "  [" + user.getUsername() + "]  " }
           <Badge pill>{user.getGroups().size + " groups"}</Badge>
-          <i className="fa fa-minus float-right"/>
         </ListGroupItemHeading>
         <ListGroupItemText>
           {user.getLastName() + ", " + user.getFirstName()}

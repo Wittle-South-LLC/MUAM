@@ -57,6 +57,19 @@ export default class CustomMembershipService extends BaseRIMService {
       [Membership._IsOwnerKey]: false
     }, false, false, true)
     this.setById(newMembership)
+    this.addMembership(newMembership)
+    return newMembership
+  }
+
+  newUserForGroup(group, userId) {
+    const newMembership = new Membership({
+      [User._IdentityKey]: userId,
+      [Group._IdentityKey]: group.getId(),
+      [Membership._IsAdminKey]: false,
+      [Membership._IsOwnerKey]: false
+    }, false, false, true)
+    this.setById(newMembership)
+    this.addMembership(newMembership)
     return newMembership
   }
 

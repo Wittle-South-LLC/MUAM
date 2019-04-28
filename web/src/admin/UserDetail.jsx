@@ -1,4 +1,4 @@
-/* UserDetail.jsx - Detail pain for user */
+/* UserDetail.jsx - Detail pane for user */
 
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -21,9 +21,7 @@ export default class UserDetail extends React.Component {
     e.preventDefault()
     const droppedType = e.dataTransfer.getData("type")
     const droppedId = e.dataTransfer.getData("text")
-    console.log(`Somone dropped a ${droppedType} with id ${droppedId}`)
     const newMembership = MembershipService.newGroupForUser(this.props.user, droppedId)
-    console.log('New membership: ', newMembership)
     try {
       this.context.dispatch(MembershipService.saveNew(newMembership))
     } catch (e) {

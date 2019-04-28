@@ -1,13 +1,17 @@
 /* GroupAdmin.jsx - Main page for group administration */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Badge, Button, Card, CardBody, CardText, CardTitle, Col,
-         ListGroup, ListGroupItem,
+import { Badge, Breadcrumb, BreadcrumbItem, Card, CardBody, CardText,
+         CardTitle, Col, ListGroup, ListGroupItem,
          ListGroupItemHeading, ListGroupItemText, Row } from 'reactstrap'
-import { intlShape, defineMessages } from 'react-intl'
+import { defineMessages, intlShape } from 'react-intl'
 import { GroupService, MembershipService } from '../state/OrimServices'
-import MemberList from './MemberList'
+import Group from '../state/Group'
+import ActiveCard from '../components/ActiveCard'
 import GroupEdit from './GroupEdit'
+import GroupDetail from './GroupDetail'
+import UserSearch from './UserSearch'
+import MemberList from './MemberList'
 
 export default class GroupAdmin extends React.Component {
   constructor (props, context) {
@@ -15,10 +19,7 @@ export default class GroupAdmin extends React.Component {
 
     // Method bindings
     this.onSelect = this.onSelect.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-    this.startAdd = this.startAdd.bind(this)
-    this.startDelete = this.startDelete.bind(this)
-    this.startEdit = this.startEdit.bind(this)
+    this.onClear = this.onClear.bind(this)
 
     // Internationalized text
     this.iText = defineMessages({
@@ -28,6 +29,11 @@ export default class GroupAdmin extends React.Component {
 
     this.state = {
       selectedGroupId: undefined
+    }
+    if (GroupService.isEditing()) {
+      this.state.selectedGroupId = GroupService.getEditingId()
+    } else if (GroupService.isCreating()) {
+      this.state.selectedGroupId = GroupService._NewID
     }
   }
   onSelect (e) {
@@ -40,34 +46,22 @@ export default class GroupAdmin extends React.Component {
       selectedGroupId: idElement.id
     })
   }
-  onSubmit (e) {
-    console.log('Trying to stop propagation')
-    e.preventDefault()
-  }
-  startAdd (e) {
-    console.log('Starting to add')
-    e.stopPropagation()
-  }
-  startDelete (e) {
-    console.log('Starting to delete')
-    e.stopPropagation()
-  }
-  startEdit (e) {
-    this.context.dispatch(GroupService.startEdit(e.target.id))
-    e.stopPropagation()
+  onClear () {
+    this.setState({
+      selectedGroupId: undefined
+    })
   }
   render () {
     let formatMessage = this.context.intl.formatMessage
     let groupsList = GroupService.getObjectArray()
+    let selectedGroup = GroupService.getById(this.state.selectedGroupId)
     let groupsLGItems = groupsList.map((group) =>
       <ListGroupItem className="justify-content-between" key={group.getId()}
                      id={group.getId()} onClick={this.onSelect}
                      active={group.getId() === this.state.selectedGroupId}>
         <ListGroupItemHeading>
           {group.getName() + "  [" + group.getGid() + "]  " }
-          <Badge pill>{group.getUsers().size + " users"}</Badge>
-          <i className="fas fa-edit float-right" onClick={this.startEdit} id={group.getId()} />
-          <i className="fa fa-minus float-right" onClick={this.startDelete} id={group.getId()} />
+          {group.getUsers() && <Badge pill>{group.getUsers().size + " users"}</Badge>}
         </ListGroupItemHeading>
         <ListGroupItemText>
           {group.getDescription()}
@@ -80,29 +74,40 @@ export default class GroupAdmin extends React.Component {
         <CardText>Select a group to see the list of users</CardText>
       </CardBody>
     </Card>
-    if (GroupService.getEditingId()) {
-      rightStuff = <GroupEdit group={GroupService.getById(GroupService.getEditingId())} />
-    } else if (this.state.selectedGroupId) {
-      rightStuff = <MemberList listType="Users" list={MembershipService.getMembersForGroup(this.state.selectedGroupId)}></MemberList>
+    var leftSide = GroupService.isEditing() || GroupService.isCreating()
+      ? <GroupEdit group={GroupService.getById(GroupService.isCreating() ? Group._NewID : GroupService.getEditingId())}>
+        </GroupEdit>
+      : <ListGroup>
+          {groupsLGItems}
+        </ListGroup>
+    if (this.state.selectedGroupId && (!GroupService.isEditing() || GroupService.isCreating())) {
+      leftSide = <GroupDetail group={selectedGroup} />
     }
+    const myTitle= selectedGroup
+      ? <Breadcrumb className="inlineBreadcrumb">
+          <BreadcrumbItem onClick={this.onClear}>{formatMessage(this.iText.pageTitle)}</BreadcrumbItem>
+          <BreadcrumbItem active>{selectedGroup.getName()}</BreadcrumbItem>
+        </Breadcrumb>
+      : <Breadcrumb className="inlineBreadcrumb">
+          <BreadcrumbItem active>{formatMessage(this.iText.pageTitle)}</BreadcrumbItem>
+        </Breadcrumb>
     return (
       <Row>
         <Col md={6}>
-          <Card>
-            <CardBody>
-              <CardTitle>{formatMessage(this.iText.pageTitle)}<i className="fa fa-plus float-right"></i></CardTitle>
-              <ListGroup>
-                {groupsLGItems}
-              </ListGroup>
-              <Button outline size="xs"><i className="fa fa-plus" onClick={this.startAdd}/></Button>
-              <Button outline size="xs" disabled={this.state.selectedGroupId === undefined}>
-                <i className="fa fa-minus" onClick={this.startDelete}/>
-              </Button>
-            </CardBody>
-          </Card>
+          <ActiveCard title={myTitle}
+                      service={GroupService}
+                      selectedId={this.state.selectedGroupId}>
+            {leftSide}
+          </ActiveCard>
         </Col>
         <Col md={6}>
-          {rightStuff}
+          {this.state.selectedGroupId 
+            ? <div>
+                <MemberList listType="Users" list={MembershipService.getMembersForGroup(this.state.selectedGroupId)}></MemberList>
+                <UserSearch />
+              </div>
+            : rightStuff
+          }
         </Col>
       </Row>
     )

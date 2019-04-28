@@ -633,7 +633,8 @@ components:
           properties:
             users:
               type: array
-              x-wsag-linked-objects: Membership
+              nullable: true
+              x-wsag-linked-object: Membership
               items:
                 $ref: '#/components/schemas/UserList'
     GroupList:
