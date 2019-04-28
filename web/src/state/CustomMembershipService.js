@@ -57,7 +57,6 @@ export default class CustomMembershipService extends BaseRIMService {
       [Membership._IsOwnerKey]: false
     }, false, false, true)
     this.setById(newMembership)
-    this.addMembership(newMembership)
     return newMembership
   }
 
@@ -69,7 +68,6 @@ export default class CustomMembershipService extends BaseRIMService {
       [Membership._IsOwnerKey]: false
     }, false, false, true)
     this.setById(newMembership)
-    this.addMembership(newMembership)
     return newMembership
   }
 
@@ -85,6 +83,28 @@ export default class CustomMembershipService extends BaseRIMService {
           ? state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId(), membership.getUserId()], membership)
           : state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId()], new Map({[membership.getUserId()]: membership}))
       }
+    } else if (action.verb === this.config.verbs.SAVE_NEW &&
+               action.status === status.SUCCESS && 
+               action.rimObj && action.rimObj instanceof Membership) {
+      state = state.hasIn([CustomMembershipService._UserIdMap, action.rimObj.getUserId()])
+        ? state.setIn([CustomMembershipService._UserIdMap, action.rimObj.getUserId(), action.rimObj.getGroupId()], action.rimObj)
+        : state.setIn([CustomMembershipService._UserIdMap, action.rimObj.getUserId()], new Map({[action.rimObj.getGroupId()]: action.rimObj}))
+      state = state.hasIn([CustomMembershipService._GroupIdMap, action.rimObj.getGroupId()])
+        ? state.setIn([CustomMembershipService._GroupIdMap, action.rimObj.getGroupId(), action.rimObj.getUserId()], action.rimObj)
+        : state.setIn([CustomMembershipService._GroupIdMap, action.rimObj.getGroupId()], new Map({[action.rimObj.getUserId()]: action.rimObj}))
+    } else if (action.verb === this.config.verbs.SAVE_NEW &&
+               action.status === status.SUCCESS &&
+               action.rimObj && action.rimObj instanceof Group) {
+      // This is a special case where we will assign the logged in user as
+      // a group owner for the group just created; the server-side API does the
+      // same thing
+      let membership = new Membership(action.receivedData['membership'])
+      state = state.hasIn([CustomMembershipService._UserIdMap, membership.getUserId()])
+        ? state.setIn([CustomMembershipService._UserIdMap, membership.getUserId(), membership.getGroupId()], membership)
+        : state.setIn([CustomMembershipService._UserIdMap, membership.getUserId()], new Map({[membership.getGroupId()]: membership}))
+      state = state.hasIn([CustomMembershipService._GroupIdMap, membership.getGroupId()])
+        ? state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId(), membership.getUserId()], membership)
+        : state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId()], new Map({[membership.getUserId()]: membership}))
     }
     return this.setState(state)
   }

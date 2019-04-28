@@ -48,7 +48,8 @@ def post(body):
         g.db_session.commit()
     except IntegrityError:
         return api_error(400, 'DUPLICATE_GROUP_KEY')
-    return {'group_id': new_group.get_uuid()}, 201
+    # Need to return the first member appended since that did not come from client
+    return {'group_id': new_group.get_uuid(), 'membership': new_group.users[0].dump()}, 201
 
 @jwt_required
 def search(search_text = None, gid = None):

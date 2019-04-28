@@ -19,7 +19,7 @@ export default class UserDetail extends React.Component {
   }
   onDrop (e) {
     e.preventDefault()
-    const droppedType = e.dataTransfer.getData("type")
+//    const droppedType = e.dataTransfer.getData("type")
     const droppedId = e.dataTransfer.getData("text")
     const newMembership = MembershipService.newGroupForUser(this.props.user, droppedId)
     try {

@@ -210,6 +210,8 @@ paths:
                 properties:
                   group_id:
                     type: string
+                  membership:
+                    $ref: '#/components/schemas/MembershipCreate'
         '400':
           description: Request error
           content:
