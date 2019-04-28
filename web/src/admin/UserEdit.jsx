@@ -23,7 +23,6 @@ export default class UserEdit extends React.Component {
   }
   render () {
     let formatMessage = this.context.intl.formatMessage
-    if (this.props.user.isUsernameValid()) { console.log('Valid Username') } else { console.log('Invalid Username') }
     return (
       <Form>
         <Row form>

@@ -34,27 +34,29 @@ export default class MemberList extends React.Component {
           <th>{formatMessage(Membership.msgs.isOwnerLabel)}</th>
         </tr>
     const rows = []
-    this.props.list.forEach((membership, itemId) => {
-      let item = this.props.listType === "Users"
-        ? UserService.getById(itemId)
-        : GroupService.getById(itemId)
-      rows.push(
-        this.props.listType === "Users"
-          ? <tr key={itemId}>
-              <td>{item.getFirstName()}</td>
-              <td>{item.getLastName()}</td>
-              <td>{item.getUsername()}</td>
-              <td>{membership.getIsAdmin() ? <i className="fas fa-check" /> : ""}</td>
-              <td>{membership.getIsOwner() ? <i className="fas fa-check" /> : ""}</td>
-            </tr>
-          : <tr key={itemId}>
-              <td>{item.getName()}</td>
-              <td>{item.getGid()}</td>
-              <td>{membership.getIsAdmin() ? <i className="fas fa-check" /> : ""}</td>
-              <td>{membership.getIsOwner() ? <i className="fas fa-check" /> : ""}</td>
-            </tr>
-      )
-    })
+    if (this.props.list) {
+      this.props.list.forEach((membership, itemId) => {
+        let item = this.props.listType === "Users"
+          ? UserService.getById(itemId)
+          : GroupService.getById(itemId)
+        rows.push(
+          this.props.listType === "Users"
+            ? <tr key={itemId}>
+                <td>{item.getFirstName()}</td>
+                <td>{item.getLastName()}</td>
+                <td>{item.getUsername()}</td>
+                <td>{membership.getIsAdmin() ? <i className="fas fa-check" /> : ""}</td>
+                <td>{membership.getIsOwner() ? <i className="fas fa-check" /> : ""}</td>
+              </tr>
+            : <tr key={itemId}>
+                <td>{item.getName()}</td>
+                <td>{item.getGid()}</td>
+                <td>{membership.getIsAdmin() ? <i className="fas fa-check" /> : ""}</td>
+                <td>{membership.getIsOwner() ? <i className="fas fa-check" /> : ""}</td>
+              </tr>
+        )
+      })
+    }
     return (
       <Card>
         <CardBody>
