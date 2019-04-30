@@ -18,6 +18,7 @@ export default class GroupAdmin extends React.Component {
     super(props, context)
 
     // Method bindings
+    this.confirmDelete = this.confirmDelete.bind(this)
     this.onSelect = this.onSelect.bind(this)
     this.onClear = this.onClear.bind(this)
 
@@ -34,6 +35,8 @@ export default class GroupAdmin extends React.Component {
       this.state.selectedGroupId = GroupService.getEditingId()
     } else if (GroupService.isCreating()) {
       this.state.selectedGroupId = GroupService._NewID
+    } else if (GroupService.isDeleting()) {
+      this.state.selectedGroupId = GroupService.getDeletingId()
     }
   }
   onSelect (e) {
@@ -46,6 +49,12 @@ export default class GroupAdmin extends React.Component {
       selectedGroupId: idElement.id
     })
   }
+  confirmDelete (e) {
+    this.setState({
+      selectedGroupId: undefined
+    })
+    this.context.dispatch(GroupService.commitDelete(GroupService.getById(this.state.selectedGroupId)))
+  }
   onClear () {
     this.setState({
       selectedGroupId: undefined
@@ -55,6 +64,7 @@ export default class GroupAdmin extends React.Component {
     let formatMessage = this.context.intl.formatMessage
     let groupsList = GroupService.getObjectArray()
     let selectedGroup = GroupService.getById(this.state.selectedGroupId)
+    if (!selectedGroup) { console.log('Selected group is not in service!') }
     let groupsLGItems = groupsList.map((group) =>
       <ListGroupItem className="justify-content-between" key={group.getId()}
                      id={group.getId()} onClick={this.onSelect}
@@ -81,7 +91,7 @@ export default class GroupAdmin extends React.Component {
           {groupsLGItems}
         </ListGroup>
     if (this.state.selectedGroupId && (!GroupService.isEditing() || GroupService.isCreating())) {
-      leftSide = <GroupDetail group={selectedGroup} />
+      leftSide = <GroupDetail group={selectedGroup} confirmDelete={this.confirmDelete}/>
     }
     const myTitle= selectedGroup
       ? <Breadcrumb className="inlineBreadcrumb">

@@ -18,7 +18,7 @@ export default class ActiveCard extends React.Component {
     // State
     this.state = {
       adding: this.props.service.isCreating(),
-      deleting: false,
+      deleting: this.props.service.isDeleting(),
       editing: this.props.service.isEditing()
     }
   }
@@ -33,6 +33,8 @@ export default class ActiveCard extends React.Component {
       this.context.dispatch(this.props.service.cancelNew())
     } else if (this.state.editing) {
       this.context.dispatch(this.props.service.cancelEdit())
+    } else if (this.state.deleting) {
+      this.context.dispatch(this.props.service.cancelDelete())
     }
     this.setState({
       adding: false,
@@ -40,7 +42,8 @@ export default class ActiveCard extends React.Component {
       editing: false
     })
   }
-  onDelStart (e) {
+  onDelStart () {
+    this.context.dispatch(this.props.service.startDelete(this.props.selectedId))
     this.setState({
       deleting: true
     })
@@ -77,8 +80,8 @@ export default class ActiveCard extends React.Component {
   render () {
     const showAdd = !this.props.selectedId ? true : undefined
     const showCancel = this.state.adding || this.state.editing || this.state.deleting ? true : undefined
-    const showDelete = this.props.selectedId && !this.state.editing && !this.state.adding ? true : undefined
-    const showEdit = this.props.selectedId && !this.state.adding && !this.state.editing ? true : undefined
+    const showDelete = this.props.selectedId && !this.state.editing && !this.state.adding && !this.state.deleting ? true : undefined
+    const showEdit = this.props.selectedId && !this.state.adding && !this.state.editing && !this.state.deleting ? true : undefined
     const showSave = this.state.adding || this.state.editing ? true : undefined
     return (
       <Card>

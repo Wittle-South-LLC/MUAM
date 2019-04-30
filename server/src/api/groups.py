@@ -98,7 +98,7 @@ def delete(group_id):
         g.db_session.delete(ug)
     g.db_session.delete(delete_group)
     g.db_session.commit()
-    return 'Group deleted', 204
+    return {'result': 'Group deleted'}, 204
 
 @jwt_required
 def put(group_id, body):
@@ -137,7 +137,7 @@ def put(group_id, body):
                         g.db_session.add(ug)
     g.db_session.add_all([update_group])
     g.db_session.commit()
-    return 'Group updated', 200
+    return {'result': 'Group updated'}, 200
 
 @jwt_required
 def get(group_id):
