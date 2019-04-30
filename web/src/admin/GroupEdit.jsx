@@ -39,7 +39,7 @@ export default class GroupEdit extends React.Component {
               <Label for="name">{formatMessage(Group.msgs.nameLabel)}</Label>
               <Input type="text" name="name" id="name"
                      placeholder={formatMessage(Group.msgs.namePlaceholder)}
-                     value={this.props.group.getName()}
+                     value={this.props.group.getName() || ''}
                      invalid={!this.props.group.isNameValid()}
                      onChange={this.handleChange} />
               <FormFeedback>{formatMessage(Group.msgs.nameInvalid)}</FormFeedback>
@@ -50,7 +50,7 @@ export default class GroupEdit extends React.Component {
               <Label for="gid">{formatMessage(Group.msgs.gidLabel)}</Label>
               <Input type="number" name="gid" id="gid"
                      placeholder={formatMessage(Group.msgs.gidPlaceholder)}
-                     value={this.props.group.getGid()}
+                     value={this.props.group.getGid() || ''}
                      invalid={!this.props.group.isGidValid()}
                      onChange={this.handleChange} />
               <FormFeedback>{formatMessage(Group.msgs.gidInvalid)}</FormFeedback>
