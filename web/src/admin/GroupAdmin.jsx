@@ -64,7 +64,6 @@ export default class GroupAdmin extends React.Component {
     let formatMessage = this.context.intl.formatMessage
     let groupsList = GroupService.getObjectArray()
     let selectedGroup = GroupService.getById(this.state.selectedGroupId)
-    if (!selectedGroup) { console.log('Selected group is not in service!') }
     let groupsLGItems = groupsList.map((group) =>
       <ListGroupItem className="justify-content-between" key={group.getId()}
                      id={group.getId()} onClick={this.onSelect}

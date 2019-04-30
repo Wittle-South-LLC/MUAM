@@ -104,7 +104,10 @@ export default class ActiveCard extends React.Component {
 ActiveCard.propTypes = {
   service: PropTypes.object.isRequired,
   selectedId: PropTypes.string,
-  title: PropTypes.string
+  title: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object
+  ])
 }
 
 ActiveCard.contextTypes = {

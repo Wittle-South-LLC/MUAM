@@ -34,7 +34,6 @@ export default class UserSearch extends React.Component {
   render () {
     let formatMessage = this.context.intl.formatMessage
     let sResults = UserService.getSearchResults()
-    console.log('UserSearch: sResults ->', sResults)
     let sResultItems = sResults.map((sUser) =>
       <ListGroupItem className="justify-content-between" key={sUser.get(User._IdentityKey)}
                      id={sUser.get(User._IdentityKey)} draggable={true} onDragStart={this.onDragStart}>
