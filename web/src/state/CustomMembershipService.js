@@ -82,6 +82,7 @@ export default class CustomMembershipService extends BaseRIMService {
         state = state.hasIn([CustomMembershipService._GroupIdMap, membership.getGroupId()])
           ? state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId(), membership.getUserId()], membership)
           : state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId()], new Map({[membership.getUserId()]: membership}))
+        state = state.setIn([CustomMembershipService._ObjectMap, membership.getId()], membership)
       }
     } else if (action.verb === this.config.verbs.SAVE_NEW &&
                action.status === status.SUCCESS && 
@@ -92,6 +93,7 @@ export default class CustomMembershipService extends BaseRIMService {
       state = state.hasIn([CustomMembershipService._GroupIdMap, action.rimObj.getGroupId()])
         ? state.setIn([CustomMembershipService._GroupIdMap, action.rimObj.getGroupId(), action.rimObj.getUserId()], action.rimObj)
         : state.setIn([CustomMembershipService._GroupIdMap, action.rimObj.getGroupId()], new Map({[action.rimObj.getUserId()]: action.rimObj}))
+      state = state.setIn([CustomMembershipService._ObjectMap, action.rimObj.getId()], action.rimObj)
     } else if (action.verb === this.config.verbs.SAVE_NEW &&
                action.status === status.SUCCESS &&
                action.rimObj && action.rimObj instanceof Group) {
@@ -105,6 +107,27 @@ export default class CustomMembershipService extends BaseRIMService {
       state = state.hasIn([CustomMembershipService._GroupIdMap, membership.getGroupId()])
         ? state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId(), membership.getUserId()], membership)
         : state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId()], new Map({[membership.getUserId()]: membership}))
+      state = state.setIn([CustomMembershipService._ObjectMap, membership.getId()], membership)
+    } else if (action.verb === this.config.verbs.DELETE &&
+               action.status === status.SUCCESS &&
+               action.rimObj && action.rimObj instanceof Membership) {
+      // Need to remove the membership object from lookup tables
+      state = super.reducer(state, action)
+      state = state.deleteIn([CustomMembershipService._UserIdMap, action.rimObj.getUserId(), action.rimObj.getGroupId()])
+      state = state.deleteIn([CustomMembershipService._GroupIdMap, action.rimObj.getGroupId(), action.rimObj.getUserId()])
+    } else {
+      // If we haven't handled the event, let the base handler deal with it
+      state = super.reducer(state, action)
+      if (action.rimObj && action.rimObj instanceof Membership) {
+        const membership = state.getIn([CustomMembershipService._ObjectMap, action.rimObj.getId()])
+        state = state.hasIn([CustomMembershipService._UserIdMap, membership.getUserId()])
+          ? state.setIn([CustomMembershipService._UserIdMap, membership.getUserId(), membership.getGroupId()], membership)
+          : state.setIn([CustomMembershipService._UserIdMap, membership.getUserId()], new Map({[membership.getGroupId()]: membership}))
+        state = state.hasIn([CustomMembershipService._GroupIdMap, membership.getGroupId()])
+          ? state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId(), membership.getUserId()], membership)
+          : state.setIn([CustomMembershipService._GroupIdMap, membership.getGroupId()], new Map({[membership.getUserId()]: membership}))
+      }
+      return this.setState(state)
     }
     return this.setState(state)
   }

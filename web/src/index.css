@@ -31,3 +31,7 @@ code {
 .inlineBreadcrumb {
   display: inline-block;
 }
+
+.selectedRow {
+  background-color: lightblue;
+}

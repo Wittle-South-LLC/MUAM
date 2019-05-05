@@ -7,6 +7,10 @@ export default class Membership extends OrimMembership {
     super (createFrom, dirtyVal, fetchingVal, newVal)
   }
 
+  getId() {
+    return this.getGroupId() + '/' + this.getUserId()
+  }
+
   // Internationalization Messages
   static msgs = defineMessages({
     isAdminLabel: { id: 'Membership.isAdminLabel', defaultMessage: 'Admin' },
