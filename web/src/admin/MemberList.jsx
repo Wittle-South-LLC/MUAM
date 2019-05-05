@@ -64,6 +64,7 @@ export default class MemberList extends React.Component {
           <th>{formatMessage(Membership.msgs.isOwnerLabel)}</th>
         </tr>
       : <tr>
+          {deletingId && <th>{formatMessage(this.iText.confirmDelete)}</th>}
           <th>{formatMessage(Group.msgs.nameLabel)}</th>
           <th>{formatMessage(Group.msgs.gidLabel)}</th>
           <th>{formatMessage(Membership.msgs.isAdminLabel)}</th>
@@ -87,9 +88,10 @@ export default class MemberList extends React.Component {
                 <td>{membership.getIsOwner() ? <i className="fas fa-check" /> : ""}</td>
               </tr>
             : <tr key={memberId} id={memberId} onClick={this.onClick} className={memberId === this.state.selectedId ? "selectedRow" : undefined}>
+                {deletingId && (deletingId === memberId ? <td><i className="fa fa-trash fa-pl" style={{color: 'red'}} onClick={this.confirmDelete}></i></td> : <td></td>)}
                 <td>{item.getName()}</td>
                 <td>{item.getGid()}</td>
-                <td>{membership.getIsAdmin() ? <i className="fas fa-check" /> : ""}</td>
+                <td>{this.getControlForMember(membership)}</td>
                 <td>{membership.getIsOwner() ? <i className="fas fa-check" /> : ""}</td>
               </tr>
         )
