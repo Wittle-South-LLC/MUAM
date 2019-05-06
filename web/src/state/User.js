@@ -12,6 +12,8 @@ export default class User extends OrimUser {
     switch (verb) {
       case defaultVerbs.LOGIN:
         return { username: this.getUsername(), password: this.getPassword() }
+      case defaultVerbs.LOGOUT:
+        return {}
       default:
         return super.getFetchPayload(verb)
     }

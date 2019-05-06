@@ -15,6 +15,7 @@ export default class AppContainer extends React.Component {
     super(props, context)
     this.listenStore = this.listenStore.bind(this)
     this.init = this.init.bind(this)
+    this.logout = this.logout.bind(this)
     this.getRoute = this.getRoute.bind(this)
     this.toggle = this.toggle.bind(this)
 
@@ -26,6 +27,7 @@ export default class AppContainer extends React.Component {
       frLocaleDesc: { id: 'AppContainer.fr_locale_description', defaultMessage: 'French' },
       brandTitle: { id: 'AppContainer.brandTitle', defaultMessage: 'MUAM' },
       groupsLink: { id: 'AppContainer.groupsLink', defaultMessage: 'Groups' },
+      logout: { id: 'AppContainer.logout', defaultMessage: 'Logout' },
       showStateLink: { id: 'AppContainer.showStateLink', defaultMessage: 'Show State' },
       usersLink: { id: 'AppContainer.usersLink', defaultMessage: 'Users' },
       containerGreetingStatus: {
@@ -57,6 +59,12 @@ export default class AppContainer extends React.Component {
     if (needsHydrate(this.state.reduxState)) {
       this.props.store.dispatch(UserService.hydrate(loggedInUser(this.state.reduxState)))
     }
+  }
+
+  logout() {
+    let myUser = loggedInUser(this.state.reduxState)
+    console.log('myUser = ', myUser)
+    this.props.store.dispatch(UserService.logout(myUser))
   }
 
   // Put the Redux state and dispatch method into context
@@ -113,6 +121,8 @@ export default class AppContainer extends React.Component {
 
   render() {
     let formatMessage = this.context.intl.formatMessage
+    let myUser = loggedInUser(this.state.reduxState)
+    console.log('myUser = ', myUser)
     let locale = this.props.getCurrentLocale()
     if (locale !== this.currentLocale) {
       this.currentLocale = locale
@@ -139,12 +149,13 @@ export default class AppContainer extends React.Component {
             <Nav className="ml-auto" navbar>
               <NavItem><NavLink tag={ RRNavLink } exact to="/groups">{formatMessage(this.componentText.groupsLink)}</NavLink></NavItem>              
               <NavItem><NavLink tag={ RRNavLink } exact to="/users">{formatMessage(this.componentText.usersLink)}</NavLink></NavItem>              
-              <NavItem><NavLink tag={ RRNavLink } exact to="/showstate">{formatMessage(this.componentText.showStateLink)}</NavLink></NavItem>              
+              <NavItem><NavLink tag={ RRNavLink } exact to="/showstate">{formatMessage(this.componentText.showStateLink)}</NavLink></NavItem>
+              { myUser && <NavItem><NavLink onClick={this.logout}>{formatMessage(this.componentText.logout)}</NavLink></NavItem>}
             </Nav>
           </Collapse>
         </Navbar>
         <Row>
-          <Col md={ loggedInUser(this.state.reduxState) !== undefined ? 12 : 6 }
+          <Col md={ myUser !== undefined ? 12 : 6 }
               className='scroll-vertical'
               id='appMainBody'>
           <Switch>

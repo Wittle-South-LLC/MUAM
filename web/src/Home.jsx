@@ -35,6 +35,10 @@ export default class Home extends React.Component {
   }
   handleLogin (e) {
     this.context.dispatch(UserService.login(this.state.loginUsername, this.state.loginPassword))
+    this.setState({
+      loginUsername: undefined,
+      loginPassword: undefined
+    })
   }
   render () {
     let formatMessage = this.context.intl.formatMessage
