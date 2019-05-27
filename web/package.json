@@ -29,7 +29,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "http://kube.wittlesouth.local:31310",
+  "proxy": "http://wsv-dev.wittlesouth.local:31310",
   "openapi-rim-app": {
     "spec": "../server/src/spec/muam.yaml",
     "paths": {

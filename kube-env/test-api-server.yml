@@ -16,7 +16,8 @@ spec:
     storage: 5Gi
   storageClassName: server
   hostPath:
-    path: /Users/eric/Development/wsv/muam
+    path: /mnt/hgfs/wsv/muam
+#    path: /Users/eric/Development/wsv/muam
 ---
 # Claim for test server
 apiVersion: v1
