@@ -9,7 +9,7 @@ export APP_DB_NAME="muam"
 export APP_DB_SNAME=$MY_KUBE_SERVER
 export APP_DB_CPORT=3306
 export OPENAPI_SPEC="/app/server/src/spec/muam.yaml"
-export REACT_APP_API_PATH="/api/v1"
+export REACT_APP_API_PATH="/api/v1/us"
 export APP_PW_RESET_SUBJECT='MUAM Password Reset Code'
 export APP_PW_RESET_FROM='service@wittlesouth.com'
 export APP_PW_RESET_MAILHOST='mail.wittlesouth.com'
@@ -32,7 +32,7 @@ if [ "$NODE_ENV" == "development" ]; then
   export APP_DB_SERVER="mysql-dev:3306"
   # Generate a new secret key with this python command: binascii.hexlify(os.urandom(24))
   export SECRET_KEY=b'57d4585302cb1a8dc3beaa03a8de90b82efb9a98057b9c01'
-  export REACT_APP_BASE_URL="http://kube.wittlesouth.local:${APPSERVER_SPORT}"
+  export REACT_APP_BASE_URL="http://wsv-dev.wittlesouth.local:${APPSERVER_SPORT}"
   export APP_LOG_LEVEL="info"
 elif [ "$NODE_ENV" == "test" ] || [ "$NODE_ENV" == "jenkins" ]; then
   echo "Setting up testing environment variables"

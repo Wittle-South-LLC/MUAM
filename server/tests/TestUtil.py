@@ -7,7 +7,7 @@ from http import cookiejar
 LOGGER = logging.getLogger()
 
 # Set base URL, which will should only vary by port number
-BASE_URL = 'http://' + os.environ['TEST_HOST'] + ':' + os.environ['APPSERVER_SPORT'] + '/api/v1'
+BASE_URL = 'http://' + os.environ['TEST_HOST'] + ':' + os.environ['APPSERVER_SPORT'] + '/api/v1/us'
 
 class AcceptAll(cookiejar.CookiePolicy):
     return_ok = set_ok = domain_return_ok = path_return_ok = lambda self, *args, **kwargs: True

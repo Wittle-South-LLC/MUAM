@@ -84,6 +84,7 @@ FAPP.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes=30)
 if 'NODE_ENV' in os.environ and os.environ['NODE_ENV'] == 'development':
     FAPP.config['JWT_COOKIE_DOMAIN'] = os.environ['COOKIE_DOMAIN']
     LOGGER.info('Setting JWT_COOKIE_DOMAIN to: %s', FAPP.config['JWT_COOKIE_DOMAIN'])
+LOGGER.info('Setting JWT_REFRESH_COOKE_PATH to %s', os.environ['REACT_APP_API_PATH'])
 FAPP.config['JWT_REFRESH_COOKIE_PATH'] = os.environ['REACT_APP_API_PATH']
 FAPP.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=30)
 FAPP.config['JWT_SESSION_COOKIE'] = False
@@ -163,7 +164,7 @@ def after_request(resp):
     # If we have a valid response, create a new access_token to
     # reset the 15 minute clock
     if (resp.status_code) < 400 and 'user' in g and\
-       not request.path in ['/api/v1/logout', '/api/v1/shutdown']:
+       not request.path in ['/api/v1/us/logout', '/api/v1/us/shutdown']:
         access_token = create_access_token(identity=g.user.get_uuid())
         set_access_cookies(resp, access_token, int(datetime.timedelta(minutes=30).total_seconds()))
     g.db_session.close()

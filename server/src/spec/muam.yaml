@@ -513,7 +513,7 @@ tags:
   - name: Groups
     description: APIs for operations on groups
 servers:
-  - url: /api/v1
+  - url: /api/v1/us
     description: Local development server
 components:
   parameters:
