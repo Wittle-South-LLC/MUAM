@@ -33,13 +33,12 @@ class User(Base):
         self.assign_id()
 
     def get_groups(self):
-        result = []
+        result = {}
         for ug in self.groups:
-            result.append({
-                'group_uuid': ug.group.get_uuid(),
+            result[ug.group.get_uuid()] = {
                 'gid': ug.group.gid,
                 'group_name': ug.group.name
-            })
+            }
         return result
 
     def dump(self, deep=False):
