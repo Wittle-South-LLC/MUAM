@@ -37,7 +37,7 @@ class User(Base):
         for ug in self.groups:
             result[ug.group.get_uuid()] = {
                 'gid': ug.group.gid,
-                'group_name': ug.group.name
+                'name': ug.group.name
             }
         return result
 
