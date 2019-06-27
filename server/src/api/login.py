@@ -8,9 +8,11 @@ from flask_jwt_extended import create_access_token, \
      create_refresh_token, set_access_cookies, \
      set_refresh_cookies
 from util.api_util import api_error
-from dm.User import User
-from dm.UserGroup import UserGroup
-from dm.Group import Group
+from dm.smoacks.base import Base
+from dm.Group import Group #pylint: disable=W0611
+from dm.Membership import Membership #pylint: disable=W0611
+from dm.User import User #pylint: disable=W0611
+
 
 def post(body):
     """handles POST verb for /login endpoint"""
@@ -63,19 +65,24 @@ def post(body):
 @jwt_refresh_token_required
 def search():
     """Handles GET verb for /login endpoint"""
-    users = []
-    sq_user_groups = g.db_session.query(UserGroup.group_id).filter(UserGroup.user_id == g.user.user_id).subquery()
-    user_q = g.db_session.query(User).join(UserGroup, UserGroup.user_id == User.user_id)\
-                         .filter(UserGroup.group_id.in_(sq_user_groups)).all()
-    for user in user_q:
-        users.append(user.dump(deep=True))
-    groups = []
-    for ug in g.user.groups:
-        groups.append(ug.group.dump(deep=True))
-    members = []
-    member_q = g.db_session.query(UserGroup).filter(UserGroup.group_id.in_(sq_user_groups)).all()
-    for member in member_q:
-        members.append(member.dump())
-    current_app.logger.debug('Members object is {}'.format(str(members)))
-    result = {'Groups': groups, 'Users': users, 'Memberships': members}
+    result = {}
+    
+    groups_l = []
+    groups_q = g.db_session.query(Group).all()
+    for groups_item in groups_q:
+        groups_l.append(groups_item.dump(deep=True))
+    result['Groups'] = groups_l
+    
+    memberships_l = []
+    memberships_q = g.db_session.query(Membership).all()
+    for memberships_item in memberships_q:
+        memberships_l.append(memberships_item.dump(deep=True))
+    result['Memberships'] = memberships_l
+    
+    users_l = []
+    users_q = g.db_session.query(User).all()
+    for users_item in users_q:
+        users_l.append(users_item.dump(deep=True))
+    result['Users'] = users_l
+    
     return result, 200

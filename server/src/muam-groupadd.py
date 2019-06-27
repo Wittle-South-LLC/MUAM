@@ -6,7 +6,7 @@ import sys
 from dm.DataModel import get_session
 from dm.Group import Group
 from dm.User import User
-from dm.UserGroup import UserGroup
+from dm.Membership import Membership
 
 # Ensure we have a database session or exit
 my_session = get_session()
@@ -48,21 +48,21 @@ if 'user_list' in opts and opts.user_list != None:
     for user_name in user_list:
         user = my_session.query(User).filter(User.username == user_name).one_or_none()
         if user:
-            new_group.users.append(UserGroup(user=user))
+            new_group.users.append(Membership(user=user))
 if 'owner_list' in opts and opts.owner_list != None:
     owner_list = opts.owner_list.split(',')
     for user_name in owner_list:
         user = my_session.query(User).filter(User.username == user_name).one_or_none()
         if user:
-            new_group.users.append(UserGroup(user=user, is_owner=True))
+            new_group.users.append(Membership(user=user, is_owner=True))
 else:
-    new_group.users.append(UserGroup(user=user, is_owner=True))
+    new_group.users.append(Membership(user=user, is_owner=True))
 if 'admin_list' in opts and opts.admin_list != None:
     admin_list = opts.admin_list.split(',')
     for user_name in admin_list:
         user = my_session.query(User).filter(User.username == user_name).one_or_none()
         if user:
-            new_group.users.append(UserGroup(user=user, is_admin=True))
+            new_group.users.append(Membership(user=user, is_admin=True))
 my_session.add(new_group)
 my_session.commit()
 my_session.close()

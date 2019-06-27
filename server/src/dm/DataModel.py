@@ -4,12 +4,12 @@ import os
 import sys
 from sqlalchemy import create_engine, event, exc, select
 from sqlalchemy.orm import sessionmaker
-from dm.base import Base
-from dm.Group import Group                   #pylint: disable=W0611
-from dm.User import User                     #pylint: disable=W0611
-from dm.UserGroup import UserGroup           #pylint: disable=W0611
+from dm.smoacks.base import Base
+from dm.Group import Group #pylint: disable=W0611
+from dm.Membership import Membership #pylint: disable=W0611
+from dm.User import User #pylint: disable=W0611
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger('appLogger')
 
 # Confirm that required environment variables are present
 for req_var in ['APP_DB_NAME', 'APP_DB_ACCOUNT', 'APP_DB_PASSWORD']:
@@ -29,6 +29,7 @@ DB_PWD = os.environ['APP_DB_PASSWORD']
 # Assemble the connection string from component parts
 connect_string = "mysql+mysqldb://{}:{}@{}:{}/{}?charset=utf8mb4&binary_prefix=True".format(\
                  DB_USER, DB_PWD, DB_HOST, DB_PORT, DB_NAME)
+LOGGER.info('Using database named {} on host {} on port {}'.format(DB_NAME, DB_HOST, DB_PORT))
 LOGGER.debug('Connect string: {}'.format(connect_string))
 # Create database connection and sessionmaker
 try:
@@ -44,12 +45,12 @@ LOGGER.debug('We have created a sessionmaker')
 # Check to see if the schema exists, if not create it
 try:
     LOGGER.debug('Let us check if there is a User table...')
-    if not ENGINE.dialect.has_table(ENGINE, 'User'):
+    if not ENGINE.dialect.has_table(ENGINE, 'Group'):
         LOGGER.info('No schema, so need to create_all')
         Base.metadata.create_all(ENGINE)
 except exc.SQLAlchemyError: # pragma: no cover
     LOGGER.error('Caught an exception in schema setup: ' + str(exc.SQLAlchemyError))
-LOGGER.debug('We have created or found a User table')
+LOGGER.debug('We have created or found a Group table')
 
 def get_session():
     return DBSESSION()

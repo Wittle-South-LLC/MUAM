@@ -6,7 +6,7 @@ import sys
 from dm.DataModel import get_session
 from dm.Group import Group
 from dm.User import User
-from dm.UserGroup import UserGroup
+from dm.Membership import Membership
 
 # Ensure we have a database session or exit
 my_session = get_session()
@@ -62,7 +62,7 @@ if 'group_list' in opts and opts.group_list != None:
     for group_name in group_list:
         group = my_session.query(Group).filter(Group.name == group_name).one_or_none()
         if group:
-            new_user.groups.append(UserGroup(group=group))
+            new_user.groups.append(Membership(group=group))
 my_session.add(new_user)
 my_session.commit()
 my_session.close()

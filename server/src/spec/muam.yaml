@@ -1,883 +1,842 @@
-openapi: 3.0.0
+components:
+  parameters:
+    gid:
+      description: GID (numeric group id) to filter group searches with
+      in: query
+      name: gid
+      required: false
+      schema:
+        format: int32
+        type: integer
+    search_text:
+      description: String to filter search with
+      in: query
+      name: search_text
+      required: false
+      schema:
+        maxLength: 40
+        type: string
+  schemas:
+    Error:
+      properties:
+        error_code:
+          description: Error code (equivalent to HTTP status code)
+          type: integer
+        key:
+          description: Unique identifier for error message
+          type: string
+        text:
+          description: Default english error message
+          type: string
+      type: object
+    Group:
+      allOf:
+      - $ref: '#/components/schemas/GroupShort'
+      - properties:
+          description:
+            description: Long description of group
+            example: This is a really long description of a group
+            maxLength: 3000
+            minLength: 20
+            nullable: true
+            type: string
+          record_created:
+            description: Record creation date
+            example: '1995-08-19T00:00:00.000Z'
+            format: date
+            readOnly: true
+            type: string
+          record_updated:
+            description: Record update date
+            example: '1995-08-19T00:00:00.001Z'
+            format: date
+            readOnly: true
+            type: string
+          source:
+            description: Source of this group (Local or LDAP)
+            enum:
+            - Local
+            - LDAP
+            example: LDAP
+            nullable: false
+            readOnly: true
+            type: string
+        type: object
+      description: Named collection of users
+      type: object
+      x-orim-test-data: true
+      x-smoacks-create: Group
+      x-smoacks-relationships:
+        memberships:
+          cascade: all, delete-orphan
+          field: group
+          table: Membership
+    GroupFull:
+      allOf:
+      - $ref: '#/components/schemas/Group'
+      - properties:
+          users:
+            items:
+              $ref: '#/components/schemas/UserList'
+            nullable: true
+            type: array
+            x-smoacks-linked-object: Membership
+        type: object
+      description: Group with all attributes
+      x-smoacks-update: Group
+    GroupList:
+      description: List representation of Group
+      properties:
+        group_id:
+          description: Unique group identifier
+          example: b5665877-f9ee-4074-a38b-39219cde6b4d
+          format: uuid
+          maxLength: 40
+          minLength: 12
+          nullable: false
+          type: string
+        is_admin:
+          description: Indicates if the user is an administrator of this group
+          example: false
+          type: boolean
+        is_owner:
+          description: Indicates if the user is the owner of this group
+          example: false
+          type: boolean
+      type: object
+    GroupShort:
+      description: Short representation of Group
+      properties:
+        gid:
+          description: Numeric group ID (LDAP)
+          example: 104
+          format: int32
+          nullable: true
+          type: integer
+        group_id:
+          description: Unique group identifier
+          example: b5665877-f9ee-4074-a38b-39219cde6b4d
+          format: uuid
+          maxLength: 40
+          minLength: 12
+          nullable: false
+          readOnly: true
+          type: string
+          x-smoacks-model-id: true
+        name:
+          description: Description of the group
+          example: app-users
+          maxLength: 80
+          minLength: 4
+          type: string
+          x-smoacks-edit-unit-test: app-users - edited
+          x-smoacks-search-field: true
+      required:
+      - name
+      type: object
+    Login:
+      properties:
+        password:
+          description: Password associated with the username requesting access
+          example: Testing123!
+          maxLength: 32
+          minLength: 8
+          type: string
+        token:
+          description: Facebook access token
+          example: KLSDJKFJF-LKSJFLKJSDFJ
+          maxLength: 120
+          minLength: 8
+          type: string
+        username:
+          description: Username representing identity of person requesting access
+          example: testing
+          maxLength: 12
+          minLength: 4
+          type: string
+      type: object
+    Membership:
+      description: Group membership
+      properties:
+        group_id:
+          description: Unique group identifier
+          example: b5665877-f9ee-4074-a38b-39219cde6b4d
+          format: uuid
+          maxLength: 40
+          minLength: 12
+          nullable: false
+          type: string
+          x-smoacks-foreign-key: Group
+          x-smoacks-model-id: true
+        is_admin:
+          description: Indicates if the user is an administrator of this group
+          example: false
+          type: boolean
+        is_owner:
+          description: Indicates if the user is the owner of this group
+          example: false
+          type: boolean
+        user_id:
+          description: Unique user identifier
+          example: b5665877-f9ee-4074-a38b-39219cde6b67
+          format: uuid
+          maxLength: 40
+          minLength: 12
+          type: string
+          x-smoacks-foreign-key: User
+          x-smoacks-model-id: true
+      required:
+      - group_id
+      - user_id
+      type: object
+      x-orim-test-data: true
+      x-smoacks-create: Membership
+      x-smoacks-relationships:
+        group:
+          field: memberships
+          table: Group
+        user:
+          field: memberships
+          table: User
+    MembershipUpdate:
+      description: Group membership
+      properties:
+        is_admin:
+          description: Indicates if the user is an administrator of this group
+          example: false
+          type: boolean
+        is_owner:
+          description: Indicates if the user is the owner of this group
+          example: false
+          type: boolean
+      type: object
+    User:
+      allOf:
+      - $ref: '#/components/schemas/UserShort'
+      - $ref: '#/components/schemas/UserCore'
+      description: User
+      x-orim-test-data: true
+      x-smoacks-create: User
+      x-smoacks-relationships:
+        memberships:
+          field: user
+          table: Membership
+    UserCore:
+      description: User
+      properties:
+        create_groups:
+          default: false
+          description: True if this user can create groups
+          example: true
+          type: boolean
+        create_users:
+          default: false
+          description: True if this user can create other users
+          example: false
+          type: boolean
+        email:
+          description: Email address
+          example: testing@wittlesouth.com
+          maxLength: 80
+          minLength: 4
+          pattern: ^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$
+          type: string
+        first_name:
+          description: First Name
+          example: Tester
+          maxLength: 80
+          minLength: 2
+          type: string
+          x-smoacks-edit-unit-test: Tester - edited
+        full_name:
+          description: Full Name
+          example: Tester, Unit X
+          maxLength: 120
+          minLength: 5
+          type: string
+          x-smoacks-search-field: true
+        grant_privs:
+          default: false
+          description: True if this user can change values of create_users or create_groups
+            for other users
+          example: false
+          type: boolean
+        last_name:
+          description: Last Name
+          example: Unit
+          maxLength: 80
+          minLength: 2
+          type: string
+        phone:
+          description: Phone number
+          example: +1 (919) 999-9999
+          maxLength: 20
+          minLength: 10
+          nullable: true
+          type: string
+        record_created:
+          description: Record creation date
+          example: '1995-08-19T00:00:00.002Z'
+          format: date
+          readOnly: true
+          type: string
+        record_updated:
+          description: Record update date
+          example: '1995-08-19T00:00:00.003Z'
+          format: date
+          readOnly: true
+          type: string
+        source:
+          description: Source of this user
+          enum:
+          - Local
+          - LDAP
+          - Facebook
+          example: LDAP
+          nullable: false
+          readOnly: true
+          type: string
+      type: object
+    UserExtended:
+      allOf:
+      - $ref: '#/components/schemas/UserShort'
+      - $ref: '#/components/schemas/UserCore'
+      - properties:
+          groups:
+            items:
+              $ref: '#/components/schemas/GroupList'
+            nullable: true
+            type: array
+            x-smoacks-linked-object: Membership
+        type: object
+      description: User with related objects list
+      x-smoacks-extended: User
+    UserList:
+      properties:
+        is_admin:
+          description: Indicates if the user is an administrator of this group
+          example: false
+          type: boolean
+        is_owner:
+          description: Indicates if the user is the owner of this group
+          example: false
+          type: boolean
+        user_id:
+          description: Unique user identifier
+          example: b5665877-f9ee-4074-a38b-39219cde6b67
+          format: uuid
+          maxLength: 40
+          minLength: 12
+          type: string
+          x-smoacks-model-id: true
+      type: object
+    UserShort:
+      properties:
+        user_id:
+          description: Unique user identifier
+          example: b5665877-f9ee-4074-a38b-39219cde6b67
+          format: uuid
+          maxLength: 40
+          minLength: 12
+          readOnly: true
+          type: string
+          x-smoacks-model-id: true
+        username:
+          description: Login user name
+          example: testing
+          maxLength: 32
+          minLength: 4
+          type: string
+      required:
+      - username
+      type: object
+    UserUpdate:
+      allOf:
+      - $ref: '#/components/schemas/UserShort'
+      - $ref: '#/components/schemas/UserCore'
+      - properties:
+          groups:
+            items:
+              $ref: '#/components/schemas/GroupList'
+            nullable: true
+            type: array
+            x-smoacks-linked-object: Membership
+          password:
+            description: User password
+            example: testing123
+            maxLength: 32
+            minLength: 8
+            nullable: true
+            type: string
+        type: object
+      description: User
+      x-smoacks-test-data: false
+      x-smoacks-update: User
 info:
-  version: 0.1.0
   title: Multimode User Authentication for Microservices
+  version: 0.1.0
+openapi: 3.0.0
 paths:
-  /login:
-    post:
-      summary: Authenticate via Username/Password or Facebook
+  /groups:
+    get:
+      parameters:
+      - $ref: '#/components/parameters/search_text'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Group'
+                type: array
+          description: List of Groups found
+      summary: Get a list of Groups
       tags:
-        - Authentication
-      description: >
-        Authenticate users to the application with either username and password
-        in POST data, or Facebook access_token in post data.
-
-        Returns both an HTTP-only cookie and an authentication token
+      - Groups
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+        required: true
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                properties:
+                  group_id:
+                    type: string
+                type: object
+          description: Group successfully added
+        402:
+          description: Object already exists
+      summary: Create a Group
+      tags:
+      - Groups
+  /groups/{group_id}:
+    delete:
+      responses:
+        204:
+          description: Group deleted successfully
+        400:
+          description: Request error
+        404:
+          description: Group not found
+      summary: Delete a Group
+      tags:
+      - Groups
+    get:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: Details for the requested Group
+        404:
+          description: Group not found
+      summary: Get information for a specific Group
+      tags:
+      - Groups
+    parameters:
+    - description: Group ID (UUID) on which the operation should be performed
+      in: path
+      name: group_id
+      required: true
+      schema:
+        maxLength: 40
+        minLength: 4
+        type: string
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+        required: true
+      responses:
+        200:
+          description: Group updated successfully
+        400:
+          description: Request error
+        404:
+          description: Group not found
+      summary: Update a Group
+      tags:
+      - Groups
+  /login:
+    get:
+      description: Returns initial login data for this service
       responses:
         '200':
-          description: Successful response
           content:
             application/json:
               schema:
-                type: object
                 properties:
-                  Users:
+                  Groups:
+                    items:
+                      $ref: '#/components/schemas/Group'
                     type: array
+                  Memberships:
+                    items:
+                      $ref: '#/components/schemas/Membership'
+                    type: array
+                  Users:
                     items:
                       $ref: '#/components/schemas/User'
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Invalid user or password
+                    type: array
+                type: object
+          description: Successful response
+      summary: Hydrate application
+      tags:
+      - muam
+    post:
+      description: 'Authenticate users to the application with either username and
+        password in POST data, or Facebook access_token in post data.
+
+        Returns both an HTTP-only cookie and an authentication token
+
+        '
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Login'
-    get:
-      summary: Return set of application data for logged in user
-      tags:
-        - Authentication
-      description: >
-        Returns complete set of application data provided by this service for
-        the logged in user.
       responses:
         '200':
-          description: Successful response
           content:
             application/json:
               schema:
-                type: object
                 properties:
                   Users:
-                    type: array
                     items:
-                      $ref: '#/components/schemas/UserExtended'
-                  Groups:
+                      $ref: '#/components/schemas/User'
                     type: array
-                    items:
-                      $ref: '#/components/schemas/GroupFull'
-                  Memberships:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/MembershipCreate'
+                type: object
+          description: Successful response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Request error
+        '404':
+          description: Invalid user or password
+      summary: Authenticate via Username/Password or Facebook
+      tags:
+      - Authentication
   /logout:
     post:
+      description: 'Ending authentication for a user requires removing a non-expiring
+        token.
+
+        This method will clear the JWT tokens for the application
+
+        '
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: User not logged in
       summary: Remove authentication and exit the application
       tags:
-        - Authentication
-      description: |
-        Ending authentication for a user requires removing a non-expiring token.
-        This method will clear the JWT tokens for the application
-      responses:
-        '200':
-          description: Successful response
-        '400':
-          description: User not logged in
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /pw_reset:
+      - Authentication
+  /memberships:
     post:
-      summary: Requests that a password reset token be sent to the given email address
-      tags:
-        - Users
-      description: >
-        Will request a password reset code be sent to the e-mail address
-        provided in the form body.
-
-        Will result in an e-mail being sent with an access code. The access code
-        will have a 15 minute timeout.
-
-        No new reset codes will be able to be generated for the same email
-        address within the timeout window.
-
-        Will generate a refresh token if the email address is valid, the PUT
-        verb for this endpoint will require
-
-        a valid refresh token.
-      responses:
-        '200':
-          description: Successful response
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Email address not found
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - email
+              $ref: '#/components/schemas/Membership'
+        required: true
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                properties:
+                  user_id:
+                    type: string
+                type: object
+          description: Membership successfully added
+        402:
+          description: Object already exists
+      summary: Create a Membership
+      tags:
+      - Memberships
+  /memberships/{group_id}/{user_id}:
+    delete:
+      responses:
+        204:
+          description: Membership deleted successfully
+        400:
+          description: Request error
+        404:
+          description: Membership not found
+      summary: Delete a Membership
+      tags:
+      - Memberships
+    get:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+          description: Details for the requested Membership
+        404:
+          description: Membership not found
+      summary: Get information for a specific Membership
+      tags:
+      - Memberships
+    parameters:
+    - description: Membership ID (UUID) on which the operation should be performed
+      in: path
+      name: group_id
+      required: true
+      schema:
+        maxLength: 40
+        minLength: 4
+        type: string
+    - description: Membership ID (UUID) on which the operation should be performed
+      in: path
+      name: user_id
+      required: true
+      schema:
+        maxLength: 40
+        minLength: 4
+        type: string
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Membership'
+        required: true
+      responses:
+        200:
+          description: Membership updated successfully
+        400:
+          description: Request error
+        404:
+          description: Membership not found
+      summary: Update a Membership
+      tags:
+      - Memberships
+  /pw_reset:
+    post:
+      description: 'Will request a password reset code be sent to the e-mail address
+        provided in the form body.
+
+        Will result in an e-mail being sent with an access code. The access code will
+        have a 15 minute timeout.
+
+        No new reset codes will be able to be generated for the same email address
+        within the timeout window.
+
+        Will generate a refresh token if the email address is valid, the PUT verb
+        for this endpoint will require
+
+        a valid refresh token.
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
               properties:
                 email:
-                  type: string
                   description: User email address for password reset
-                  minLength: 4
                   maxLength: 80
+                  minLength: 4
+                  type: string
+              required:
+              - email
+              type: object
         description: Fields required to start password reset
-    put:
-      summary: >-
-        Requests that the user's password be reset. Requires an e-mail address
-        that matches the refresh token. Also requires a reset code that has not
-        timed out
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Request error
+        '404':
+          description: Email address not found
+      summary: Requests that a password reset token be sent to the given email address
       tags:
-        - Users
-      description: >
-        Will reset the users password to the requested value if the refresh
+      - Authentication
+    put:
+      description: 'Will reset the users password to the requested value if the refresh
         token is valid, matches the email address,
 
         and the reset code is valid and current.
-      responses:
-        '200':
-          description: Successful response
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+
+        '
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - email
-                - password
-                - reset_code
               properties:
                 email:
-                  type: string
                   description: User email address for password reset
-                  minLength: 4
                   maxLength: 80
+                  minLength: 4
+                  type: string
                 password:
-                  type: string
                   description: New Password
-                  minLength: 8
                   maxLength: 32
-                reset_code:
+                  minLength: 8
                   type: string
+                reset_code:
                   description: Reset code
-                  minLength: 6
                   maxLength: 6
+                  minLength: 6
+                  type: string
+              required:
+              - email
+              - password
+              - reset_code
+              type: object
         description: Fields required to complete password reset
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Request error
+      summary: Requests that the user's password be reset. Requires an e-mail address
+        that matches the refresh token. Also requires a reset code that has not timed
+        out
+      tags:
+      - Authentication
   /shutdown:
     post:
-      description: |
-        Allows for clean server shutdown.
-      tags:
-        - Test Utilities
+      description: 'Allows for clean server shutdown.
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                key:
+                  type: string
+              title: ShutdownKey
+              type: object
+        description: Unique application key to allow shutdown
       responses:
         '200':
           description: Server successfully shut down
         '404':
           description: User not authorized to shut down server
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              title: ShutdownKey
-              properties:
-                key:
-                  type: string
-        description: Unique application key to allow shutdown
-  /groups:
-    post:
-      summary: Create a group
       tags:
-        - Groups
-      responses:
-        '201':
-          description: Group successfully added
-          content:
-            application/json:
-              schema:
-                type: object
-                title: GroupID
-                properties:
-                  group_id:
-                    type: string
-                  membership:
-                    $ref: '#/components/schemas/MembershipCreate'
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: One or more group fields that should be unique are duplicated
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GroupFull'
-    get:
-      summary: Get a list of groups
-      tags:
-        - Groups
-      parameters:
-        - $ref: '#/components/parameters/search_text'
-        - $ref: '#/components/parameters/gid'
-      responses:
-        '200':
-          description: List of groups found
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Group'
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /groups/{group_id}:
-    parameters:
-      - name: group_id
-        description: Group ID (UUID) on which the operation should be performed
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-          minLength: 12
-          maxLength: 40
-    get:
-      summary: Get information for a group by group_id
-      tags:
-        - Groups
-      responses:
-        '200':
-          description: Group found and details returned successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GroupFull'
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Group not found
-    put:
-      summary: Update a group by group_id
-      tags:
-        - Groups
-      responses:
-        '200':
-          description: Group updated successfully
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: User not found
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GroupFull'
-        required: true
-    delete:
-      summary: Delete a group by group ID
-      tags:
-        - Groups
-      responses:
-        '204':
-          description: Group deleted successfully
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: User not found
-  /memberships:
-    post:
-      summary: Create a link between a user and a group
-      tags:
-        - Groups
-      responses:
-        '201':
-          description: Relationship created successfully
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MembershipCreate'
-  /memberships/{group_id}/{user_id}:
-    parameters:
-      - name: group_id
-        description: Group ID (UUID) on which the operation should be performed
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-          minLength: 12
-          maxLength: 40
-      - name: user_id
-        description: User ID (UUID) on which the operation should be performed
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-          minLength: 12
-          maxLength: 40
-    put:
-      summary: Update the role fields for a user within a group
-      tags:
-        - Groups
-      responses:
-        '200':
-          description: Roles updated successfully
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: User or group not found
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MembershipUpdate'
-        required: true
-    delete:
-      summary: Remove a user from a group
-      tags:
-        - Groups
-      responses:
-        '204':
-          description: User removed from group successfully
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: User or group not found
+      - Test Utilities
   /users:
-    post:
-      summary: Create a user
-      tags:
-        - Users
-      responses:
-        '201':
-          description: User successfully added
-          content:
-            application/json:
-              schema:
-                type: object
-                title: UserID
-                properties:
-                  user_id:
-                    type: string
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: One or more user fields that should be unique are duplicated
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserUpdate'
     get:
-      summary: Get a list of users
-      tags:
-        - Users
       parameters:
-        - $ref: '#/components/parameters/search_text'
+      - $ref: '#/components/parameters/search_text'
       responses:
-        '200':
-          description: List of users found
+        200:
           content:
             application/json:
               schema:
-                type: array
                 items:
                   $ref: '#/components/schemas/User'
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /users/{user_id}:
-    parameters:
-      - name: user_id
-        description: User ID (UUID) on which the operation should be performed
-        in: path
-        required: true
-        schema:
-          type: string
-          minLength: 4
-          maxLength: 400
-    get:
-      summary: Get information for a user by user_id
+                type: array
+          description: List of Users found
+      summary: Get a list of Users
       tags:
-        - Users
-      responses:
-        '200':
-          description: User details returned successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserExtended'
-        '400':
-          description: Request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: User not found
-    put:
-      summary: Update a user by user_id
-      tags:
-        - Users
-      responses:
-        '200':
-          description: User updated successfully
-        '400':
-          description: Request error
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: User not found
+      - Users
+    post:
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
         required: true
-    delete:
-      summary: Delete a user by user_id
-      tags:
-        - Users
       responses:
-        '204':
-          description: User deleted successfully
-        '400':
-          description: Request error
+        201:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '404':
+                properties:
+                  user_id:
+                    type: string
+                type: object
+          description: User successfully added
+        402:
+          description: Object already exists
+      summary: Create a User
+      tags:
+      - Users
+  /users/{user_id}:
+    delete:
+      responses:
+        204:
+          description: User deleted successfully
+        400:
+          description: Request error
+        404:
           description: User not found
-tags:
-  - name: Authentication
-    description: APIs associated with application authentication
-  - name: Users
-    description: APIs for operations on users
-  - name: Test Utilities
-    description: APIs that should only be used by test utilities
-  - name: Groups
-    description: APIs for operations on groups
-servers:
-  - url: /api/v1/us
-    description: Local development server
-components:
-  parameters:
-    search_text:
-      in: query
-      name: search_text
-      required: false
-      description: String to filter search with
+      summary: Delete a User
+      tags:
+      - Users
+    get:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Details for the requested User
+        404:
+          description: User not found
+      summary: Get information for a specific User
+      tags:
+      - Users
+    parameters:
+    - description: User ID (UUID) on which the operation should be performed
+      in: path
+      name: user_id
+      required: true
       schema:
-        type: string
         maxLength: 40
-    gid:
-      in: query
-      name: gid
-      required: false
-      description: GID (numeric group id) to filter group searches with
-      schema:
-        type: integer
-        format: int32
-  schemas:
-    BrowserError:
-      type: object
-      required:
-        - short_message
-        - full_message
-        - user_id
-      properties:
-        user_id:
-          type: string
-          description: Unique user identifier
-          minLength: 2
-          maxLength: 200
-        short_message:
-          type: string
-          description: Short error message
-          minLength: 2
-          maxLength: 80
-        full_message:
-          type: string
-          description: Full message (with stack trace)
-          minLength: 2
-          maxLength: 4000
-    Error:
-      type: object
-      properties:
-        key:
-          type: string
-          description: Unique identifier for error message
-        text:
-          type: string
-          description: Default english error message
-        error_code:
-          type: integer
-          description: Error code (equivalent to HTTP status code)
-    Login:
-      type: object
-      properties:
-        username:
-          type: string
-          description: Username representing identity of person requesting access
-          minLength: 4
-          maxLength: 12
-          example: testing
-        password:
-          type: string
-          description: Password associated with the username requesting access
-          minLength: 8
-          maxLength: 32
-          example: Testing123!
-        token:
-          type: string
-          description: Facebook access token
-          minLength: 8
-          maxLength: 120
-          example: KLSDJKFJF-LKSJFLKJSDFJ
-    Group:
-      type: object
-      x-wsag-create: Group
-      description: Named collection of users
-      allOf:
-        - $ref: '#/components/schemas/GroupShort'
-        - type: object
-          properties:
-            description:
-              type: string
-              nullable: true
-              description: Long description of group
-              minLength: 20
-              maxLength: 3000
-              example: This is a really long description of a group
-            source:
-              type: string
-              nullable: False
-              description: Source of this group (Local or LDAP)
-              enum:
-                - Local
-                - LDAP
-              readOnly: true
-              example: LDAP
-            record_created:
-              type: string
-              format: date
-              description: Record creation date
-              readOnly: True
-              example: '1995-08-19T00:00:00.000Z'
-            record_updated:
-              type: string
-              format: date
-              description: Record update date
-              readOnly: true
-              example: '1995-08-19T00:00:00.001Z'
-    GroupFull:
-      description: Group with all attributes
-      x-wsag-update: Group
-      x-wsag-test-data: False
-      allOf:
-        - $ref: '#/components/schemas/Group'
-        - type: object
-          properties:
-            users:
-              type: array
-              nullable: true
-              x-wsag-linked-object: Membership
-              items:
-                $ref: '#/components/schemas/UserList'
-    GroupList:
-      type: object
-      description: List representation of Group
-      properties:
-        group_id:
-          type: string
-          nullable: false
-          format: uuid
-          description: Unique group identifier
-          minLength: 12
-          maxLength: 40
-          example: b5665877-f9ee-4074-a38b-39219cde6b4d
-        is_owner:
-          type: boolean
-          description: Indicates if the user is the owner of this group
-          example: false
-        is_admin:
-          type: boolean
-          description: Indicates if the user is an administrator of this group
-          example: false
-    GroupShort:
-      type: object
-      description: Short representation of Group
-      required:
-        - name
-      properties:
-        group_id:
-          type: string
-          x-wsag-model-id: true
-          nullable: false
-          readOnly: true
-          description: Unique group identifier
-          minLength: 12
-          maxLength: 40
-          example: b5665877-f9ee-4074-a38b-39219cde6b4d
-        gid:
-          type: integer
-          format: int32
-          nullable: true
-          description: Numeric group ID (LDAP)
-          example: 104
-        name:
-          type: string
-          description: Description of the group
-          minLength: 4
-          maxLength: 80
-          example: app-users
-    MembershipCreate:
-      x-wsag-create: Membership
-      type: object
-      description: Group membership
-      required:
-        - group_id
-        - user_id
-      properties:
-        group_id:
-          type: string
-          nullable: false
-          description: Unique group identifier
-          minLength: 12
-          maxLength: 40
-          example: b5665877-f9ee-4074-a38b-39219cde6b4d
-        user_id:
-          type: string
-          description: Unique user identifier
-          minLength: 12
-          maxLength: 40
-          example: b5665877-f9ee-4074-a38b-39219cde6b67
-        is_owner:
-          type: boolean
-          description: Indicates if the user is the owner of this group
-          example: false
-        is_admin:
-          type: boolean
-          description: Indicates if the user is an administrator of this group
-          example: false
-    MembershipUpdate:
-      type: object
-      description: Group membership
-      properties:
-        is_owner:
-          type: boolean
-          description: Indicates if the user is the owner of this group
-          example: false
-        is_admin:
-          type: boolean
-          description: Indicates if the user is an administrator of this group
-          example: false
-    User:
-      x-wsag-create: User
-      description: User
-      x-wsag-test-data: False
-      allOf:
-        - $ref: '#/components/schemas/UserShort'
-        - $ref: '#/components/schemas/UserCore'
-    UserCore:
-      description: User
-      type: object
-      properties:
-        email:
-          type: string
-          description: Email address
-          pattern: ^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$
-          minLength: 4
-          maxLength: 80
-          example: 'testing@wittlesouth.com'
-        first_name:
-          type: string
-          description: First Name
-          minLength: 2
-          maxLength: 80
-          example: 'Tester'
-        full_name:
-          type: string
-          description: Full Name
-          minLength: 5
-          maxLength: 120
-          example: 'Tester, Unit X'
-        last_name:
-          type: string
-          description: Last Name
-          minLength: 2
-          maxLength: 80
-          example: 'Unit'
-        phone:
-          type: string
-          description: Phone number
-          nullable: true
-          minLength: 10
-          maxLength: 20
-          example: '+1 (919) 999-9999'
-        source:
-          type: string
-          nullable: False
-          description: Source of this user
-          enum:
-            - Local
-            - LDAP
-            - Facebook
-          readOnly: true
-          example: LDAP
-        create_users:
-          type: boolean
-          default: false
-          description: True if this user can create other users
-          example: false
-        create_groups:
-          type: boolean
-          default: false
-          description: True if this user can create groups
-          example: true
-        grant_privs:
-          type: boolean
-          default: false
-          description: True if this user can change values of create_users or create_groups for other users
-          example: false
-        record_created:
-          type: string
-          format: date
-          description: Record creation date
-          readOnly: True
-          example: '1995-08-19T00:00:00.002Z'
-        record_updated:
-          type: string
-          format: date
-          description: Record update date
-          readOnly: true
-          example: '1995-08-19T00:00:00.003Z'
-    UserExtended:
-      x-wsag-extended: User
-      description: User with related objects list
-      allOf:
-        - $ref: '#/components/schemas/UserShort'
-        - $ref: '#/components/schemas/UserCore'
-        - type: object
-          properties:
-            groups:
-              x-wsag-linked-object: Membership
-              nullable: true
-              type: array
-              items:
-                $ref: '#/components/schemas/GroupList'
-    UserList:
-      type: object
-      properties:
-        user_id:
-          type: string
-          x-wsag-model-id: true
-          description: Unique user identifier
-          format: uuid
-          minLength: 12
-          maxLength: 40
-          example: b5665877-f9ee-4074-a38b-39219cde6b67
-        is_owner:
-          type: boolean
-          description: Indicates if the user is the owner of this group
-          example: false
-        is_admin:
-          type: boolean
-          description: Indicates if the user is an administrator of this group
-          example: false
-    UserShort:
-      type: object
-      required:
-        - username
-      properties:
-        user_id:
-          type: string
-          x-wsag-model-id: true
-          description: Unique user identifier
-          readOnly: True
-          minLength: 12
-          maxLength: 40
-          example: b5665877-f9ee-4074-a38b-39219cde6b67
-        username:
-          type: string
-          description: Login user name
-          minLength: 4
-          maxLength: 32
-          example: 'testing'
-    UserUpdate:
-      x-wsag-update: User
-      description: User
-      x-wsag-test-data: False
-      allOf:
-        - $ref: '#/components/schemas/UserShort'
-        - $ref: '#/components/schemas/UserCore'
-        - type: object
-          properties:
-            password:
-              type: string
-              description: User password
-              nullable: True
-              minLength: 8
-              maxLength: 32
-              example: 'testing123'
-            groups:
-              type: array
-              nullable: true
-              x-wsag-linked-object: Membership
-              items:
-                $ref: '#/components/schemas/GroupList'
+        minLength: 4
+        type: string
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        200:
+          description: User updated successfully
+        400:
+          description: Request error
+        404:
+          description: User not found
+      summary: Update a User
+      tags:
+      - Users
+servers:
+- description: Local development server
+  url: /api/v1/us
+tags:
+- description: APIs associated with application authentication
+  name: Authentication
+- description: APIs that should only be used by test utilities
+  name: Test Utilities

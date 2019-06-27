@@ -1,103 +1,67 @@
-"""Module to handle /users API endpoint"""
+# pylint: disable-msg=C0321,R0912
+"""Module to handle /Users API endpoint """
 import uuid
-from flask import g, current_app, request
-from sqlalchemy.exc import IntegrityError
+from flask import current_app, g
 from flask_jwt_extended import jwt_required
+from sqlalchemy.exc import IntegrityError
+from util.api_util import handle_post, handle_search, handle_delete, \
+                          handle_put, handle_get, api_error
 from dm.User import User
-from dm.UserGroup import UserGroup
-from dm.Group import Group
-from util.api_util import api_error
 
-#@jwt_required
+@jwt_required
 def post(body):
-    """Method to handle POST verb for /users enpoint"""
-
-#    if not g.user.create_users:
-#        return api_error(401, 'INSUFFICIENT_PRIVILEGES', g.user.username)
-
+    """Method to handle POST verb for /Users endpoint"""
     # Check if the username is already in use, and if so return an error
     check_user = g.db_session.query(User).filter(User.username == body['username']).one_or_none()
     if check_user is not None:
         return api_error(400, 'DUPLICATE_USER_NAME', body['username'])
-    current_app.logger.debug('user = ' + str(body))
-    new_user = User(username=body['username'], source='Local')
-    new_user.apply_update(body)
-    new_user.hash_password(body['password'])
-    if 'groups' in body:
-        for user_group in body['groups']:
-            # Need the binary form of group ID for data model operations
-            binary_group_id = uuid.UUID(user_group['group_id']).bytes
-            # Look up the group by ID
-            find_group = g.db_session.query(Group).filter(Group.group_id == binary_group_id).one_or_none()
-            if find_group:
-                new_user.groups.append(UserGroup(group=find_group, is_owner=user_group['is_owner'], is_admin=user_group['is_admin']))
+    new_record = User()
+    new_record.apply_update(body)
+    new_record._creator_user_id = g.user_id
+    new_record.source = 'Local'
+    new_record.hash_password(body['password'])
     try:
-        g.db_session.add(new_user)
+        g.db_session.add(new_record)
         g.db_session.commit()
     except IntegrityError:
         return api_error(400, 'DUPLICATE_USER_KEY')
-    return {'user_id': new_user.get_uuid()}, 201
+    result = {
+        'user_id': new_record.get_uuid()
+    }
+    return result, 201
 
 @jwt_required
 def search(search_text):
     """Method to handle GET verb with no URL parameters"""
-    my_search = '%'
-    if search_text:
-        my_search = '%' + search_text + '%'
-    user_list = g.db_session.query(User)\
-                 .filter(User.username.like(my_search))\
-                 .order_by(User.username)\
-                 .all()
-    ret = []
-    for user in user_list:
-        ret.append(user.dump())
-    return ret, 200
+    return handle_search(User, User.full_name, g.db_session, search_text)
 
 @jwt_required
 def delete(user_id):
-    """Method to handle DELETE verb for /users/{user_id} endpoint"""
-    current_app.logger.debug('Delete user called with user_id = ' + user_id)
-    binary_uuid = uuid.UUID(user_id).bytes
-    # Logged in user cannot delete themselves; must have create privilege to be able to delete
-    if binary_uuid == g.user.user_id or not g.user.create_users:
-        return api_error(401,'INSUFFICIENT_PRIVILEGES', g.user.username)
-    delete_user = g.db_session.query(User).filter(User.user_id == binary_uuid).one_or_none()
-    if not delete_user:
-        return api_error(404, 'USER_ID_NOT_FOUND', user_id)
-    for ug in delete_user.groups:
-        g.db_session.delete(ug)
-    g.db_session.delete(delete_user)
-    g.db_session.commit()
-    return {'result': 'User deleted'}, 204
+    """Method to handle DELETE verb for /User/user_id endpoint"""
+    return handle_delete(User, User.user_id, g.db_session, user_id)
 
 @jwt_required
 def put(user_id, body):
-    """Method to handle PUT verb for /users/{user_id} endpoint"""
+    """Method to handle PUT verb for /User/user_id endpoint"""
     binary_uuid = uuid.UUID(user_id).bytes
     update_user = g.db_session.query(User).filter(User.user_id == binary_uuid).one_or_none()
     if not update_user:
         return api_error(404, 'USER_ID_NOT_FOUND', user_id)
-    if update_user.username != g.user.username and not g.user.create_users:
+    user = g.db_session.query(User)\
+                       .filter(User.user_id == g.user_id)\
+                       .one_or_none()
+    if update_user.username != user.username and not user.create_users:
         current_app.logger.debug('/users PUT: rejected update to %s by %s' %\
-                                 (update_user.username, g.user.username))
+                                 (update_user.username, user.username))
         return api_error(401, 'UNAUTHORIZED_USER_EDIT')
-    # Now we're good to update the user and their identity person record
-    for key, value in body.items():
-        if key != 'password' and key != 'newPassword':
-            if hasattr(update_user, key):
-                setattr(update_user, key, value)
-        elif key == 'newPassword':
-            update_user.hash_password(value)
-    g.db_session.add_all([update_user])
+    update_user.apply_update(body)
+    if 'newPassword' in body:
+        update_user.hash_password(body['newPassword'])
+    g.db_session.add(update_user)
     g.db_session.commit()
-    return {'result': 'User updated'}, 200
+    return 'User updated', 200
 
 @jwt_required
 def get(user_id):
-    """Handles GET verb for /users/{user_id} endpoint"""
-    binary_uuid = uuid.UUID(user_id).bytes
-    find_user = g.db_session.query(User).filter(User.user_id == binary_uuid).one_or_none()
-    if not find_user:
-        return api_error(404, 'USER_ID_NOT_FOUND', user_id)
-    ret = find_user.dump(deep=True)
-    return ret, 200
+    """Method to handle GET verb for /User/user_id endpoint"""
+    return handle_get(User, User.user_id, g.db_session, user_id)

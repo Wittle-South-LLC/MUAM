@@ -11,13 +11,13 @@ import connexion
 from connexion.resolver import RestyResolver
 from flask_jwt_extended import JWTManager, create_access_token, set_access_cookies
 from flask import request, g, abort
-from dm.DataModel import get_session
-from dm.User import User                     #pylint: disable=W0611
 
 # Try loading logging configuration, see if we can manage it directly
 with open(os.environ['APP_LOGGING_CONFIG'], 'r') as f:
     config = yaml.safe_load(f.read())
     logging.config.dictConfig(config)
+
+from dm.DataModel import get_session
 
 # Define constants
 API_REQUIRES_JSON = 'All PUT/POST API requests require JSON, and this request did not'
@@ -35,11 +35,6 @@ else:
 # Create the connextion-based Flask app, and tell it where to look for API specs
 APP = connexion.FlaskApp(__name__, specification_dir='spec/', debug=DEBUG_APP)
 FAPP = APP.app
-if DEBUG_APP:
-    FAPP.debug = True
-else:
-    FAPP.debug = False
-
 # JWT implementation
 JWT = JWTManager(FAPP)
 
@@ -54,8 +49,6 @@ REQUEST_LOGGER = logging.getLogger('requestLogger')
 
 # Log the API spec we're using
 LOGGER.info('API Specification: ' + OPENAPI_SPEC)
-if 'NODE_ENV' in os.environ:
-    LOGGER.info('Node ENV: ' + os.environ['NODE_ENV'])
 
 APPSERVER_PORT = os.environ['APPSERVER_CPORT']
 LOGGER.info('Running on port: ' + APPSERVER_PORT)
@@ -82,9 +75,8 @@ FAPP.config['JWT_ACCESS_COOKIE_PATH'] = '/'
 FAPP.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes=30)
 # Adding domain so that CORS works
 if 'NODE_ENV' in os.environ and os.environ['NODE_ENV'] == 'development':
-    FAPP.config['JWT_COOKIE_DOMAIN'] = os.environ['COOKIE_DOMAIN']
+    FAPP.config['JWT_COOKIE_DOMAIN'] = '.wittlesouth.local'
     LOGGER.info('Setting JWT_COOKIE_DOMAIN to: %s', FAPP.config['JWT_COOKIE_DOMAIN'])
-LOGGER.info('Setting JWT_REFRESH_COOKE_PATH to %s', os.environ['REACT_APP_API_PATH'])
 FAPP.config['JWT_REFRESH_COOKIE_PATH'] = os.environ['REACT_APP_API_PATH']
 FAPP.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=30)
 FAPP.config['JWT_SESSION_COOKIE'] = False
@@ -96,29 +88,25 @@ FAPP.config['JWT_COOKIE_CSRF_PROTECT'] = True
 # state change operations
 FAPP.config['JWT_CSRF_METHODS'] = ['POST', 'PUT', 'PATCH', 'DELETE', 'GET']
 
-@JWT.user_claims_loader
-def add_claims_to_access_token(identity):
-    user = g.db_session.query(User)\
-                       .filter(User.user_id == uuid.UUID(identity).bytes)\
-                       .one_or_none()
-    if not user:
-        return None
-    return {
-        'user_id': identity,
-        'groups': user.get_groups()
-    }
-
 # This method ensures that we have a user object both in global and
 # in the current_user proxy from flask-jwt-extended
 @JWT.user_loader_callback_loader
 def user_loader_callback(identity):
     """Callback to load user object for requests where jwt_identity is required"""
-    g.user = g.db_session.query(User)\
-                         .filter(User.user_id == uuid.UUID(identity).bytes)\
-                         .one_or_none()
-    if not g.user:
-        return None #pragma: no cover
-    return g.user
+    g.user_id = uuid.UUID(identity).bytes
+    return uuid.UUID(identity).bytes
+
+@JWT.claims_verification_loader
+def claims_verification_loader(claims):
+    """Callback to get claims from token and make them globally available for the request"""
+    if 'groups' in claims:
+        g.user_groups = {}
+        for group_id in claims['groups']:
+            g.user_groups[group_id] = {
+                'name': claims['groups'][group_id]['name'],
+                'gid': claims['groups'][group_id]['gid']
+            }
+    return True
 
 # Need to make sure that the use of the database session is
 # scoped to the request to avoid open orm transactions between requests
@@ -152,7 +140,7 @@ def after_request(resp):
     # TODO: Remove when proxy in create_react_app is fixed. Note that the next
     #       four lines are specific to enviornments where CORS is required.
     if 'NODE_ENV' in os.environ and os.environ['NODE_ENV'] == 'development':
-        resp.headers['Access-Control-Allow-Origin'] = os.environ['ACCESS_CONTROL_ORIGIN']
+        resp.headers['Access-Control-Allow-Origin'] = 'http://eric.wittlesouth.local:3000'
         resp.headers['Access-Control-Allow-Methods'] = "GET,HEAD,OPTIONS,POST,PUT"
         resp.headers['Access-Control-Allow-Credentials'] = "true" 
         resp.headers['Access-Control-Allow-Headers'] = "Access-Control-Allow-Headers, Access-Control-Allow-Origin, Access-Control-Allow-Methods, Accept, X-Requested-With, Content-Type, Set-Cookie, Access-Control-Request-Method, Access-Control-Request-Headers, X-CSRF-TOKEN"
@@ -164,7 +152,8 @@ def after_request(resp):
     # If we have a valid response, create a new access_token to
     # reset the 15 minute clock
     if (resp.status_code) < 400 and 'user' in g and\
-       not request.path in ['/api/v1/us/logout', '/api/v1/us/shutdown']:
+       not request.path in ['/api/v1/us/logout',
+                            '/api/v1/us/shutdown']:
         access_token = create_access_token(identity=g.user.get_uuid())
         set_access_cookies(resp, access_token, int(datetime.timedelta(minutes=30).total_seconds()))
     g.db_session.close()

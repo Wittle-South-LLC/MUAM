@@ -3,29 +3,13 @@
 # api_error - Enables internationalization / localization of error messages in the UI by
 #             returning a set of error codes as well as default english error messages
 
-from flask import jsonify
+import uuid
+from flask import jsonify, g
 
 API_ERRORS = {
-    "MISSING_USERNAME_API_KEY": "Either username or api_key is required, neither were provided",
-    "INVALID_USERNAME_PASSWORD": "Invalid username / password combination",
     "INSUFFICIENT_PRIVILEGES": "User {} does not have required privileges for this operation",
-    "EMAIL_NOT_FOUND": 'Email {} not found',
-    "REGISTERED_USER_EXISTS": 'A different user is already registered for {}',
-    "RESET_CODE_CURRENT": 'There is already a valid reset code for this user',
-    "RESET_CODE_INVALID_OR_EXIRED": 'The reset code provided is invalid or expired',
-    "RESET_EMAIL_MISMATCH": 'The email provided for reset does not match the email of the user',
     "INVALID_SHUTDOWN_KEY": 'The shutdown key {} is not valid',
-    "DUPLICATE_USER_NAME": 'User name {} is already in use',
-    "DUPLICATE_USER_KEY": 'Key value (e.g. email, phone) is already in use for another user',
-    "DUPLICATE_GROUP_NAME": 'Group name {} is already in use',
-    "DUPLICATE_GID": 'GID {} is already in use',
-    "DUPLICATE_GROUP_KEY": 'Key value is already in use for another group',
-    "CANNOT_ASSIGN_ADMIN": 'Cannot assign Admin role during user creation',
-    "API_RECAPTCHA_FAILS": 'ReCaptcha check failed',
-    "USER_ID_NOT_FOUND": 'User ID {} not found',
-    "GROUP_ID_NOT_FOUND": 'Group ID {} not found',
-    "MISSING_PASSWORD_EDIT": 'Current password must be provided to edit user data',
-    "UNAUTHORIZED_USER_EDIT": 'Cannot edit other users data unless you have the Admin role'
+    "CANNOT_ASSIGN_ADMIN": 'Cannot assign Admin role during user creation'
 }
 
 # Error response constants
@@ -49,3 +33,99 @@ def api_error_msg(msg_key, msg_text):
             return API_ERRORS[msg_key].format(msg_text)
         return API_ERRORS[msg_key]
     return "Unknown error key: " + msg_key #pragma: no cover
+
+def handle_post(dmo, dmo_pk_name, session, body):
+    """Method to handle POST verbs for data model object APIs"""
+    new_record = dmo()
+    new_record.apply_update(body)
+    new_record._creator_user_id = g.user_id
+    session.add(new_record)
+    session.commit()
+    result = {}
+    result[dmo_pk_name] = new_record.get_uuid()
+    return result, 201
+
+def handle_2key_post(dmo, session, body):
+    """Method to handle POST verbs for many-to-many link object APIs"""
+    new_record = dmo()
+    new_record.apply_update(body)
+    new_record._creator_user_id = g.user_id
+    session.add(new_record)
+    session.commit()
+    return {}, 201
+
+def handle_search(dmo, search_field, session, search_text):
+    """Method to handle GET verb with no URL parameters"""
+    my_search = '%'
+    if search_text:
+        my_search = '%' + search_text + '%'
+    search_list = session.query(dmo)\
+                   .filter(search_field.like(my_search)).all()
+    ret = []
+    for item in search_list:
+        ret.append(item.dump())
+    return ret, 200
+
+def handle_delete(dmo, dmo_pk, session, id):
+    """Method to handle DELETE verb for data model object APIs"""
+    binary_uuid = uuid.UUID(id).bytes
+    find_record = session.query(dmo)\
+                   .filter(dmo_pk == binary_uuid).one_or_none()
+    if not find_record:
+        return 'NOT_FOUND', 404
+    session.delete(find_record)
+    session.commit()
+    return type(dmo).__name__ + ' deleted', 204
+
+def handle_2key_delete(dmo, pk1, pk2, session, id1, id2):
+    bid1 = uuid.UUID(id1).bytes
+    bid2 = uuid.UUID(id2).bytes
+    find_record = session.query(dmo)\
+                   .filter(pk1 == bid1, pk2 == bid2).one_or_none()
+    if not find_record:
+        return 'NOT_FOUND', 404
+    session.delete(find_record)
+    session.commit()
+    return type(dmo).__name__ + ' deleted', 204
+
+def handle_put(dmo, dmo_pk, dmo_pk_name, session, id, body):
+    """Method to handle PUT verb for data model object APIs"""
+    binary_uuid = uuid.UUID(id).bytes
+    find_record = session.query(dmo)\
+                   .filter(dmo_pk == binary_uuid).one_or_none()
+    if not find_record:
+        return 'NOT_FOUND', 404
+    find_record.apply_update(body)
+    session.add(find_record)
+    session.commit()
+    return type(dmo).__name__ + ' updated', 200
+
+def handle_2key_put(dmo, pk1, pk2, session, id1, id2, body):
+    bid1 = uuid.UUID(id1).bytes
+    bid2 = uuid.UUID(id2).bytes
+    find_record = session.query(dmo)\
+                   .filter(pk1 == bid1, pk2 == bid2).one_or_none()
+    if not find_record:
+        return 'NOT_FOUND', 404
+    find_record.apply_update(body)
+    session.add(find_record)
+    session.commit()
+    return type(dmo).__name__ + ' updated', 200
+
+def handle_get(dmo, dmo_pk, session, id):
+    """Method to handle GET verb for data model object APIs"""
+    binary_uuid = uuid.UUID(id).bytes
+    find_record = session.query(dmo)\
+                   .filter(dmo_pk == binary_uuid).one_or_none()
+    if not find_record:
+        return 'NOT_FOUND', 404
+    return find_record.dump(True), 200
+
+def handle_2key_get(dmo, pk1, pk2, session, id1, id2):
+    bid1 = uuid.UUID(id1).bytes
+    bid2 = uuid.UUID(id2).bytes
+    find_record = session.query(dmo)\
+                   .filter(pk1 == bid1, pk2 == bid2).one_or_none()
+    if not find_record:
+        return 'NOT_FOUND', 404
+    return find_record.dump(True), 200
