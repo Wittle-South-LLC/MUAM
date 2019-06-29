@@ -6,6 +6,9 @@ lib/**
 man/**
 src/api/__pycache__
 src/dm/__pycache__
+src/dm/smoacks/__pycache__
 src/util/__pycache__
 tests/__pycache__
+muam/__pycache__
+muam/cli/__pycache__
 .Python
