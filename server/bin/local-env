@@ -1,0 +1,17 @@
+#!/bin/bash
+# This file should export environment variables that are specific to a
+# developer's local environment. It should not be checked into source
+# control. This script is invoked within containers, and is intended
+# to provide a container equivalent to ~/.bash_profile.
+#
+export MY_DEV_DB_USER='dev'
+export MY_DEV_DB_PWD='dev'
+export MY_TEST_DB_USER='test'
+export MY_TEST_DB_PWD='test'
+export MY_KUBE_SERVER='wsv-dev.wittlesouth.local'
+export MY_DEV_DB_SPORT=30386
+export MY_TEST_DB_SPORT=30387
+# MY_NETWORK is used as a switch in scripts; if the value is 'kubernetes',
+# then container ports (CPORT) and names (CNAME) are used, else
+# service ports (SPORT) and names (SNAME)
+export MY_NETWORK='kubernetes'

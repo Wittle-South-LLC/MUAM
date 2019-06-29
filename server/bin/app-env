@@ -1,0 +1,54 @@
+# !/bin/bash
+#
+# app-env - sets up the application environment variables base on mode
+#           where mode is one of 'development', 'test', 'production'
+#
+# Variables with values that are independent of mode
+export APP_DB_NAME="muam"
+export APP_DB_SNAME=$MY_KUBE_SERVER
+export APP_DB_CPORT=3306
+export OPENAPI_SPEC='/app/src/spec/muam.yaml'
+export REACT_APP_API_PATH="/api/v1"
+export APP_LOGGING_CONFIG='/app/src/server_logging.yaml'
+export APPSERVER_CPORT=8180
+export APP_SHUTDOWN_KEY='Eric'
+export APP_PW_RESET_SUBJECT='MUAM Password Reset Code'
+export APP_PW_RESET_FROM='service@wittlesouth.com'
+export APP_PW_RESET_MAILHOST='mail.wittlesouth.com'
+# TODO: Move these to secrets
+export APP_PW_RESET_FROM_USER='service'
+export APP_PW_RESET_FROM_PW='onlyeric'
+export APP_SHUTDOWN_KEY='Eric'
+
+
+if [ "$MUAM_MODE" == "development" ]; then
+  echo "Setting up development environment variables"
+  export APP_DB_CNAME='mysql-dev'
+  export APP_DB_ACCOUNT=$MY_DEV_DB_USER
+  export APP_DB_PASSWORD=$MY_DEV_DB_PWD
+  export APP_DB_SPORT=$MY_DEV_DB_SPORT
+  export APPSERVER_SPORT=31310
+  export SECRET_KEY=Development
+  export REACT_APP_BASE_URL="http://wsv-dev.wittlesouth.local:${APPSERVER_SPORT}"
+elif [ "$MUAM_MODE" == "test" ]; then
+  export APP_DB_CNAME='mysql-test'
+  export APP_DB_ACCOUNT=$MY_TEST_DB_USER
+  export APP_DB_PASSWORD=$MY_TEST_DB_PWD
+  export APP_DB_SPORT=$MY_TEST_DB_SPORT
+  export APPSERVER_SPORT=31311
+  export TEST_HOST=$MY_KUBE_SERVER
+  export SECRET_KEY=Testing
+  export REACT_APP_BASE_URL="http://wsv-dev.wittlesouth.local:${APPSERVER_SPORT}"
+elif [ "$MUAM_MODE" == "production" ]; then
+  export APP_DB_CNAME='mysql'
+  export APP_DB_ACCOUNT=prod
+  export APP_DB_PASSWORD=prod
+  export APP_DB_SPORT=$MY_DB_SPORT
+  export APPSERVER_SPORT=31309
+  export SECRET_KEY=MUAMDevelopmentSecretKey
+else
+  echo "Invalid value for MUAM_MODE: $MUAM_MODE"
+fi
+alias dsrestart="curl -H 'Content-type: application/json' -X POST -d '{\"key\":\"Eric\"}' ${REACT_APP_BASE_URL}${REACT_APP_API_PATH}/shutdown"
+alias dlog="kubectl logs \$(kubectl get pod -l \"app=muam-dev-server\" -o jsonpath='{.items[0].metadata.name}')"
+alias tlog="kubectl logs \$(kubectl get pod -l \"app=muam-test-server\" -o jsonpath='{.items[0].metadata.name}')"
