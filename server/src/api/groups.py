@@ -44,6 +44,18 @@ def delete(group_id):
     obj = existing_dm_object(Group, g.db_session, Group.group_id, group_id)
     if not obj:
         return 'NOT_FOUND', 404
+    user = g.db_session.query(User)\
+                       .filter(User.user_id == g.user_id)\
+                       .one_or_none()
+    # Confirm the logged in user is an admin or owner
+    authorized = False
+    for member in obj.memberships:
+        if member.user.user_id == user.user_id:
+            if member.is_owner:
+                authorized = True
+            break
+    if not authorized:
+        return api_error(401,'INSUFFICIENT_PRIVILEGES', user.username)
     delete_dm_object(obj, g.db_session)
     return 'Group deleted', 204
 

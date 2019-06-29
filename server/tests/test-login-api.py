@@ -20,4 +20,4 @@ def test_login():
     
     assert len(json['Groups']) == 0
     assert len(json['Memberships']) == 0
-    assert len(json['Users']) == 1
+    assert len(json['Users']) >= 1
