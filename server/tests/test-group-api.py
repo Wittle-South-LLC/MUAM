@@ -26,12 +26,11 @@ def test_group_create():
     if not success: log_response_error(resp)
     assert success
     added_obj = test_obj
-    assert added_obj.group_id
 
 def test_group_get():
     """--> get returns details """
     global added_obj
-    assert added_obj.group_id
+    assert added_obj
     
     success, resp = Group.get(TEST_SESSION, added_obj.group_id)
     if not success: log_response_error(resp)
