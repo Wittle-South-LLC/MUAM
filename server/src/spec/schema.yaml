@@ -418,6 +418,13 @@ components:
           minLength: 4
           maxLength: 80
           example: 'testing@wittlesouth.com'
+        password:
+          type: string
+          description: Password for user
+          writeOnly: true
+          minLength: 6
+          maxLength: 60
+          example: 'MyPassword.ResetMe'
         first_name:
           type: string
           description: First Name

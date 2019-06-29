@@ -1,13 +1,12 @@
 # pylint: disable-msg=C0321,R0912
 """Module to handle /Groups API endpoint """
-import uuid
 from flask import current_app, g
 from flask_jwt_extended import jwt_required
-from util.api_util import handle_post, handle_search, handle_delete, \
-                          handle_put, handle_get, api_error
-from dm.User import User
-from dm.Membership import Membership
+from util.api_util import new_dm_object, existing_dm_object, persist_dm_object, \
+                          delete_dm_object, post_response, handle_search, api_error
 from dm.Group import Group
+from dm.Membership import Membership
+from dm.User import User
 
 @jwt_required
 def post(body):
@@ -27,18 +26,12 @@ def post(body):
         check_group = g.db_session.query(Group).filter(Group.gid == body['gid']).one_or_none()
         if check_group is not None:
             return api_error(400, 'DUPLICATE_GID', body['gid'])
-
-    # If we get here, then we have a valid create request
-    new_record = Group()
-    new_record.apply_update(body)
+    obj = new_dm_object(Group, body)
     # Ensure that user who created the group is the owner
-    new_record.memberships.append(Membership(user=user, is_owner=True))
-    new_record._creator_user_id = g.user_id
-    g.db_session.add(new_record)
-    g.db_session.commit()
-    result = {}
-    result['group_id'] = new_record.get_uuid()
-    return result, 201
+    obj.memberships.append(Membership(user=user, is_owner=True))
+    persist_dm_object(obj, g.db_session)
+    current_app.logger.info('Group Post Response: {}'.format(str(post_response(obj, 'group_id'))))
+    return post_response(obj, 'group_id')
 
 @jwt_required
 def search(search_text):
@@ -48,30 +41,38 @@ def search(search_text):
 @jwt_required
 def delete(group_id):
     """Method to handle DELETE verb for /Group/group_id endpoint"""
-    return handle_delete(Group, Group.group_id, g.db_session, group_id)
+    obj = existing_dm_object(Group, g.db_session, Group.group_id, group_id)
+    if not obj:
+        return 'NOT_FOUND', 404
+    delete_dm_object(obj, g.db_session)
+    return 'Group deleted', 204
 
 @jwt_required
 def put(group_id, body):
     """Method to handle PUT verb for /Group/group_id endpoint"""
-    binary_uuid = uuid.UUID(group_id).bytes
-    update_group = g.db_session.query(Group).filter(Group.group_id == binary_uuid).one_or_none()
-    if not update_group:
-        return api_error(404, 'GROUP_ID_NOT_FOUND', group_id)
+    obj = existing_dm_object(Group, g.db_session, Group.group_id, group_id)
+    if not obj:
+        return 'NOT_FOUND', 404
     user = g.db_session.query(User)\
                        .filter(User.user_id == g.user_id)\
                        .one_or_none()
     # Confirm the logged in user is an admin or owner
     authorized = False
-    for member in update_group.memberships:
+    for member in obj.memberships:
         if member.user.user_id == user.user_id:
             if member.is_admin or member.is_owner:
                 authorized = True
             break
     if not authorized:
         return api_error(401,'INSUFFICIENT_PRIVILEGES', user.username)
-    return handle_put(Group, Group.group_id, 'group_id', g.db_session, group_id, body)
+    obj.apply_update(body)
+    persist_dm_object(obj, g.db_session)
+    return 'Group updated', 200
 
 @jwt_required
 def get(group_id):
     """Method to handle GET verb for /Group/group_id endpoint"""
-    return handle_get(Group, Group.group_id, g.db_session, group_id)
+    obj = existing_dm_object(Group, g.db_session, Group.group_id, group_id)
+    if not obj:
+        return 'NOT_FOUND', 404
+    return obj.dump(True), 200

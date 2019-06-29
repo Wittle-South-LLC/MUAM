@@ -4,10 +4,10 @@ import logging
 import requests
 import uuid
 from flask import Flask, make_response
-from smoacks.api_util import AcceptAll
 from flask_jwt_extended import JWTManager, create_access_token, \
      create_refresh_token, get_csrf_token, set_access_cookies
 from http import cookiejar
+from smoacks.api_util import AcceptAll
 
 LOGGER = logging.getLogger()
 
@@ -77,6 +77,11 @@ def mock_login(uid=None):
         'csrf_refresh_token': csrf_refresh_token
     }
 
+def log_response_error(resp, log_success=False):
+    """Shared method for logging response errors"""
+    if resp.status_code >= 400 or log_success:
+        LOGGER.debug('Response code: {}, text: {}'.format(resp.status_code, resp.text))
+
 def get_new_session():
     """Sets up a new session object that contains a requests session and a saved csrf token"""
     my_session = requests.session()
@@ -86,8 +91,3 @@ def get_new_session():
         'csrf_token': None,
         'csrf_refresh_token': None
     }
-
-def log_response_error(resp, log_success=False):
-    """Shared method for logging response errors"""
-    if resp.status_code >= 400 or log_success:
-        LOGGER.debug('Response code: {}, text: {}'.format(resp.status_code, resp.text))

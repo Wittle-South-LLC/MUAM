@@ -267,6 +267,13 @@ components:
           maxLength: 80
           minLength: 2
           type: string
+        password:
+          description: Password for user
+          example: MyPassword.ResetMe
+          maxLength: 60
+          minLength: 6
+          type: string
+          writeOnly: true
         phone:
           description: Phone number
           example: +1 (919) 999-9999

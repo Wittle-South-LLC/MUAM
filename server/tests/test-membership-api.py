@@ -28,7 +28,7 @@ def setUp():
     assert success
     
     global added_user
-    added_user = User(**{'username': 'testing','password': 'Testing', 'email': 'testing@wittlesouth.com', 'first_name': 'Tester', 'full_name': 'Tester, Unit X', 'last_name': 'Unit', 'phone': '+1 (919) 999-9999', 'create_users': False, 'create_groups': True, 'grant_privs': False})
+    added_user = User(**{'username': 'testing', 'email': 'testing@wittlesouth.com', 'password': 'MyPassword.ResetMe', 'first_name': 'Tester', 'full_name': 'Tester, Unit X', 'last_name': 'Unit', 'phone': '+1 (919) 999-9999', 'create_users': False, 'create_groups': True, 'grant_privs': False})
     success, resp = added_user.save_new(TEST_SESSION)
     if not success: log_response_error(resp)
     assert success
@@ -52,6 +52,7 @@ def test_membership_create():
     test_obj.is_admin = False
     test_obj.group_id = added_group.group_id
     test_obj.user_id = added_user.user_id
+    
     success, resp = test_obj.save_new(TEST_SESSION)
     if not success: log_response_error(resp)
     assert success
@@ -66,8 +67,6 @@ def test_membership_get():
     
     success, resp = Membership.get(TEST_SESSION, [added_obj.group_id, added_obj.user_id])
     if not success: log_response_error(resp)
-    else:
-        LOGGER.debug('member.is_owner = {}, .is_admin = {}'.format(resp.is_owner, resp.is_admin))
     assert success
     assert resp.is_owner == False
     assert resp.is_admin == False

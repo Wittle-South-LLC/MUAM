@@ -7,7 +7,7 @@
 import logging
 from smoacks.api_util import call_api, login
 from muam.User import User
-from .TestUtil import mock_login, log_response_error, default_group_ids
+from .TestUtil import log_response_error, default_group_ids
 
 LOGGER = logging.getLogger()
 TEST_SESSION = login('admin', 'testing0')
@@ -20,11 +20,11 @@ def test_user_create():
     test_obj = User()
     test_obj.username = 'testing'
     test_obj.email = 'testing@wittlesouth.com'
+    test_obj.password = 'MyPassword.ResetMe'
     test_obj.first_name = 'Tester'
     test_obj.full_name = 'Tester, Unit X'
     test_obj.last_name = 'Unit'
     test_obj.phone = '+1 (919) 999-9999'
-    test_obj.password = 'Testing'
     test_obj.create_users = False
     test_obj.create_groups = True
     test_obj.grant_privs = False

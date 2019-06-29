@@ -6,7 +6,7 @@
 """test-login-api.py - Tests of Login API"""
 import logging
 from smoacks.api_util import call_api, login
-from .TestUtil import mock_login, log_response_error
+from .TestUtil import log_response_error
 
 LOGGER = logging.getLogger()
 TEST_SESSION = login('admin', 'testing0')
@@ -17,7 +17,6 @@ def test_login():
     log_response_error(resp)
     assert resp.status_code == 200
     json = resp.json()
-    LOGGER.debug('json = {}'.format(str(json)))
     
     assert len(json['Groups']) == 0
     assert len(json['Memberships']) == 0

@@ -2,7 +2,7 @@ parameters:
   dest_spec: muam.yaml
   include_login_post: True
 structure:
-  pvPathRoot: /mnt/hgfs/wsv/muam/server
+  pvPath: /mnt/hgfs/wsv/muam/server
 env_defaults:
   smoacks_app_name: muam
   smoacks_dev_server_service_port: 31310
@@ -18,3 +18,4 @@ env_defaults:
   smoacks_app_classifiers: ['License :: OSI Approved :: MIT License', 'Intended Audience :: Developers', 'Topic :: Software Development :: Libraries']
   smoacks_app_cli_prefix: us
   smoacks_app_version: 0.4.0
+  smoacks_test_login: real

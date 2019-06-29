@@ -11,10 +11,12 @@ class SB_User(Base):
     """Data model object representing a User"""
     __tablename__ = 'User'
     __uuid_list__ = {'user_id'}
+    __wo_fields__ = {'password'}
     __primary_key__ = 'user_id'
     user_id = Column(BINARY(16), primary_key=True)
     username = Column(String(32))
     email = Column(String(80))
+    password = Column(String(60))
     first_name = Column(String(80))
     full_name = Column(String(120))
     last_name = Column(String(80))
@@ -31,14 +33,3 @@ class SB_User(Base):
         """Initializes the ID for newly constructed objects"""
         super(SB_User, self).__init__(**kwargs)
         self.user_id = uuid.uuid4().bytes
-
-
-    def dump(self, deep=False):
-        """Returns dictionary of fields and values"""
-        ret = {}
-        for key, value in vars(self).items():
-            if key in self.__uuid_list__ and value:
-                ret[key] = str(uuid.UUID(bytes=value))
-            elif not key.startswith('_'):
-                ret[key] = value
-        return ret

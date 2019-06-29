@@ -9,10 +9,10 @@ class User (ApiClientBase):
         self.user_id = kwargs['user_id'] if 'user_id' in kwargs else None
         self.username = kwargs['username'] if 'username' in kwargs else None
         self.email = kwargs['email'] if 'email' in kwargs else None
+        self.password = kwargs['password'] if 'password' in kwargs else None
         self.first_name = kwargs['first_name'] if 'first_name' in kwargs else None
         self.full_name = kwargs['full_name'] if 'full_name' in kwargs else None
         self.last_name = kwargs['last_name'] if 'last_name' in kwargs else None
-        self.password = kwargs['password'] if 'password' in kwargs else None
         self.phone = kwargs['phone'] if 'phone' in kwargs else None
         self.source = kwargs['source'] if 'source' in kwargs else None
         self.create_users = kwargs['create_users'] if 'create_users' in kwargs else None
