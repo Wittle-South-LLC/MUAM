@@ -16,7 +16,6 @@ class SB_User(Base):
     user_id = Column(BINARY(16), primary_key=True)
     username = Column(String(32))
     email = Column(String(80))
-    password = Column(String(60))
     first_name = Column(String(80))
     full_name = Column(String(120))
     last_name = Column(String(80))

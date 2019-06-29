@@ -422,6 +422,7 @@ components:
           type: string
           description: Password for user
           writeOnly: true
+          x-smoacks-no-persist: True
           minLength: 6
           maxLength: 60
           example: 'MyPassword.ResetMe'

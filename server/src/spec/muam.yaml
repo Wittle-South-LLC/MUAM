@@ -274,6 +274,7 @@ components:
           minLength: 6
           type: string
           writeOnly: true
+          x-smoacks-no-persist: true
         phone:
           description: Phone number
           example: +1 (919) 999-9999
