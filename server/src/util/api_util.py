@@ -4,7 +4,7 @@
 #             returning a set of error codes as well as default english error messages
 
 import uuid
-from flask import jsonify, g, current_app
+from flask import jsonify, g
 
 API_ERRORS = {
     "INSUFFICIENT_PRIVILEGES": "User {} does not have required privileges for this operation",
@@ -68,7 +68,6 @@ def post_response(obj, keys):
     # a string rather than a list, we should return the object's UUID in
     # the response. For multiple-field primary key objects, the assumption
     # is that object creation requires providing existing keys
-
     if isinstance(keys, str):
         result[keys] = obj.get_uuid()
     return result, 201
