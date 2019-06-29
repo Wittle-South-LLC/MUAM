@@ -30,6 +30,13 @@ def delete(user_id):
     obj = existing_dm_object(User, g.db_session, User.user_id, user_id)
     if not obj:
         return 'NOT_FOUND', 404
+    user = g.db_session.query(User)\
+                       .filter(User.user_id == g.user_id)\
+                       .one_or_none()
+    if obj.username == user.username or not user.create_users:
+        current_app.logger.debug('/users PUT: rejected delete of %s by %s' %\
+                                 (obj.username, user.username))
+        return api_error(401, 'UNAUTHORIZED_USER_DELETION')
     delete_dm_object(obj, g.db_session)
     return 'User deleted', 204
 

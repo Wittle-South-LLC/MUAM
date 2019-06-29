@@ -2,7 +2,7 @@
 import logging
 from smoacks.api_util import call_api, login
 from muam.Group import Group
-from .TestUtil import log_response_error, default_group_ids
+from .TestUtil import log_response_error
 
 LOGGER = logging.getLogger()
 TEST_SESSION = login('admin', 'testing0')
