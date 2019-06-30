@@ -421,6 +421,7 @@ components:
         password:
           type: string
           description: Password for user
+          nullable: true
           writeOnly: true
           x-smoacks-no-persist: True
           minLength: 6

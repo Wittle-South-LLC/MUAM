@@ -32,11 +32,11 @@ export default class GroupAdmin extends React.Component {
       selectedGroupId: undefined
     }
     if (GroupService.isEditing()) {
-      this.state.selectedGroupId = GroupService.getEditingId()
+      this.state.selectedGroupId = GroupService.getEditing().getId()
     } else if (GroupService.isCreating()) {
       this.state.selectedGroupId = GroupService._NewID
     } else if (GroupService.isDeleting()) {
-      this.state.selectedGroupId = GroupService.getDeletingId()
+      this.state.selectedGroupId = GroupService.getDeleting().getId()
     }
   }
   onSelect (e) {
@@ -70,7 +70,7 @@ export default class GroupAdmin extends React.Component {
                      active={group.getId() === this.state.selectedGroupId}>
         <ListGroupItemHeading>
           {group.getName() + "  [" + group.getGid() + "]  " }
-          {group.getUsers() && <Badge pill>{group.getUsers().size + " users"}</Badge>}
+          {MembershipService.getMembersForGroup(group) && <Badge pill>{MembershipService.getMembersForGroup(group).size + " users"}</Badge>}
         </ListGroupItemHeading>
         <ListGroupItemText>
           {group.getDescription()}
@@ -84,7 +84,7 @@ export default class GroupAdmin extends React.Component {
       </CardBody>
     </Card>
     var leftSide = GroupService.isEditing() || GroupService.isCreating()
-      ? <GroupEdit group={GroupService.getById(GroupService.isCreating() ? Group._NewID : GroupService.getEditingId())}>
+      ? <GroupEdit group={GroupService.getById(GroupService.isCreating() ? Group._NewID : GroupService.getEditing().getId())}>
         </GroupEdit>
       : <ListGroup>
           {groupsLGItems}
@@ -112,7 +112,7 @@ export default class GroupAdmin extends React.Component {
         <Col md={6}>
           {this.state.selectedGroupId 
             ? <div>
-                <MemberList listType="Users" list={MembershipService.getMembersForGroup(this.state.selectedGroupId)}></MemberList>
+                <MemberList listType="Users" list={MembershipService.getMembersForGroup(selectedGroup)}></MemberList>
                 <UserSearch />
               </div>
             : rightStuff

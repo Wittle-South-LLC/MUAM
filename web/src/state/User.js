@@ -8,6 +8,10 @@ export default class User extends OrimUser {
     super (createFrom, dirtyVal, fetchingVal, newVal)
   }
 
+  getFullName () {
+    return super.getFullName() || ''
+  }
+
   getFetchPayload (verb) {
     switch (verb) {
       case defaultVerbs.LOGIN:

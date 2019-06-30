@@ -39,17 +39,8 @@ describe('Group: testing RimObject actions', () => {
   it('getId() returns ID', () => {
     chai.expect(testObj.getId()).to.equal(TEST_ID)
   })
-  it ('getIdentity() returns Group._IdentityKey', () => {
-    chai.expect(testObj.getIdentity()).to.equal('b5665877-f9ee-4074-a38b-39219cde6b4d')
-  })
-  it ('getUsers() returns Group._UsersKey', () => {
-    chai.expect(testObj.getUsers()).to.equal(null)
-  })
   it ('getDescription() returns Group._DescriptionKey', () => {
     chai.expect(testObj.getDescription()).to.equal('This is a really long description of a group')
-  })
-  it ('getSource() returns Group._SourceKey', () => {
-    chai.expect(testObj.getSource()).to.equal('LDAP')
   })
   it ('getRecordCreated() returns Group._RecordCreatedKey', () => {
     chai.expect(testObj.getRecordCreated().toJSON()).to.equal('1995-08-19T00:00:00.000Z')
@@ -63,8 +54,14 @@ describe('Group: testing RimObject actions', () => {
   it ('getRecordUpdatedString() returns Group._RecordUpdatedKey as LocaleString', () => {
     chai.expect(testObj.getRecordUpdatedString()).to.equal(new Date('1995-08-19T00:00:00.001Z').toLocaleString())
   })
+  it ('getSource() returns Group._SourceKey', () => {
+    chai.expect(testObj.getSource()).to.equal('LDAP')
+  })
   it ('getGid() returns Group._GidKey', () => {
     chai.expect(testObj.getGid()).to.equal(104)
+  })
+  it ('getIdentity() returns Group._IdentityKey', () => {
+    chai.expect(testObj.getIdentity()).to.equal('b5665877-f9ee-4074-a38b-39219cde6b4d')
   })
   it ('getName() returns Group._NameKey', () => {
     chai.expect(testObj.getName()).to.equal('app-users')
@@ -89,10 +86,10 @@ describe('Group: testing RimObject actions', () => {
   })
   // Test get create payload
   it ('getCreatePayload() returns correct payload', () => {
-    chai.expect(testObj.getCreatePayload()).to.eql({"users":null,"description":"This is a really long description of a group","gid":104,"name":"app-users"})
+    chai.expect(testObj.getCreatePayload()).to.eql({"description":"This is a really long description of a group","gid":104,"name":"app-users"})
   })
   // Test get update payload
   it ('getUpdatePayload() returns correct payload', () => {
-    chai.expect(testObj.getUpdatePayload()).to.eql({"users":null,"description":"This is a really long description of a group","gid":104,"name":"app-users"})
+    chai.expect(testObj.getUpdatePayload()).to.eql({"description":"This is a really long description of a group","gid":104,"name":"app-users"})
   })
 })

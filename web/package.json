@@ -14,7 +14,7 @@
     "reactstrap": "^7.1.0",
     "redux": "^4.0.1",
     "redux-immutable": "^4.0.0",
-    "redux-immutable-model": "^0.6.1-0",
+    "redux-immutable-model": "^0.6.1-4",
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
@@ -34,6 +34,9 @@
     "spec": "../server/src/spec/muam.yaml",
     "paths": {
       "stateObjects": "src/state",
+      "sourceRoot": "src",
+      "sourceUtil": "src/utils",
+      "util": "util",
       "tests": "tests",
       "templates": "node_modules/openapi-rim-app/templates"
     },
@@ -65,7 +68,7 @@
     "mocha": "^6.1.4",
     "nock": "^10.0.6",
     "nyc": "^14.1.1",
-    "openapi-rim-app": "^0.2.1-1",
+    "openapi-rim-app": "^0.2.1-4",
     "react-intl-cra": "^0.3.4",
     "react-intl-translations-manager": "^5.0.3"
   }

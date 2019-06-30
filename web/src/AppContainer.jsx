@@ -57,13 +57,16 @@ export default class AppContainer extends React.Component {
 
   componentDidUpdate() {
     if (needsHydrate(this.state.reduxState)) {
-      this.props.store.dispatch(UserService.hydrate(loggedInUser(this.state.reduxState)))
+      let lUser = loggedInUser(this.state.reduxState)
+      const fullUser = lUser ? UserService.getById(lUser.getId()) : undefined
+      if (fullUser) {
+        this.props.store.dispatch(UserService.hydrate(fullUser))
+      }
     }
   }
 
   logout() {
     let myUser = loggedInUser(this.state.reduxState)
-    console.log('myUser = ', myUser)
     this.props.store.dispatch(UserService.logout(myUser))
   }
 
@@ -122,7 +125,6 @@ export default class AppContainer extends React.Component {
   render() {
     let formatMessage = this.context.intl.formatMessage
     let myUser = loggedInUser(this.state.reduxState)
-    console.log('myUser = ', myUser)
     let locale = this.props.getCurrentLocale()
     if (locale !== this.currentLocale) {
       this.currentLocale = locale

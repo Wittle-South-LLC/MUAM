@@ -29,10 +29,10 @@ export default class MemberList extends React.Component {
     })
   }
   confirmDelete (e) {
-    this.context.dispatch(MembershipService.commitDelete(MembershipService.getById(MembershipService.getDeletingId())))
+    this.context.dispatch(MembershipService.commitDelete(MembershipService.getDeleting()))
   }
   handleToggle (e) {
-    this.context.dispatch(MembershipService.editField(e.target.id, e.target.checked, MembershipService.getById(MembershipService.getEditingId())))
+    this.context.dispatch(MembershipService.editField(e.target.id, e.target.checked, MembershipService.getEditing()))
     e.stopPropagation()
   }
   onClick (e) {
@@ -43,7 +43,7 @@ export default class MemberList extends React.Component {
     }
   }
   getControlForMember(member) {
-    if (MembershipService.getEditingId() === member.getId()) {
+    if (MembershipService.getEditing() === member) {
       return <Input type="checkbox" name="is_admin" id="is_admin"
               checked={member.getIsAdmin()}
               onChange={this.handleToggle} />
@@ -52,7 +52,8 @@ export default class MemberList extends React.Component {
     }
   }
   render () {
-    const deletingId = MembershipService.getDeletingId()
+    const deleting = MembershipService.getDeleting()
+    const deletingId = deleting ? deleting.getId() : undefined
     let formatMessage = this.context.intl.formatMessage
     const headerRow = this.props.listType === "Users"
       ? <tr>

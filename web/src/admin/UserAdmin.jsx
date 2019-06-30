@@ -6,7 +6,6 @@ import { Badge, Breadcrumb, BreadcrumbItem, Card, CardBody, CardText,
          ListGroupItemText, Row } from 'reactstrap'
 import { defineMessages, intlShape } from 'react-intl'
 import { MembershipService, UserService } from '../state/OrimServices'
-import User from '../state/User'
 import ActiveCard from '../components/ActiveCard'
 import UserEdit from './UserEdit'
 import UserDetail from './UserDetail'
@@ -30,7 +29,7 @@ export default class UserAdmin extends React.Component {
       selectedUserId: undefined
     }
     if (UserService.isEditing()) {
-      this.state.selectedUserId = UserService.getEditingId()
+      this.state.selectedUserId = UserService.getEditing().getId()
     } else if (UserService.isCreating()) {
       this.state.selectedUserId = UserService._NewID
     }
@@ -60,7 +59,7 @@ export default class UserAdmin extends React.Component {
                      active={user.getId() === this.state.selectedUserId}>
         <ListGroupItemHeading>
           {user.getFullName() + "  [" + user.getUsername() + "]  " }
-          <Badge pill>{user.getGroups().size + " groups"}</Badge>
+          {MembershipService.getMembersForUser(user) && <Badge pill>{MembershipService.getMembersForUser(user).size + " groups"}</Badge>}
         </ListGroupItemHeading>
         <ListGroupItemText>
           {user.getLastName() + ", " + user.getFirstName()}
@@ -74,7 +73,7 @@ export default class UserAdmin extends React.Component {
       </CardBody>
     </Card>
     var leftSide = UserService.isEditing() || UserService.isCreating()
-      ? <UserEdit user={UserService.getById(UserService.isCreating() ? User._NewID : UserService.getEditingId())}>
+      ? <UserEdit user={UserService.isCreating() ? UserService.getCreating() : UserService.getEditing()}>
         </UserEdit>
       : <ListGroup>
           {usersLGItems}
@@ -102,7 +101,7 @@ export default class UserAdmin extends React.Component {
         <Col md={6}>
           {this.state.selectedUserId 
             ? <div>
-                <MemberList listType="Groups" list={MembershipService.getMembersForUser(this.state.selectedUserId)}></MemberList>
+                <MemberList listType="Groups" list={MembershipService.getMembersForUser(selectedUser)}></MemberList>
                 <GroupSearch />
               </div>
             : rightStuff

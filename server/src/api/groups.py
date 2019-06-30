@@ -31,7 +31,9 @@ def post(body):
     obj.memberships.append(Membership(user=user, is_owner=True))
     persist_dm_object(obj, g.db_session)
     current_app.logger.info('Group Post Response: {}'.format(str(post_response(obj, 'group_id'))))
-    return post_response(obj, 'group_id')
+#    return post_response(obj, 'group_id')
+    # Need to return the first member appended since that did not come from client
+    return {'group_id': obj.get_uuid(), 'membership': obj.memberships[0].dump()}, 201
 
 @jwt_required
 def search(search_text):

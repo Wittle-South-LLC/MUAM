@@ -272,6 +272,7 @@ components:
           example: MyPassword.ResetMe
           maxLength: 60
           minLength: 6
+          nullable: true
           type: string
           writeOnly: true
           x-smoacks-no-persist: true

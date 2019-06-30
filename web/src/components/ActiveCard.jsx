@@ -29,13 +29,13 @@ export default class ActiveCard extends React.Component {
     }
   }
   onDelStart () {
-    this.context.dispatch(this.props.service.startDelete(this.props.selectedId))
+    this.context.dispatch(this.props.service.startDelete(this.props.service.getById(this.props.selectedId)))
   }
   onDelFinish () {
-    this.context.dispatch(this.props.service.deleteId(this.props.selectedId))
+    this.context.dispatch(this.props.service.commitDelete(this.props.service.getById(this.props.selectedId)))
   }
   onEdit () {
-    this.context.dispatch(this.props.service.startEdit(this.props.selectedId))
+    this.context.dispatch(this.props.service.startEdit(this.props.service.getById(this.props.selectedId)))
   }
   onSave () {
     if (this.props.service.isCreating()) {

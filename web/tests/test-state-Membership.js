@@ -10,7 +10,7 @@ import { defaultState } from './TestData'
 // import { testCreateNew, testEditField, testLogin, testSaveNew,
 //          testSaveUpdate, testSaveDelete } from './ActionTests'
 
-const TEST_ID = 
+const TEST_ID = 'b5665877-f9ee-4074-a38b-39219cde6b4d'
 const TCLASS = Membership
 const TSERVICE = MembershipService
 
@@ -39,58 +39,58 @@ describe('Membership: testing RimObject actions', () => {
   it('getId() returns ID', () => {
     chai.expect(testObj.getId()).to.equal(TEST_ID)
   })
-  it ('getGroupId() returns Membership._GroupIdKey', () => {
-    chai.expect(testObj.getGroupId()).to.equal('b5665877-f9ee-4074-a38b-39219cde6b4d')
-  })
-  it ('getUserId() returns Membership._UserIdKey', () => {
-    chai.expect(testObj.getUserId()).to.equal('b5665877-f9ee-4074-a38b-39219cde6b67')
-  })
-  it ('getIsOwner() returns Membership._IsOwnerKey', () => {
-    chai.expect(testObj.getIsOwner()).to.equal(null)
+  it ('getIdentity() returns Membership._IdentityKey', () => {
+    chai.expect(testObj.getIdentity()).to.equal('b5665877-f9ee-4074-a38b-39219cde6b4d')
   })
   it ('getIsAdmin() returns Membership._IsAdminKey', () => {
     chai.expect(testObj.getIsAdmin()).to.equal(null)
   })
+  it ('getIsOwner() returns Membership._IsOwnerKey', () => {
+    chai.expect(testObj.getIsOwner()).to.equal(null)
+  })
+  it ('getIdentity() returns Membership._IdentityKey', () => {
+    chai.expect(testObj.getIdentity()).to.equal('b5665877-f9ee-4074-a38b-39219cde6b67')
+  })
   // Test validators - valid data
-  it ('isGroupIdValid() returns true for valid GroupId', () => {
-    chai.expect(testObj.isGroupIdValid()).to.equal(true)
-  })
-  it ('isUserIdValid() returns true for valid UserId', () => {
-    chai.expect(testObj.isUserIdValid()).to.equal(true)
-  })
-  it ('isIsOwnerValid() returns true for valid IsOwner', () => {
-    chai.expect(testObj.isIsOwnerValid()).to.equal(true)
+  it ('isIdentityValid() returns true for valid Identity', () => {
+    chai.expect(testObj.isIdentityValid()).to.equal(true)
   })
   it ('isIsAdminValid() returns true for valid IsAdmin', () => {
     chai.expect(testObj.isIsAdminValid()).to.equal(true)
   })
+  it ('isIsOwnerValid() returns true for valid IsOwner', () => {
+    chai.expect(testObj.isIsOwnerValid()).to.equal(true)
+  })
+  it ('isIdentityValid() returns true for valid Identity', () => {
+    chai.expect(testObj.isIdentityValid()).to.equal(true)
+  })
   // Test validators - invalid data
-  it ('isGroupIdValid() returns false for invalid GroupId', () => {
-    const invalidObj = testObj.updateField(TCLASS._GroupIdKey, undefined)
+  it ('isIdentityValid() returns false for invalid Identity', () => {
+    const invalidObj = testObj.updateField(TCLASS._IdentityKey, undefined)
     chai.expect(invalidObj.isValid()).to.equal(false)
-    chai.expect(invalidObj.isGroupIdValid()).to.equal(false)
-  })
-  it ('isUserIdValid() returns false for invalid UserId', () => {
-    const invalidObj = testObj.updateField(TCLASS._UserIdKey, undefined)
-    chai.expect(invalidObj.isValid()).to.equal(false)
-    chai.expect(invalidObj.isUserIdValid()).to.equal(false)
-  })
-  it ('isIsOwnerValid() returns false for invalid IsOwner', () => {
-    const invalidObj = testObj.updateField(TCLASS._IsOwnerKey, undefined)
-    chai.expect(invalidObj.isValid()).to.equal(false)
-    chai.expect(invalidObj.isIsOwnerValid()).to.equal(false)
+    chai.expect(invalidObj.isIdentityValid()).to.equal(false)
   })
   it ('isIsAdminValid() returns false for invalid IsAdmin', () => {
     const invalidObj = testObj.updateField(TCLASS._IsAdminKey, undefined)
     chai.expect(invalidObj.isValid()).to.equal(false)
     chai.expect(invalidObj.isIsAdminValid()).to.equal(false)
   })
+  it ('isIsOwnerValid() returns false for invalid IsOwner', () => {
+    const invalidObj = testObj.updateField(TCLASS._IsOwnerKey, undefined)
+    chai.expect(invalidObj.isValid()).to.equal(false)
+    chai.expect(invalidObj.isIsOwnerValid()).to.equal(false)
+  })
+  it ('isIdentityValid() returns false for invalid Identity', () => {
+    const invalidObj = testObj.updateField(TCLASS._IdentityKey, undefined)
+    chai.expect(invalidObj.isValid()).to.equal(false)
+    chai.expect(invalidObj.isIdentityValid()).to.equal(false)
+  })
   // Test get create payload
   it ('getCreatePayload() returns correct payload', () => {
-    chai.expect(testObj.getCreatePayload()).to.eql({"group_id":"b5665877-f9ee-4074-a38b-39219cde6b4d","user_id":"b5665877-f9ee-4074-a38b-39219cde6b67","is_owner":null,"is_admin":null})
+    chai.expect(testObj.getCreatePayload()).to.eql({"group_id":"b5665877-f9ee-4074-a38b-39219cde6b4d","is_admin":null,"is_owner":null,"user_id":"b5665877-f9ee-4074-a38b-39219cde6b67"})
   })
   // Test get update payload
   it ('getUpdatePayload() returns correct payload', () => {
-    chai.expect(testObj.getUpdatePayload()).to.eql({"group_id":"b5665877-f9ee-4074-a38b-39219cde6b4d","user_id":"b5665877-f9ee-4074-a38b-39219cde6b67","is_owner":null,"is_admin":null})
+    chai.expect(testObj.getUpdatePayload()).to.eql({"group_id":"b5665877-f9ee-4074-a38b-39219cde6b4d","is_admin":null,"is_owner":null,"user_id":"b5665877-f9ee-4074-a38b-39219cde6b67"})
   })
 })
