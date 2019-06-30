@@ -6,7 +6,6 @@ import { Badge, Breadcrumb, BreadcrumbItem, Card, CardBody, CardText,
          ListGroupItemHeading, ListGroupItemText, Row } from 'reactstrap'
 import { defineMessages, intlShape } from 'react-intl'
 import { GroupService, MembershipService } from '../state/OrimServices'
-import Group from '../state/Group'
 import ActiveCard from '../components/ActiveCard'
 import GroupEdit from './GroupEdit'
 import GroupDetail from './GroupDetail'
@@ -84,7 +83,7 @@ export default class GroupAdmin extends React.Component {
       </CardBody>
     </Card>
     var leftSide = GroupService.isEditing() || GroupService.isCreating()
-      ? <GroupEdit group={GroupService.getById(GroupService.isCreating() ? Group._NewID : GroupService.getEditing().getId())}>
+      ? <GroupEdit group={GroupService.isCreating() ? GroupService.getCreating() : GroupService.getEditing()}>
         </GroupEdit>
       : <ListGroup>
           {groupsLGItems}

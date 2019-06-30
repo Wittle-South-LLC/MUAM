@@ -160,7 +160,7 @@ describe('User: testing RimObject actions', () => {
     chai.expect(invalidObj.isLastNameValid()).to.equal(false)
   })
   it ('isPasswordValid() returns false for invalid Password', () => {
-    const invalidObj = testObj.updateField(TCLASS._PasswordKey, undefined)
+    const invalidObj = testObj.updateField(TCLASS._PasswordKey, 'X')
     chai.expect(invalidObj.isValid()).to.equal(false)
     chai.expect(invalidObj.isPasswordValid()).to.equal(false)
   })

@@ -3,11 +3,6 @@ import { defaultVerbs } from 'redux-immutable-model'
 export function applyHeaders(verb, headers) {
   if (typeof document !== 'undefined' && document.cookie && verb !== defaultVerbs.LOGIN) {
     let token = (verb === defaultVerbs.HYDRATE || verb === defaultVerbs.LOGOUT) ? getCookie('csrf_refresh_token') : getCookie('csrf_access_token')
-    if (verb === defaultVerbs.HYDRATE || verb === defaultVerbs.LOGOUT) {
-      console.log('Picking csrf_refresh_token based on verb', getCookie('csrf_refresh_token'))
-    } else {
-      console.log('Picking csrf_access_token based on verb', getCookie('csrf_access_token'))
-    }
     headers['headers']['X-CSRF-TOKEN'] = token
   }
   return headers

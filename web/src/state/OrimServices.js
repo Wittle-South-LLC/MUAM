@@ -9,7 +9,6 @@ export const config = new Configuration()
 
 // Set the login and logout paths for this application
 const myGetApiPath = (verb, prefix) => {
-  console.log(`myGetApiPath: prefix = ${prefix}`)
   if (verb === config.verbs.LOGIN || verb === config.verbs.HYDRATE) return prefix ? `/${prefix}/login` : '/login'
   if (verb === config.verbs.LOGOUT) return `/${prefix}/logout`
   return undefined
