@@ -14,4 +14,7 @@ src/util/__pycache__
 tests/__pycache__
 muam/__pycache__
 muam/cli/__pycache__
+build/**
+muam.egg-info/**
+dist/**
 .Python
