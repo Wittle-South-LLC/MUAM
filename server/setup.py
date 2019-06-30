@@ -4,7 +4,7 @@ with open('README.md') as f:
     long_description = f.read()
 
 setup(name='muam',
-      version='0.4.0',
+      version='0.6.2',
       description='User and group management appliction',
       url='https://github.com/Wittle-South-LLC/MUAM',
       author='Wittle South Ventures, LLC',
