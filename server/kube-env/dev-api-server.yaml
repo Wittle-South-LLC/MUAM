@@ -55,6 +55,10 @@ spec:
         env:
         - name: MUAM_MODE
           value: "development"
+        - name: ACCESS_CONTROL_ORIGIN
+          value: "http://eric.wittlesouth.local:3000"
+        - name: COOKIE_DOMAIN
+          value: ".wittlesouth.local"
         command: ["/app/src/server-loop"]
         ports:
         - containerPort: 8180
