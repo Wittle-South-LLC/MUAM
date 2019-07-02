@@ -4,6 +4,8 @@ class Group (ApiClientBase):
     _id_fields = 'group_id'
     _api_path = 'us/groups'
     _ro_fields = {'source', 'record_created', 'record_updated', 'group_id'}
+    _float_fields = set()
+    _int_fields = {'gid'}
 
     def __init__(self, **kwargs):
         self.description = kwargs['description'] if 'description' in kwargs else None

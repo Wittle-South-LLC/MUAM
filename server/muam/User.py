@@ -4,6 +4,8 @@ class User (ApiClientBase):
     _id_fields = 'user_id'
     _api_path = 'us/users'
     _ro_fields = {'user_id', 'source', 'record_created', 'record_updated'}
+    _float_fields = set()
+    _int_fields = set()
 
     def __init__(self, **kwargs):
         self.user_id = kwargs['user_id'] if 'user_id' in kwargs else None

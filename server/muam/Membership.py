@@ -4,6 +4,8 @@ class Membership (ApiClientBase):
     _id_fields = {'group_id', 'user_id'}
     _api_path = 'us/memberships'
     _ro_fields = set()
+    _float_fields = set()
+    _int_fields = set()
 
     def __init__(self, **kwargs):
         self.group_id = kwargs['group_id'] if 'group_id' in kwargs else None
