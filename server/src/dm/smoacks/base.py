@@ -50,7 +50,7 @@ class Base(object):
             if column.key in fields:
                 if self.is_uuid(column.key):
                     setattr(self, column.key, uuid.UUID(fields[column.key]).bytes)
-                elif str(column.columns[0].type) == 'DATETIME':
+                elif column.columns[0].type == DateTime:
                     setattr(self, column.key, dateutil.parser.parse(fields[column.key]))
                 else:
                     setattr(self, column.key, fields[column.key])
@@ -62,7 +62,9 @@ class Base(object):
     def dump(self, deep=False):
         """Returns dictionary of fields and values"""
         ret = {}
+        mapper = inspect(type(self))
         for key, value in vars(self).items():
+            if mapper.attrs.get(key) and type(mapper.attrs.get(key)).__name__ == 'RelationshipProperty': continue
             if key in self.__uuid_list__ and value:
                 ret[key] = str(uuid.UUID(bytes=value))
             elif not key.startswith('_') and not key in self.__wo_fields__:

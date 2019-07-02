@@ -18,6 +18,7 @@ with open(os.environ['APP_LOGGING_CONFIG'], 'r') as f:
     logging.config.dictConfig(config)
 
 from dm.DataModel import get_session
+from dm.User import User
 
 # Define constants
 API_REQUIRES_JSON = 'All PUT/POST API requests require JSON, and this request did not'
@@ -97,17 +98,29 @@ def user_loader_callback(identity):
     g.user_id = uuid.UUID(identity).bytes
     return uuid.UUID(identity).bytes
 
-@JWT.claims_verification_loader
-def claims_verification_loader(claims):
-    """Callback to get claims from token and make them globally available for the request"""
-    if 'groups' in claims:
-        g.user_groups = {}
-        for group_id in claims['groups']:
-            g.user_groups[group_id] = {
-                'name': claims['groups'][group_id]['name'],
-                'gid': claims['groups'][group_id]['gid']
-            }
-    return True
+@JWT.user_claims_loader
+def add_claims_to_access_token(identity):
+    user = g.db_session.query(User)\
+                       .filter(User.user_id == uuid.UUID(identity).bytes)\
+                       .one_or_none()
+    if not user:
+        return None
+    return {
+        'user_id': identity,
+        'groups': user.get_groups()
+    }
+
+#@JWT.claims_verification_loader
+#def claims_verification_loader(claims):
+#    """Callback to get claims from token and make them globally available for the request"""
+#    if 'groups' in claims:
+#        g.user_groups = {}
+#        for group_id in claims['groups']:
+#            g.user_groups[group_id] = {
+#                'name': claims['groups'][group_id]['name'],
+#                'gid': claims['groups'][group_id]['gid']
+#            }
+#    return True
 
 # Need to make sure that the use of the database session is
 # scoped to the request to avoid open orm transactions between requests

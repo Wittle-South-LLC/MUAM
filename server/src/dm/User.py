@@ -10,6 +10,15 @@ class User(SB_User):
     password_hash = Column(String(128)) # Persistent encrypted password
     pass
 
+    def get_groups(self):
+        result = {}
+        for membership in self.memberships:
+            result[membership.group.get_uuid()] = {
+                'gid': membership.group.gid,
+                'name': membership.group.name
+            }
+        return result
+
     def hash_password(self, password):
         """Create password hash from password string"""
         self.password_hash = pwd_context.encrypt(password)
