@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDatabase, faHome, faUsers, faUser } from '@fortawesome/free-solid-svg-icons';
-import { NavItem, NavLink, Nav } from 'reactstrap';
-import { NavLink as RRNavLink } from 'react-router-dom'
+import { NavItem, NavLink, Nav } from 'reactstrap'
 import { intlShape, defineMessages } from 'react-intl'
 import classNames from 'classnames'
 import './Sidebar.css'
@@ -11,6 +10,7 @@ import './Sidebar.css'
 export default class Sidebar extends React.Component {
   constructor (props, context) {
     super(props, context)
+    this.onClick = this.onClick.bind(this)
     this.iText = defineMessages({
       title: { id: 'Sidebar.title', defaultMessage: 'Sidebar' },
       groupsLink: { id: 'Sidebar.groupsLink', defaultMessage: 'Groups' },
@@ -18,6 +18,10 @@ export default class Sidebar extends React.Component {
       showStateLink: { id: 'Sidebar.showStateLink', defaultMessage: 'Show State' },
       usersLink: { id: 'Sidebar.usersLink', defaultMessage: 'Users' },
     })
+  }
+  onClick(e) {
+    this.context.router.history.push(e.target.id)
+    this.props.toggle()
   }
   render() {
     let formatMessage = this.context.intl.formatMessage
@@ -29,25 +33,25 @@ export default class Sidebar extends React.Component {
         </div>
           <Nav vertical>
             <NavItem>
-              <NavLink tag={ RRNavLink } exact to="/home">
+              <NavLink id="/home" onClick={this.onClick}>
                 <FontAwesomeIcon icon={faHome} className="mr-2"/>
                 {formatMessage(this.iText.homeLink)}
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={ RRNavLink } exact to="/groups">
+              <NavLink id="/groups" onClick={this.onClick}>
                 <FontAwesomeIcon icon={faUsers} className="mr-2"/>
                 {formatMessage(this.iText.groupsLink)}
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={ RRNavLink } exact to="/users">
+              <NavLink id="/users" onClick={this.onClick}>
                 <FontAwesomeIcon icon={faUser} className="mr-2"/>
                 {formatMessage(this.iText.usersLink)}
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={ RRNavLink } exact to="/showstate">
+              <NavLink id="/showstate" onClick={this.onClick}>
                 <FontAwesomeIcon icon={faDatabase} className="mr-2"/>
                 {formatMessage(this.iText.showStateLink)}
               </NavLink>
