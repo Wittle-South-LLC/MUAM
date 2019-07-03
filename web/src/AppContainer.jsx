@@ -1,10 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { NavLink as RRNavLink, Redirect, Route, Switch } from 'react-router-dom'
-import { Col, Collapse, Container, Navbar, NavbarBrand, NavbarToggler, Nav, NavItem, NavLink, Row } from 'reactstrap'
+import { NavLink as Redirect, Route, Switch } from 'react-router-dom'
+import { Container } from 'reactstrap';
 import { intlShape, defineMessages } from 'react-intl'
 import { UserService } from './state/OrimServices'
 import { loggedInUser, needsHydrate, setMessage } from './state/clientState'
+import Sidebar from './components/Sidebar'
+import Content from './components/Content'
 import UserAdmin from './admin/UserAdmin'
 import GroupAdmin from './admin/GroupAdmin'
 import ShowState from './utils/ShowState'
@@ -107,16 +109,24 @@ export default class AppContainer extends React.Component {
     })
   }
 
+/*
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('In Should Component Update')
+    return true
+  }
+*/
+
   // Will return the provided route if the user is authenticated, and a redirect otherwise
   getRoute (authRoute) {
+    console.log('loggedInUser: ', loggedInUser(this.state.reduxState))
     let ret = loggedInUser(this.state.reduxState) !== undefined
       ? authRoute
       : () => <Redirect to='/home' />
+    console.log('returning: ', ret)
     return ret
   }
 
   toggle (e) {
-    console.log('Toggling')
     this.setState({
       isOpen: !this.state.isOpen
     })
@@ -142,32 +152,20 @@ export default class AppContainer extends React.Component {
     } else {
       console.log('Container.render() Note: message was a JS object and not an Immutable object')
     }
+/*
+          <span className="bg-primary text-black"><i className="fas fas-bars" onClick={this.toggle} /></span>
+*/
     return (
-      <Container fluid={true} id="appName">
-        <Navbar color="light" light expand="md">
-          <NavbarBrand tag={ RRNavLink } exact to="/home">{formatMessage(this.componentText.brandTitle)}</NavbarBrand>
-          <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              <NavItem><NavLink tag={ RRNavLink } exact to="/groups">{formatMessage(this.componentText.groupsLink)}</NavLink></NavItem>              
-              <NavItem><NavLink tag={ RRNavLink } exact to="/users">{formatMessage(this.componentText.usersLink)}</NavLink></NavItem>              
-              <NavItem><NavLink tag={ RRNavLink } exact to="/showstate">{formatMessage(this.componentText.showStateLink)}</NavLink></NavItem>
-              { myUser && <NavItem><NavLink onClick={this.logout}>{formatMessage(this.componentText.logout)}</NavLink></NavItem>}
-            </Nav>
-          </Collapse>
-        </Navbar>
-        <Row>
-          <Col md={ myUser !== undefined ? 12 : 6 }
-              className='scroll-vertical'
-              id='appMainBody'>
-          <Switch>
-              <Route path={'/users'} component={this.getRoute(UserAdmin)} />
-              <Route path={'/groups'} component={this.getRoute(GroupAdmin)} />
-              <Route path={'/showstate'} component={this.getRoute(ShowState)} />
-              <Route component={Home} />
-          </Switch>
-            </Col>
-        </Row>
+      <Container fluid={true} id="appName" className="App wrapper">
+        <Sidebar toggle={this.toggle} isOpen={this.state.isOpen}/>
+        <Content toggle={this.toggle} isOpen={this.state.isOpen} logout={myUser && this.logout}>
+        <Switch>
+          <Route path={'/users'} component={this.getRoute(UserAdmin)} />
+          <Route path={'/groups'} component={this.getRoute(GroupAdmin)} />
+          <Route path={'/showstate'} component={this.getRoute(ShowState)} />
+          <Route component={Home} />
+        </Switch>
+        </Content>
       </Container>
     )
   }
