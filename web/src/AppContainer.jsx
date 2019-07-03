@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { NavLink as Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 import { Container } from 'reactstrap';
 import { intlShape, defineMessages } from 'react-intl'
 import { UserService } from './state/OrimServices'
