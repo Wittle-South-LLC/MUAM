@@ -2,17 +2,30 @@
     SIDEBAR STYLE
 ----------------------------------------------------- */
 .sidebar {
-  min-width: 250px;
-  max-width: 250px;
+  min-width: 200px;
+  max-width: 200px;
   background: #7386D5;
   color: #fff;
-  margin-left: -250px;
+/*   margin-left: -200px; */
   transition: all 0.5s;
+  z-index: 2;
 }
 
 .sidebar.is-open {
-  margin-left: 0;
+/*  margin-left: 0; */
   transition: .5s;
+  min-width: 60px;
+  max-width: 60px;
+}
+
+.sidebar.is-open .nav-item .nav-link span {
+  display: block;
+}
+
+.sidebar .nav-item .nav-link span {
+  display: inline;
+  font-size: .65rem;
+  color: white !important;
 }
 
 .sidebar ul.nav {
@@ -23,17 +36,29 @@
   color: white !important;
 }
 
-.sidebar a.nav-link:active {
+.sidebar a.nav-link:active span, .sidebar a.nav-link:active svg {
   color: blue !important;
 }
 
-.sidebar a.nav-link:hover {
+.sidebar a.nav-link:hover span, .sidebar a.nav-link:hover svg {
   color: blue !important;
 }
 
 .sidebar-header {
   background: #6d7fcc;
 }
+
+.sidebar .sidebar-header .closed {
+  font-size: 1rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/*
+.sidebar.is-open .sidebar-header h3 {
+  display: none;
+}
+*/
 
 .sidebar-header h3{
   color: #fff;

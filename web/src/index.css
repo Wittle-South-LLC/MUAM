@@ -13,6 +13,10 @@ code {
     monospace;
 }
 
+#appName {
+  background-color: rgb(230, 240, 247);
+}
+
 .fa-pl {
   padding-left: 5px;
 }

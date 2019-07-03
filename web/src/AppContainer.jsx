@@ -118,11 +118,9 @@ export default class AppContainer extends React.Component {
 
   // Will return the provided route if the user is authenticated, and a redirect otherwise
   getRoute (authRoute) {
-    console.log('loggedInUser: ', loggedInUser(this.state.reduxState))
     let ret = loggedInUser(this.state.reduxState) !== undefined
       ? authRoute
       : () => <Redirect to='/home' />
-    console.log('returning: ', ret)
     return ret
   }
 
@@ -133,7 +131,7 @@ export default class AppContainer extends React.Component {
   }
 
   render() {
-    let formatMessage = this.context.intl.formatMessage
+//    let formatMessage = this.context.intl.formatMessage
     let myUser = loggedInUser(this.state.reduxState)
     let locale = this.props.getCurrentLocale()
     if (locale !== this.currentLocale) {
