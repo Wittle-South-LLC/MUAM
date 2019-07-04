@@ -4,7 +4,7 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 import { Container } from 'reactstrap';
 import { intlShape, defineMessages } from 'react-intl'
 import { UserService } from './state/OrimServices'
-import { loggedInUser, needsHydrate, setMessage } from './state/clientState'
+import { loggedInUserId, needsHydrate, setMessage } from './state/clientState'
 import Sidebar from './components/Sidebar'
 import Content from './components/Content'
 import UserAdmin from './admin/UserAdmin'
@@ -59,8 +59,8 @@ export default class AppContainer extends React.Component {
 
   componentDidUpdate() {
     if (needsHydrate(this.state.reduxState)) {
-      let lUser = loggedInUser(this.state.reduxState)
-      const fullUser = lUser ? UserService.getById(lUser.getId()) : undefined
+      let lUserId = loggedInUserId(this.state.reduxState)
+      const fullUser = lUserId ? UserService.getById(lUserId) : undefined
       if (fullUser) {
         this.props.store.dispatch(UserService.hydrate(fullUser))
       }
@@ -68,7 +68,7 @@ export default class AppContainer extends React.Component {
   }
 
   logout() {
-    let myUser = loggedInUser(this.state.reduxState)
+    let myUser = UserService.getById(loggedInUserId(this.state.reduxState))
     this.props.store.dispatch(UserService.logout(myUser))
   }
 
@@ -109,16 +109,9 @@ export default class AppContainer extends React.Component {
     })
   }
 
-/*
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log('In Should Component Update')
-    return true
-  }
-*/
-
   // Will return the provided route if the user is authenticated, and a redirect otherwise
   getRoute (authRoute) {
-    let ret = loggedInUser(this.state.reduxState) !== undefined
+    let ret = loggedInUserId(this.state.reduxState) !== undefined
       ? authRoute
       : () => <Redirect to='/home' />
     return ret
@@ -132,7 +125,7 @@ export default class AppContainer extends React.Component {
 
   render() {
 //    let formatMessage = this.context.intl.formatMessage
-    let myUser = loggedInUser(this.state.reduxState)
+    let myUser = UserService.getById(loggedInUserId(this.state.reduxState))
     let locale = this.props.getCurrentLocale()
     if (locale !== this.currentLocale) {
       this.currentLocale = locale

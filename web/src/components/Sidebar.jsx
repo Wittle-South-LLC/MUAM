@@ -20,8 +20,13 @@ export default class Sidebar extends React.Component {
     })
   }
   onClick(e) {
-    this.context.router.history.push(e.target.id)
-//    console.log(`Sidebar.onClick target: ${e.target.id} isOpen: ${this.props.isOpen}`)
+    var newPath = e.target
+    while (newPath && !newPath.id ) {
+      newPath = newPath.parentNode
+    }
+    if (newPath) { 
+      this.context.router.history.push(newPath.id)
+    }
     if (!this.props.isOpen) {
       this.props.toggle()
     }

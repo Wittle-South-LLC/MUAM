@@ -11,6 +11,7 @@ import { createStore, applyMiddleware } from 'redux'
 import { BrowserRouter } from 'react-router-dom'
 import baseApp from './state/baseApp'
 import AppContainer from './AppContainer'
+import { UserService } from './state/OrimServices'
 import '@fortawesome/fontawesome-pro/css/all.css'
 
 // Get browser language, found in comment here: https://stackoverflow.com/questions/673905/best-way-to-determine-users-locale-within-browser
@@ -38,6 +39,10 @@ class App extends Component {
   // If the app is going to mount, load the current language data
   componentWillMount() {
     this.loadLocale(getLang().substring(0,2))
+  }
+
+  componentDidMount() {
+    this.store.dispatch(UserService.hydrate())
   }
 
   getLocale () {

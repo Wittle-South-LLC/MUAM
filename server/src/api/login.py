@@ -2,6 +2,7 @@
 """login.py - Module to handle /login API endpoint"""
 import datetime
 import os
+import uuid
 from flask import current_app, g, jsonify
 from flask_jwt_extended import create_access_token, \
      jwt_refresh_token_required, \
@@ -44,7 +45,7 @@ def post(body):
     refresh_token = create_refresh_token(identity=user.get_uuid())
 
     # Build the response data by dumping the user data
-    resp = jsonify({'Users': [user.dump()]})
+    resp = jsonify({'Users': [user.dump()], 'auth_user_id': user.get_uuid()})
 
     # Set the tokens we created as cookies in the response
     set_access_cookies(resp, access_token, int(datetime.timedelta(minutes=30).total_seconds()))
@@ -85,4 +86,6 @@ def search():
         users_l.append(users_item.dump(deep=True))
     result['Users'] = users_l
     
+    result['auth_user_id'] = str(uuid.UUID(bytes=g.user_id))
+
     return result, 200
