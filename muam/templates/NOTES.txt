@@ -1,0 +1,4 @@
+Set up {{ .Values.deployEnv }}:
+
+- Server service port: {{ .Values.server.servicePort }}
+- Host name: {{ .Values.host }}

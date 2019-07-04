@@ -4,6 +4,7 @@ import { defaultVerbs } from 'redux-immutable-model'
 import { defineMessages } from 'react-intl'
 
 export default class User extends OrimUser {
+  static className = 'User'
   constructor(createFrom, dirtyVal = false, fetchingVal = false, newVal = false) {
     super (createFrom, dirtyVal, fetchingVal, newVal)
   }

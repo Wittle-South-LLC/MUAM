@@ -3,6 +3,7 @@ import OrimGroup from './orim/OrimGroup'
 import { defineMessages } from 'react-intl'
 
 export default class Group extends OrimGroup {
+  static className = 'Group'
   constructor(createFrom, dirtyVal = false, fetchingVal = false, newVal = false) {
     super (createFrom, dirtyVal, fetchingVal, newVal)
 

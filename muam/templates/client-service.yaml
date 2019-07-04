@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.deployEnv }}-client
+spec:
+  ports:
+  - name: http
+    targetPort: {{ .Values.client.containerPort }}
+    port: {{ .Values.client.containerPort }}
+  selector:
+    app: {{ .Release.Name }}-{{ .Values.deployEnv }}
+    task: client

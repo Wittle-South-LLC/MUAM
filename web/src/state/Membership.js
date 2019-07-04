@@ -3,6 +3,7 @@ import OrimMembership from './orim/OrimMembership'
 import { defineMessages } from 'react-intl'
 
 export default class Membership extends OrimMembership {
+  static className = 'Membership'
   constructor(createFrom, dirtyVal = false, fetchingVal = false, newVal = false) {
     super (createFrom, dirtyVal, fetchingVal, newVal)
   }
