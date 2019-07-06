@@ -17,6 +17,9 @@ spec:
       annotations:
         user: root
     spec:
+      {{ if eq .Values.deployEnv "prd" }}imagePullSecrets:
+      - name: regcred
+      {{ end -}}
       containers:
       - image: {{ .Values.server.image }}:{{ .Values.server.version }}
         name: {{ .Release.Name }}-{{ .Values.deployEnv }}-server
@@ -27,13 +30,39 @@ spec:
           value: {{ .Values.origin | quote }}
         - name: COOKIE_DOMAIN
           value: {{ .Values.cookieDomain | quote }}
-        command: ["/app/src/server-loop"]
+        {{ if eq .Values.deployEnv "prd"}}- name: APP_LOGGING_CONFIG
+          value: {{ .Values.env.app_logging_config }}
+        - name: REACT_APP_API_PATH
+          value: {{ .Values.apiPath }}
+        - name: OPENAPI_SPEC
+          value: {{ .Values.env.openapi_spec }}
+        - name: FLASK_DEBUG
+          value: "{{ .Values.env.flask_debug }}"
+        - name: APPSERVER_CPORT
+          value: "{{ .Values.server.containerPort }}"
+        - name: SECRET_KEY
+          value: "{{ .Values.env.secret_key }}"
+        - name: NODE_ENV
+          value: {{ .Values.env.node_env }}
+        - name: APP_DB_NAME
+          value: {{ .Values.env.app_db_name }}
+        - name: APP_DB_ACCOUNT
+          value: {{ .Values.env.app_db_account }}
+        - name: APP_DB_PASSWORD
+          value: {{ .Values.env.app_db_password }}
+        - name: APP_DB_CNAME
+          value: {{ .Values.env.app_db_cname }}
+        - name: APP_DB_CPORT
+          value: "{{ .Values.env.app_db_cport }}"
+        {{ end -}}
+        command: [{{ .Values.command }}]
         ports:
         - containerPort: {{ .Values.server.containerPort }}
-        volumeMounts:
+        {{ if eq .Values.deployEnv "dev" }}volumeMounts:
         - name: {{ .Release.Name }}-{{ .Values.deployEnv }}-vol
           mountPath: /app
       volumes:
       - name: {{ .Release.Name }}-{{ .Values.deployEnv }}-vol
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-{{ .Values.deployEnv }}-claim
+{{ end }}

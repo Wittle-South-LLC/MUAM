@@ -1,0 +1,31 @@
+exports:
+  data:
+    command: '"python3.7", "/app/server.py"'
+    deployEnv: prd
+    deployMode: development
+    origin: http://muam.wittlesouth.com
+    cookieDomain: .wittlesouth.com
+    apiPath: /api/v1
+    host: muam.wittlesouth.com
+    server:
+      image: registry.wittlesouth.com/muam
+      version: latest
+      containerPort: 8180
+      servicePort: 31310
+    client:
+      image: registry.wittlesouth.com/muam-client
+      version: latest
+      containerPort: 80
+    env:
+      app_logging_config: "/app/server_logging.yaml"
+      openapi_spec: "/app/spec/muam.yaml"
+      flask_debug: 0
+      secret_key: "b'60021dbd4f1062cbd00b172ae7d0d1dcf5cd6583cfd7276b'"
+      node_env: development
+      app_db_name: muam
+      app_db_account: muam
+      app_db_password: muamdbpwd
+      app_db_cname: mysql
+      app_db_cport: 3306
+
+

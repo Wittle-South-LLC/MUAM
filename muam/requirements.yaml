@@ -1,0 +1,15 @@
+dependencies:
+  - name: muam-dev
+    repository: "file://charts/muam-dev"
+    version: ">= 0.0.1"
+    tags:
+      - dev-values
+    import-values:
+      - data
+  - name: muam-prd
+    repositotry: "file://charts/muam-prd"
+    version: ">= 0.0.1"
+    tags:
+      - prd-values
+    import-values:
+      - data

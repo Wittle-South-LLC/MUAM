@@ -40,10 +40,10 @@ elif [ "$MUAM_MODE" == "test" ]; then
   export SECRET_KEY=Testing
   export REACT_APP_BASE_URL="http://wsv-dev.wittlesouth.local:${APPSERVER_SPORT}"
 elif [ "$MUAM_MODE" == "production" ]; then
-  export APP_DB_CNAME='mysql'
-  export APP_DB_ACCOUNT=prod
-  export APP_DB_PASSWORD=prod
-  export APP_DB_SPORT=$MY_DB_SPORT
+  export APP_DB_SNAME='wittlesouth.com'
+  export APP_DB_ACCOUNT=muam
+  export APP_DB_PASSWORD=muamdbpwd
+  export APP_DB_SPORT=31999
   export APPSERVER_SPORT=31309
   export SECRET_KEY=MUAMDevelopmentSecretKey
 else
