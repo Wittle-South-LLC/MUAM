@@ -1,6 +1,7 @@
 import { Map } from 'immutable'
 import { defaultVerbs, status } from 'redux-immutable-model'
 import baseApp from '../src/state/baseApp'
+import User from '../src/state/User';
 
 export const defaultLoginData = {
   Groups: [{
@@ -23,6 +24,7 @@ export const defaultLoginData = {
     username: 'testing',
     create_groups: true,
     create_users: null,
+    password: 'MyPassword.ResetMe',
     email: 'testing@wittlesouth.com',
     first_name: 'Tester',
     full_name: 'Tester, Unit X',
@@ -39,7 +41,8 @@ export const defaultState = baseApp(undefined, {
   type: 'async',
   verb: defaultVerbs.LOGIN,
   status: status.SUCCESS,
-  receivedData: defaultLoginData
+  receivedData: defaultLoginData,
+  rimObj: new User()
 })
 
 export const resetState = () => baseApp(undefined, {

@@ -6,6 +6,7 @@ import chai from 'chai'
 import Group from '../src/state/Group'
 import { GroupService } from '../src/state/OrimServices'
 // import baseApp from '../src/state/baseApp'
+import { defaultVerbs } from 'redux-immutable-model'
 import { defaultState } from './TestData'
 // import { testCreateNew, testEditField, testLogin, testSaveNew,
 //          testSaveUpdate, testSaveDelete } from './ActionTests'
@@ -85,11 +86,11 @@ describe('Group: testing RimObject actions', () => {
     chai.expect(invalidObj.isNameValid()).to.equal(false)
   })
   // Test get create payload
-  it ('getCreatePayload() returns correct payload', () => {
-    chai.expect(testObj.getCreatePayload()).to.eql({"description":"This is a really long description of a group","gid":104,"name":"app-users"})
+  it ('getFetchPayload(SAVE_NEW) returns correct payload', () => {
+    chai.expect(testObj.getFetchPayload(defaultVerbs.SAVE_NEW)).to.eql({"description":"This is a really long description of a group","gid":104,"name":"app-users"})
   })
   // Test get update payload
-  it ('getUpdatePayload() returns correct payload', () => {
-    chai.expect(testObj.getUpdatePayload()).to.eql({"description":"This is a really long description of a group","gid":104,"name":"app-users"})
+  it ('getFetchPayload(SAVE_UPDATE) returns correct payload', () => {
+    chai.expect(testObj.getFetchPayload(defaultVerbs.SAVE_UPDATE)).to.eql({"description":"This is a really long description of a group","gid":104,"name":"app-users"})
   })
 })

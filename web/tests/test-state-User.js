@@ -6,6 +6,7 @@ import chai from 'chai'
 import User from '../src/state/User'
 import { UserService } from '../src/state/OrimServices'
 // import baseApp from '../src/state/baseApp'
+import { defaultVerbs } from 'redux-immutable-model'
 import { defaultState } from './TestData'
 // import { testCreateNew, testEditField, testLogin, testSaveNew,
 //          testSaveUpdate, testSaveDelete } from './ActionTests'
@@ -17,10 +18,6 @@ const TSERVICE = UserService
 describe('User: testing RimObject actions', () => {
   beforeEach(() => {
     TSERVICE.setState(defaultState.get(TSERVICE.getStatePath()))
-  })
-  it('new returns an empty object', () => {
-    let myObj = new TCLASS()
-    chai.expect(myObj.getName()).to.equal('')
   })
   it('can create an object that is already dirty', () => {
     let myObj = new TCLASS({}, true)
@@ -170,11 +167,11 @@ describe('User: testing RimObject actions', () => {
     chai.expect(invalidObj.isPhoneValid()).to.equal(false)
   })
   // Test get create payload
-  it ('getCreatePayload() returns correct payload', () => {
-    chai.expect(testObj.getCreatePayload()).to.eql({"username":"testing","create_groups":true,"create_users":null,"email":"testing@wittlesouth.com","first_name":"Tester","full_name":"Tester, Unit X","grant_privs":null,"last_name":"Unit","password":"MyPassword.ResetMe","phone":"+1 (919) 999-9999"})
+  it ('getFetchPayload(SAVE_NEW) returns correct payload', () => {
+    chai.expect(testObj.getFetchPayload(defaultVerbs.SAVE_NEW)).to.eql({"username":"testing","create_groups":true,"create_users":null,"email":"testing@wittlesouth.com","first_name":"Tester","full_name":"Tester, Unit X","grant_privs":null,"last_name":"Unit","password":"MyPassword.ResetMe","phone":"+1 (919) 999-9999"})
   })
   // Test get update payload
-  it ('getUpdatePayload() returns correct payload', () => {
-    chai.expect(testObj.getUpdatePayload()).to.eql({"username":"testing","create_groups":true,"create_users":null,"email":"testing@wittlesouth.com","first_name":"Tester","full_name":"Tester, Unit X","grant_privs":null,"last_name":"Unit","password":"MyPassword.ResetMe","phone":"+1 (919) 999-9999"})
+  it ('getFetchPayload(SAVE_UPDATE) returns correct payload', () => {
+    chai.expect(testObj.getFetchPayload(defaultVerbs.SAVE_UPDATE)).to.eql({"username":"testing","create_groups":true,"create_users":null,"email":"testing@wittlesouth.com","first_name":"Tester","full_name":"Tester, Unit X","grant_privs":null,"last_name":"Unit","password":"MyPassword.ResetMe","phone":"+1 (919) 999-9999"})
   })
 })

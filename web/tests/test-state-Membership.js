@@ -6,21 +6,18 @@ import chai from 'chai'
 import Membership from '../src/state/Membership'
 import { MembershipService } from '../src/state/OrimServices'
 // import baseApp from '../src/state/baseApp'
+import { defaultVerbs } from 'redux-immutable-model'
 import { defaultState } from './TestData'
 // import { testCreateNew, testEditField, testLogin, testSaveNew,
 //          testSaveUpdate, testSaveDelete } from './ActionTests'
 
-const TEST_ID = 'b5665877-f9ee-4074-a38b-39219cde6b4d'
+const TEST_ID = 'b5665877-f9ee-4074-a38b-39219cde6b4d/b5665877-f9ee-4074-a38b-39219cde6b67'
 const TCLASS = Membership
 const TSERVICE = MembershipService
 
 describe('Membership: testing RimObject actions', () => {
   beforeEach(() => {
     TSERVICE.setState(defaultState.get(TSERVICE.getStatePath()))
-  })
-  it('new returns an empty object', () => {
-    let myObj = new TCLASS()
-    chai.expect(myObj.getName()).to.equal('')
   })
   it('can create an object that is already dirty', () => {
     let myObj = new TCLASS({}, true)
@@ -39,21 +36,15 @@ describe('Membership: testing RimObject actions', () => {
   it('getId() returns ID', () => {
     chai.expect(testObj.getId()).to.equal(TEST_ID)
   })
-  it ('getIdentity() returns Membership._IdentityKey', () => {
-    chai.expect(testObj.getIdentity()).to.equal('b5665877-f9ee-4074-a38b-39219cde6b4d')
-  })
   it ('getIsAdmin() returns Membership._IsAdminKey', () => {
     chai.expect(testObj.getIsAdmin()).to.equal(null)
   })
   it ('getIsOwner() returns Membership._IsOwnerKey', () => {
     chai.expect(testObj.getIsOwner()).to.equal(null)
   })
-  it ('getIdentity() returns Membership._IdentityKey', () => {
-    chai.expect(testObj.getIdentity()).to.equal('b5665877-f9ee-4074-a38b-39219cde6b67')
-  })
   // Test validators - valid data
-  it ('isIdentityValid() returns true for valid Identity', () => {
-    chai.expect(testObj.isIdentityValid()).to.equal(true)
+  it ('isLeftIdentityValid() returns true for valid LeftIdentity', () => {
+    chai.expect(testObj.isLeftIdentityValid()).to.equal(true)
   })
   it ('isIsAdminValid() returns true for valid IsAdmin', () => {
     chai.expect(testObj.isIsAdminValid()).to.equal(true)
@@ -61,14 +52,14 @@ describe('Membership: testing RimObject actions', () => {
   it ('isIsOwnerValid() returns true for valid IsOwner', () => {
     chai.expect(testObj.isIsOwnerValid()).to.equal(true)
   })
-  it ('isIdentityValid() returns true for valid Identity', () => {
-    chai.expect(testObj.isIdentityValid()).to.equal(true)
+  it ('isRightIdentityValid() returns true for valid RightIdentity', () => {
+    chai.expect(testObj.isRightIdentityValid()).to.equal(true)
   })
   // Test validators - invalid data
-  it ('isIdentityValid() returns false for invalid Identity', () => {
-    const invalidObj = testObj.updateField(TCLASS._IdentityKey, undefined)
+  it ('isLeftIdentityValid() returns false for invalid LeftIdentity', () => {
+    const invalidObj = testObj.updateField(TCLASS._LeftIdentityKey, undefined)
     chai.expect(invalidObj.isValid()).to.equal(false)
-    chai.expect(invalidObj.isIdentityValid()).to.equal(false)
+    chai.expect(invalidObj.isLeftIdentityValid()).to.equal(false)
   })
   it ('isIsAdminValid() returns false for invalid IsAdmin', () => {
     const invalidObj = testObj.updateField(TCLASS._IsAdminKey, undefined)
@@ -80,17 +71,17 @@ describe('Membership: testing RimObject actions', () => {
     chai.expect(invalidObj.isValid()).to.equal(false)
     chai.expect(invalidObj.isIsOwnerValid()).to.equal(false)
   })
-  it ('isIdentityValid() returns false for invalid Identity', () => {
-    const invalidObj = testObj.updateField(TCLASS._IdentityKey, undefined)
+  it ('isRightIdentityValid() returns false for invalid RightIdentity', () => {
+    const invalidObj = testObj.updateField(TCLASS._RightIdentityKey, '')
     chai.expect(invalidObj.isValid()).to.equal(false)
-    chai.expect(invalidObj.isIdentityValid()).to.equal(false)
+    chai.expect(invalidObj.isRightIdentityValid()).to.equal(false)
   })
   // Test get create payload
-  it ('getCreatePayload() returns correct payload', () => {
-    chai.expect(testObj.getCreatePayload()).to.eql({"group_id":"b5665877-f9ee-4074-a38b-39219cde6b4d","is_admin":null,"is_owner":null,"user_id":"b5665877-f9ee-4074-a38b-39219cde6b67"})
+  it ('getFetchPayload(SAVE_NEW) returns correct payload', () => {
+    chai.expect(testObj.getFetchPayload(defaultVerbs.SAVE_NEW)).to.eql({"group_id":"b5665877-f9ee-4074-a38b-39219cde6b4d","is_admin":null,"is_owner":null,"user_id":"b5665877-f9ee-4074-a38b-39219cde6b67"})
   })
   // Test get update payload
-  it ('getUpdatePayload() returns correct payload', () => {
-    chai.expect(testObj.getUpdatePayload()).to.eql({"group_id":"b5665877-f9ee-4074-a38b-39219cde6b4d","is_admin":null,"is_owner":null,"user_id":"b5665877-f9ee-4074-a38b-39219cde6b67"})
+  it ('getFetchPayload(SAVE_UPDATE) returns correct payload', () => {
+    chai.expect(testObj.getFetchPayload(defaultVerbs.SAVE_UPDATE)).to.eql({"group_id":"b5665877-f9ee-4074-a38b-39219cde6b4d","is_admin":null,"is_owner":null,"user_id":"b5665877-f9ee-4074-a38b-39219cde6b67"})
   })
 })
