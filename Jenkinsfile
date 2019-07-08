@@ -9,12 +9,13 @@ pipeline {
       }
       steps {
         dir ('web') {
+          sh "npm --version"
           sh "npm config set cache /tmp"
           withCredentials([string(credentialsId: 'FontAwesomePro', variable: 'NPM_TOKEN')]) {
             sh "npm config set \"@fortawesome:registry\" https://npm.fontawesome.com/"
             sh "npm config set \"//npm.fontawesome.com/:_authToken\" ${NPM_TOKEN}"
           }
-          sh "npm install"
+          sh "npm ci"
           sh "npm test"
         }
       }
