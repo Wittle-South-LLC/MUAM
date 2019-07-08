@@ -11,7 +11,7 @@
     "@fortawesome/pro-regular-svg-icons": "^5.9.0",
     "@fortawesome/pro-solid-svg-icons": "^5.9.0",
     "@fortawesome/react-fontawesome": "^0.1.4",
-    "bootstrap": "^4.3.1",
+    "bootstrap-css-only": "^4.3.1",
     "classnames": "^2.2.6",
     "immutable": "^4.0.0-rc.12",
     "isomorphic-fetch": "^2.2.1",
@@ -19,17 +19,18 @@
     "react-dom": "^16.8.5",
     "react-intl": "^2.8.0",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.5",
+    "react-scripts": "3.0.1",
     "reactstrap": "^7.1.0",
     "redux": "^4.0.1",
     "redux-immutable": "^4.0.0",
-    "redux-immutable-model": "^0.6.1-15",
+    "redux-immutable-model": "^0.6.1",
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "NODE_ENV=test mocha --require @babel/register tests",
+    "cover": "NODE_ENV=test nyc --reporter=html --reporter=text mocha tests",
     "eject": "react-scripts eject",
     "gen": "babel-node node_modules/openapi-rim-app/dist/cli.js",
     "extract:messages": "react-intl-cra 'src/**/*.{js,jsx}' -o 'i18n/messages/messages.json'",
@@ -79,6 +80,7 @@
     }
   },
   "nyc": {
+    "extends": "@istanbuljs/nyc-config-babel",
     "exclude": [
       "**/test-*.js",
       "tests/**",
@@ -106,15 +108,17 @@
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/preset-env": "^7.4.2",
     "@fortawesome/fontawesome-pro": "^5.8.1",
-    "babel-plugin-istanbul": "^5.1.1",
+    "babel-plugin-istanbul": "^5.1.4",
     "deep-diff": "^1.0.2",
     "handlebars": "^4.1.2",
-    "istanbul": "^0.4.5",
+    "install": "^0.13.0",
     "mocha": "^6.1.4",
     "nock": "^10.0.6",
+    "npm": "^6.10.0",
     "nyc": "^14.1.1",
     "openapi-rim-app": "^0.2.1-5",
     "react-intl-cra": "^0.3.4",
-    "react-intl-translations-manager": "^5.0.3"
+    "react-intl-translations-manager": "^5.0.3",
+    "typescript": "^3.5.2"
   }
 }
