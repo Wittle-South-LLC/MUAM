@@ -3,6 +3,17 @@
 pipeline {
   agent any
   stages {
+    stage ('Build server image for test') {
+      steps {
+        sh 'docker build server -f server/Dockerfile --tag=registry.wittlesouth.com/muam:test'
+        withCredentials([usernamePassword(credentialsId: 'registry.wittlesouth.com.credentials',
+                         passwordVariable: 'REGISTRY_PWD',
+                         usernameVariable: 'REGISTRY_USER')]) {
+          sh "echo $REGISTRY_PWD | docker login --username $REGISTRY_USER --password-stdin"
+        }
+        sh 'docker push registry.wittlesouth.com/muam:test'
+      }
+    }
     stage ('Run client tests') {
       environment {
         NODE_ENV = 'test'
