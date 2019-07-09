@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch, withRouter } from 'react-router-dom'
 import { Container } from 'reactstrap';
 import { intlShape, defineMessages } from 'react-intl'
 import { UserService } from './state/OrimServices'
@@ -12,7 +12,7 @@ import GroupAdmin from './admin/GroupAdmin'
 import ShowState from './utils/ShowState'
 import Home from './Home'
 
-export default class AppContainer extends React.Component {
+class AppContainer extends React.Component {
   constructor (props, context) {
     super(props, context)
     this.listenStore = this.listenStore.bind(this)
@@ -75,8 +75,9 @@ export default class AppContainer extends React.Component {
   // Put the Redux state and dispatch method into context
   getChildContext () {
     return {
-      reduxState: this.props.store.getState(),
-      dispatch: this.props.store.dispatch
+      dispatch: this.props.store.dispatch,
+      history: this.props.history,
+      reduxState: this.props.store.getState()
     }
   }
 
@@ -102,7 +103,7 @@ export default class AppContainer extends React.Component {
   // TODO: hide internal state structure for route transitions
   listenStore() {
     if (this.props.store.getState().hasIn(['clientState', 'transitionTo'])) {
-      this.context.router.history.push(this.props.store.getState().getIn(['clientState', 'transitionTo']))
+      this.props.history.push(this.props.store.getState().getIn(['clientState', 'transitionTo']))
     }
     this.setState({
       reduxState: this.props.store.getState()
@@ -170,5 +171,8 @@ AppContainer.contextTypes = {
 // Define the types of child context the container will produce
 AppContainer.childContextTypes = {
   dispatch: PropTypes.func,
+  history: PropTypes.object,
   reduxState: PropTypes.object
 }
+
+export default withRouter(AppContainer)

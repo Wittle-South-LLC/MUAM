@@ -25,7 +25,7 @@ export default class Sidebar extends React.Component {
       newPath = newPath.parentNode
     }
     if (newPath) { 
-      this.context.router.history.push(newPath.id)
+      this.context.history.push(newPath.id)
     }
     if (!this.props.isOpen) {
       this.props.toggle()
@@ -72,6 +72,7 @@ export default class Sidebar extends React.Component {
 }
 
 Sidebar.contextTypes = {
+  history: PropTypes.object,
   intl: intlShape.isRequired,
   router: PropTypes.object
 }
