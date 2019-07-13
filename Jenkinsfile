@@ -9,7 +9,7 @@ pipeline {
         sh 'docker build --help'
         withCredentials([usernamePassword(credentialsId: 'pypi.wittlesouth.com',
                          passwordVariable: 'REGISTRY_PWD', usernameVariable: 'REGISTRY_USER')]) {
-          sh "docker build --build-arg REGISTRY_PWD=$REGISTRY_PWD --build_arg REGISTRY_USER=$REGISTRY_USER -f server/Dockerfile --tag=registry.wittlesouth.com/muam:test server"
+          sh "docker build --build-arg REGISTRY_PWD=$REGISTRY_PWD --build-arg REGISTRY_USER=$REGISTRY_USER -f server/Dockerfile --tag=registry.wittlesouth.com/muam:test server"
         }
         withCredentials([usernamePassword(credentialsId: 'registry.wittlesouth.com.credentials',
                          passwordVariable: 'REGISTRY_PWD',
