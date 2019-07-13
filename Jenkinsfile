@@ -6,7 +6,7 @@ pipeline {
     stage ('Build server image for test') {
       steps {
         sh 'pip --version'
-        withCredentials([usernamePassword(credentialsId: 'pypi.wittlesouth.com.credentials',
+        withCredentials([usernamePassword(credentialsId: 'pypi.wittlesouth.com',
                          passwordViarable: 'REGISTRY_PWD', usernameVariable: 'REGISTRY_USER')]) {
           sh 'docker build server -f server/Dockerfile --tag=registry.wittlesouth.com/muam:test'
         }
