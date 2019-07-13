@@ -1,4 +1,6 @@
 FROM wittlesouth/api_server:1.3
+ARG REGISTRY_USER
+ARG REGISTRY_PWD
 LABEL maintainer="eric@wittlesouth.com" project="muam"
 COPY requirements.txt app/requirements.txt
 RUN python3.7 -m pip install --upgrade pip
