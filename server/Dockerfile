@@ -4,6 +4,7 @@ ARG REGISTRY_PWD
 LABEL maintainer="eric@wittlesouth.com" project="muam"
 COPY requirements.txt app/requirements.txt
 RUN python3.7 -m pip install --upgrade pip
+RUN pip --version
 RUN pip install --extra-index-url https://eric:onlyeric@pypi.wittlesouth.com --trusted-host pypi.wittlesouth.com -r app/requirements.txt
 COPY src/api/* app/api/
 COPY src/dm/ app/dm/
