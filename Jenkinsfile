@@ -5,13 +5,22 @@ pipeline {
   stages {
     stage ('Build server image for test') {
       steps {
-        sh 'docker build server -f server/Dockerfile --tag=registry.wittlesouth.com/muam:test'
+        sh 'pip --version'
+        withCredentials([usernamePassword(credentialsId: 'pypi.wittlesouth.com.credentials',
+                         passwordViarable: 'REGISTRY_PWD', usernameVariable: 'REGISTRY_USER')]) {
+          sh 'docker build server -f server/Dockerfile --tag=registry.wittlesouth.com/muam:test'
+        }
         withCredentials([usernamePassword(credentialsId: 'registry.wittlesouth.com.credentials',
                          passwordVariable: 'REGISTRY_PWD',
                          usernameVariable: 'REGISTRY_USER')]) {
           sh "echo $REGISTRY_PWD | docker login --username $REGISTRY_USER --password-stdin"
         }
         sh 'docker push registry.wittlesouth.com/muam:test'
+      }
+    }
+    stage ('Deploy server for testing') {
+      steps {
+        sh "helm deploy muam --name muam-${env.BUILD_ID}"
       }
     }
     stage ('Run client tests') {
