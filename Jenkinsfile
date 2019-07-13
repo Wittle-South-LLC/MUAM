@@ -3,6 +3,12 @@
 pipeline {
   agent any
   stages {
+    stage ('Set up local python environment') {
+      steps {
+        sh "virtualenv --python=/usr/bin/python3 server"
+        sh ". server/bin/activate && pip3 install -r server/requirements.txt"
+      }
+    }
     stage ('Build server image for test') {
       steps {
         sh 'pip --version'
