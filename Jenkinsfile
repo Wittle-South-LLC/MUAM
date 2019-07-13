@@ -7,7 +7,7 @@ pipeline {
       steps {
         sh 'pip --version'
         withCredentials([usernamePassword(credentialsId: 'pypi.wittlesouth.com',
-                         passwordViarable: 'REGISTRY_PWD', usernameVariable: 'REGISTRY_USER')]) {
+                         passwordVariable: 'REGISTRY_PWD', usernameVariable: 'REGISTRY_USER')]) {
           sh 'docker build server -f server/Dockerfile --tag=registry.wittlesouth.com/muam:test'
         }
         withCredentials([usernamePassword(credentialsId: 'registry.wittlesouth.com.credentials',
