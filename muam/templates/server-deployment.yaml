@@ -17,7 +17,7 @@ spec:
       annotations:
         user: root
     spec:
-      {{ if (eq .Values.deployEnv "prd") (eq .Values.deployEnv "jenkins") }}imagePullSecrets:
+      {{ if or (eq .Values.deployEnv "prd") (eq .Values.deployEnv "jenkins") }}imagePullSecrets:
       - name: regcred
       {{ end -}}
       containers:
