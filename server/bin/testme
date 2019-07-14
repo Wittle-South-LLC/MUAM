@@ -9,7 +9,7 @@ mode='test'                       # -m: Optional mode (jenkins or test)
 
 # Use getopts to parse arguments
 
-while getopts "a:b:cd:imnv:" opt; do
+while getopts "a:cd:m:v:" opt; do
     case "$opt" in
     a)  nose_args=$OPTARG
     ;;

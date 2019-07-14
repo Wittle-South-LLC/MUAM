@@ -54,6 +54,7 @@ elif [ "$MUAM_MODE" == "jenkins" ]; then
   export APP_DB_SPORT=31999
   export APPSERVER_SPORT=31311
   export SECRET_KEY=MUAMJenkinsSecretKey
+  export TEST_HOST=nuc1.wittlesouth.com
   export REACT_APP_BASE_URL="https://nuc1.wittlesouth.com:${APPSERVER_SPORT}"
 else
   echo "Invalid value for MUAM_MODE: .$MUAM_MODE."
