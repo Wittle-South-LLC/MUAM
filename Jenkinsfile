@@ -31,6 +31,8 @@ pipeline {
     }
     stage ('Run server tests') {
       steps {
+        sh "pwd"
+        sh "ls server/bin"
         sh "MUAM_MODE=jenkins && . server/bin/activate && . server/bin/app-env && /server/bin/nosetests --verbosity=2 server/tests"
       }
     }
