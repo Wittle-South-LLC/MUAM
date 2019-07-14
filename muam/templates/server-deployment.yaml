@@ -54,6 +54,27 @@ spec:
           value: {{ .Values.env.app_db_cname }}
         - name: APP_DB_CPORT
           value: "{{ .Values.env.app_db_cport }}"
+        - name: APP_PW_RESET_SUBJECT
+          value: "Wittle South Password Reset Code"
+        - name: APP_PW_RESET_FROM
+          value: "service@wittlesouth.com"
+        - name: APP_PW_RESET_MAILHOST
+          value: "mail.wittlesouth.com"
+        - name: APP_PW_RESET_FROM_USER
+          valueFrom:
+            secretKeyRef:
+              name: muam-secret
+              key: mail_user
+        - name: APP_PW_RESET_FROM_PW
+          valueFrom:
+            secretKeyRef:
+              name: muam-secret
+              key: mail_user_pw
+        - name: APP_SHUTDOWN_KEY
+          valueFrom:
+            secretKeyRef:
+              name: muam-secret
+              key: shutdown_key
         {{ end -}}
         command: [{{ .Values.command }}]
         ports:

@@ -11,7 +11,6 @@ export OPENAPI_SPEC='/app/src/spec/muam.yaml'
 export REACT_APP_API_PATH="/api/v1"
 export APP_LOGGING_CONFIG='/app/src/server_logging.yaml'
 export APPSERVER_CPORT=8180
-export APP_SHUTDOWN_KEY='Eric'
 export APP_PW_RESET_SUBJECT='MUAM Password Reset Code'
 export APP_PW_RESET_FROM='service@wittlesouth.com'
 export APP_PW_RESET_MAILHOST='mail.wittlesouth.com'
