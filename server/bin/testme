@@ -5,6 +5,7 @@ nose_verbosity=2                  # -v: Default nose verbosity to one line per t
 run_coverage=0                    # -c Default to not run code coverage, -c will turn on
 nose_args='tests'                 # -a: Optional additional argments to nosetests command
 cover_args=''                     # -d: Optional additional arguments to cover command
+mode='test'                       # -m: Optional mode (jenkins or test)
 
 # Use getopts to parse arguments
 
@@ -15,6 +16,8 @@ while getopts "a:b:cd:imnv:" opt; do
     c)  run_coverage=1
     ;;
     d)  cover_args=$
+    ;;
+    m)  mode=$OPTARG
     ;;
     v)  nose_verbosity=$OPTARG
     esac
@@ -31,7 +34,8 @@ shift $((OPTIND-1))
 #echo "leftovers: $@"
 
 # Ensure that we have the basic environment defined
-export MUAM_MODE='test'
+export MUAM_MODE=$mode
+echo "Running in mode: $MUAM_MODE"
 source bin/app-env
 export TEST_URL="http://${TEST_HOST}:${APPSERVER_SPORT}${REACT_APP_API_PATH}/us"
 echo "testme: TEST_URL = $TEST_URL"

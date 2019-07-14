@@ -35,10 +35,9 @@ pipeline {
     }
     stage ('Run server tests') {
       steps {
-        sh "pwd"
-        sh "ls server/bin"
         sh "#!/bin/bash \n" +
-           "MUAM_MODE=jenkins && . server/bin/activate && . server/bin/app-env && server/bin/nosetests --verbosity=2 server/tests"
+           "cd server && . bin/activate && testme -m jenkins"
+//            "MUAM_MODE=jenkins && . server/bin/activate && . server/bin/app-env && server/bin/nosetests --verbosity=2 server/tests"
       }
     }
     stage ('Run client tests') {
@@ -65,9 +64,9 @@ pipeline {
       subject: "WS Failed Pipeline: ${currentBuild.fullDisplayName}",
       body: "Build failed: ${env.BUILD_URL}"
     }
-    always {
-      sh "helm delete muam-${env.BUILD_ID}"
-      deleteDir()
+//    always {
+//      sh "helm delete muam-${env.BUILD_ID}"
+//      deleteDir()
     }
   }
 }
