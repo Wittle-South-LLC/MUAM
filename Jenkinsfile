@@ -64,9 +64,9 @@ pipeline {
       subject: "WS Failed Pipeline: ${currentBuild.fullDisplayName}",
       body: "Build failed: ${env.BUILD_URL}"
     }
-//    always {
-//      sh "helm delete muam-${env.BUILD_ID}"
-//      deleteDir()
-//    }
+    always {
+      sh "helm delete muam-${env.BUILD_ID}"
+      deleteDir()
+    }
   }
 }
