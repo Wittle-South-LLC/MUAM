@@ -34,7 +34,7 @@ pipeline {
         sh "pwd"
         sh "ls server/bin"
         sh "#!/bin/bash \n" +
-           "MUAM_MODE=jenkins && . server/bin/activate && . server/bin/app-env && /server/bin/nosetests --verbosity=2 server/tests"
+           "MUAM_MODE=jenkins && . server/bin/activate && . server/bin/app-env && server/bin/nosetests --verbosity=2 server/tests"
       }
     }
     stage ('Run client tests') {
