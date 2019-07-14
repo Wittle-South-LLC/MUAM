@@ -20,7 +20,7 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'registry.wittlesouth.com.credentials',
                          passwordVariable: 'REGISTRY_PWD',
                          usernameVariable: 'REGISTRY_USER')]) {
-          sh "echo $REGISTRY_PWD | docker login --username $REGISTRY_USER --password-stdin"
+          sh "echo $REGISTRY_PWD | docker login --username $REGISTRY_USER --password-stdin registry.wittlesouth.com"
         }
         sh 'docker push registry.wittlesouth.com/muam:test'
       }
@@ -54,8 +54,8 @@ pipeline {
       subject: "WS Failed Pipeline: ${currentBuild.fullDisplayName}",
       body: "Build failed: ${env.BUILD_URL}"
     }
-//    always {
-//      deleteDir()
-//    }
+    always {
+      deleteDir()
+    }
   }
 }
