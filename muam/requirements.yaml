@@ -6,6 +6,13 @@ dependencies:
       - dev-values
     import-values:
       - data
+  - name: muam-jenkins
+    repositotry: "file://charts/muam-jenkins"
+    version: ">= 0.0.1"
+    tags:
+      - jenkins-values
+    import-values:
+      - data
   - name: muam-prd
     repositotry: "file://charts/muam-prd"
     version: ">= 0.0.1"

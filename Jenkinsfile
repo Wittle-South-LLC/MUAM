@@ -14,7 +14,7 @@ pipeline {
         sh 'pip --version'
         withCredentials([usernamePassword(credentialsId: 'pypi.wittlesouth.com',
                          passwordVariable: 'REGISTRY_PWD', usernameVariable: 'REGISTRY_USER')]) {
-          sh "docker build --build-arg REGISTRY_PWD=$REGISTRY_PWD --build-arg REGISTRY_USER=$REGISTRY_USER -f server/Dockerfile --tag=registry.wittlesouth.com/muam:test server"
+          sh "docker build --build-arg REGISTRY_PWD=$REGISTRY_PWD --build-arg REGISTRY_USER=$REGISTRY_USER -f server/Dockerfile --tag=registry.wittlesouth.com/muam:test-${env.BUILD_ID} server"
         }
         withCredentials([usernamePassword(credentialsId: 'registry.wittlesouth.com.credentials',
                          passwordVariable: 'REGISTRY_PWD',
@@ -26,12 +26,12 @@ pipeline {
     }
     stage ('Deploy server for testing') {
       steps {
-        sh "helm install muam --name muam-${env.BUILD_ID} --set dev-values=true"
+        sh "helm install muam --name muam-${env.BUILD_ID} --set tags.jenkins-values=true --set server.version=test-${env.BUILD_ID}"
       }
     }
     stage ('Run server tests') {
       steps {
-        sh "MUAM_MODE=test && . server/bin/activate && . server/bin/app-env && /server/bin/nosetests --verbosity=2 server/tests"
+        sh "MUAM_MODE=jenkins && . server/bin/activate && . server/bin/app-env && /server/bin/nosetests --verbosity=2 server/tests"
       }
     }
     stage ('Run client tests') {

@@ -10,10 +10,10 @@ exports:
     server:
       localPath: /mnt/hgfs/wsv/muam/server
       image: wittlesouth/api_server
-      version: 1.3
-      containerPort: 8180
+      version: 1.4
+#      containerPort: 8180
       servicePort: 31310
     client:
       image: localhost:32000/muam-client
       version: latest
-      containerPort: 80
+#      containerPort: 80

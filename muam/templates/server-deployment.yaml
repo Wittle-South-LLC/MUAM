@@ -17,7 +17,7 @@ spec:
       annotations:
         user: root
     spec:
-      {{ if eq .Values.deployEnv "prd" }}imagePullSecrets:
+      {{ if (eq .Values.deployEnv "prd") (eq .Values.deployEnv "jenkins") }}imagePullSecrets:
       - name: regcred
       {{ end -}}
       containers:
@@ -30,7 +30,7 @@ spec:
           value: {{ .Values.origin | quote }}
         - name: COOKIE_DOMAIN
           value: {{ .Values.cookieDomain | quote }}
-        {{ if eq .Values.deployEnv "prd"}}- name: APP_LOGGING_CONFIG
+        {{ if or (eq .Values.deployEnv "prd") (eq .Values.deployEnv "jenkins")}}- name: APP_LOGGING_CONFIG
           value: {{ .Values.env.app_logging_config }}
         - name: REACT_APP_API_PATH
           value: {{ .Values.apiPath }}

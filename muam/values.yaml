@@ -1,5 +1,16 @@
 # Default values
 
+# These tags control environment-specific values
 tags:
   dev-values: false
   prd-values: false
+  jenkins-values: false
+
+# Everything else here is global (same value independent of environment)
+apiPath: /api/v1
+host: muam.wittlesouth.com
+server:
+  containerPort: 8180
+client:
+  containerPort: 80
+  version: latest

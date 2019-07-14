@@ -46,6 +46,14 @@ elif [ "$MUAM_MODE" == "production" ]; then
   export APP_DB_SPORT=31999
   export APPSERVER_SPORT=31309
   export SECRET_KEY=MUAMDevelopmentSecretKey
+elif [ "$MUAM_MODE" == "jenkins" ]; then
+  export APP_DB_NAME="jenkins_muam"
+  export APP_DB_SNAME='wittlesouth.com'
+  export APP_DB_ACCOUNT=jenkins
+  export APP_DB_PASSWORD=jenkinspwd
+  export APP_DB_SPORT=31999
+  export APPSERVER_SPORT=31311
+  export SECRET_KEY=MUAMJenkinsSecretKey
 else
   echo "Invalid value for MUAM_MODE: $MUAM_MODE"
 fi
