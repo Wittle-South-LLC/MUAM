@@ -2,4 +2,4 @@
 
 tags:
   dev-values: false
-  prd-values: true
+  prd-values: false
