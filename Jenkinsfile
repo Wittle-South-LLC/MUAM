@@ -25,7 +25,7 @@ pipeline {
                          usernameVariable: 'REGISTRY_USER')]) {
           sh "echo $REGISTRY_PWD | docker login --username $REGISTRY_USER --password-stdin registry.wittlesouth.com"
         }
-        sh 'docker push registry.wittlesouth.com/muam:test'
+        sh "docker push registry.wittlesouth.com/muam:test-${env.BUILD_ID}"
       }
     }
     stage ('Deploy server for testing') {
