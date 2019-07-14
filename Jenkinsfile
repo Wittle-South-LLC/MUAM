@@ -7,6 +7,10 @@ pipeline {
       steps {
         sh "virtualenv --python=/usr/bin/python3 server"
         sh ". server/bin/activate && pip3 install -r server/requirements.txt"
+        withCredentials([usernamePassword(credentialsId: 'pypi.wittlesouth.com',
+                         passwordVariable: 'REGISTRY_PWD', usernameVariable: 'REGISTRY_USER')]) {
+          sh ". server/bin/activate && pip3 install --index-url https://${REGISTRY_USER}:${REGISTRY_PWD}@pypi.wittlesouth.com/simple -r server/ws-requirements.txt"
+        }
       }
     }
     stage ('Build server image for test') {
