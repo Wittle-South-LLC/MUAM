@@ -26,7 +26,7 @@ pipeline {
     }
     stage ('Deploy server for testing') {
       steps {
-        sh "helm install muam --name muam-${env.BUILD_ID} --set dev-values: true"
+        sh "helm install muam --name muam-${env.BUILD_ID} --set dev-values=true"
       }
     }
     stage ('Run server tests') {
