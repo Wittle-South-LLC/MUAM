@@ -48,9 +48,11 @@ elif [ "$MUAM_MODE" == "production" ]; then
 elif [ "$MUAM_MODE" == "jenkins" ]; then
   export APP_DB_NAME="jenkins_muam"
   export APP_DB_SNAME='mysql'
+  export APP_DB_SPORT=3306
   export APP_DB_ACCOUNT=jenkins
   export APP_DB_PASSWORD=jenkinspwd
-  export APP_DB_SPORT=3306
+  export APP_DB_CNAME='mysql'
+  export APP_DB_CPORT=3306
   export APPSERVER_SPORT=31311
   export SECRET_KEY=MUAMJenkinsSecretKey
   export TEST_HOST=nuc1.wittlesouth.com
