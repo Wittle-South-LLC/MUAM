@@ -67,6 +67,6 @@ pipeline {
 //    always {
 //      sh "helm delete muam-${env.BUILD_ID}"
 //      deleteDir()
-    }
+//    }
   }
 }
