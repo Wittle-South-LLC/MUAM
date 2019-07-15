@@ -46,16 +46,25 @@ elif [ "$MUAM_MODE" == "production" ]; then
   export APPSERVER_SPORT=31309
   export SECRET_KEY=MUAMDevelopmentSecretKey
 elif [ "$MUAM_MODE" == "jenkins" ]; then
+  # Jenkins runs in the production cluster, with the production DB server, so
+  # we need a database name other than muam
   export APP_DB_NAME="jenkins_muam"
+  # Jenkins test and the server run as containers within Kubernetes, so we
+  # want to reference the service by internal cluster DNS
   export APP_DB_SNAME='mysql.default.svc.cluster.local'
+  # Set CNAME as well, as it will be used by the test client
+  export APP_DB_CNAME='mysql.default.svc.cluster.local'
+  # We can access the target port directly within Kubernetes
   export APP_DB_SPORT=3306
+  # Set CPORT as well, as it will be used by the test client
+  export APP_DB_CPORT=3306
   export APP_DB_ACCOUNT=jenkins
   export APP_DB_PASSWORD=jenkinspwd
-  export APP_DB_CNAME='mysql.default.svc.cluster.local'
-  export APP_DB_CPORT=3306
   export APPSERVER_SPORT=31311
   export SECRET_KEY=MUAMJenkinsSecretKey
   export TEST_HOST=nuc1.wittlesouth.com
+  # Since the tests now use a Python API client, they are getting the
+  # API URL from the same environment variable as the client
   export REACT_APP_BASE_URL="http://nuc1.wittlesouth.com:${APPSERVER_SPORT}"
 else
   echo "Invalid value for MUAM_MODE: .$MUAM_MODE."

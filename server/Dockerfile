@@ -6,8 +6,8 @@ COPY requirements.txt app/requirements.txt
 COPY ws-requirements.txt app/ws-requirements.txt
 RUN python3.7 -m pip install --upgrade pip
 RUN pip --version
-RUN pip install -r app/requirements.txt
-RUN pip install --index-url https://${REGISTRY_USER}:${REGISTRY_PWD}@pypi.wittlesouth.com/simple -r app/ws-requirements.txt
+RUN pip install --extra-index-url https://${REGISTRY_USER}:${REGISTRY_PWD}@pypi.wittlesouth.com/simple -r app/requirements.txt
+# RUN pip install --index-url https://${REGISTRY_USER}:${REGISTRY_PWD}@pypi.wittlesouth.com/simple -r app/ws-requirements.txt
 COPY src/api/* app/api/
 COPY src/dm/ app/dm/
 COPY src/spec/* app/spec/
