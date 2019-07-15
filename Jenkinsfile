@@ -9,7 +9,6 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'pypi.wittlesouth.com',
                          passwordVariable: 'REGISTRY_PWD', usernameVariable: 'REGISTRY_USER')]) {
           sh ". server/bin/activate && pip3 install --extra-index-url https://${REGISTRY_USER}:${REGISTRY_PWD}@pypi.wittlesouth.com/simple -r server/requirements.txt"
-//          sh ". server/bin/activate && pip3 install -r server/ws-requirements.txt"
         }
       }
     }
