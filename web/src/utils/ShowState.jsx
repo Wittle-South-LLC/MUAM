@@ -27,7 +27,7 @@ export default class ShowState extends React.Component {
     let navView = []
     stateElements.forEach((member) => {
       if (!this.context.reduxState.get(member.key)) {
-        console.log('this.context.state.get(%s) is undefined!', member.key)
+        console.log('this.context.reduxState.get(%s) is undefined!', member.key)
       } else {
         navView.push(
           <NavItem key={member.key}>

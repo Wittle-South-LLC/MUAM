@@ -50,7 +50,7 @@ spec:
         user: root
     spec:
       containers:
-      - image: wittlesouth/api_server:1.3
+      - image: wittlesouth/api_server:1.4
         name: muam-dev-server
         env:
         - name: MUAM_MODE
