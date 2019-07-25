@@ -1,8 +1,8 @@
 """Group.py - Module containing the Group class"""
 import uuid
 import datetime
-from sqlalchemy import Boolean, Column, ForeignKey, DateTime, Integer, JSON, String, text
-from sqlalchemy.dialects.mysql import BINARY
+from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, JSON, String, text
+from sqlalchemy.dialects.mysql import BINARY, DATETIME
 from sqlalchemy.orm import relationship
 
 from .base import Base

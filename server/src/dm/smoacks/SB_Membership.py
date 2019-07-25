@@ -1,8 +1,8 @@
 """Membership.py - Module containing the Membership class"""
 import uuid
 import datetime
-from sqlalchemy import Boolean, Column, ForeignKey, DateTime, Integer, JSON, String, text
-from sqlalchemy.dialects.mysql import BINARY
+from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, JSON, String, text
+from sqlalchemy.dialects.mysql import BINARY, DATETIME
 from sqlalchemy.orm import relationship
 
 from .base import Base
@@ -10,7 +10,7 @@ from .base import Base
 class SB_Membership(Base):
     """Data model object representing a Membership"""
     __tablename__ = 'Membership'
-    __uuid_list__ = {'user_id', 'group_id'}
+    __uuid_list__ = {'group_id', 'user_id'}
     __wo_fields__ = set()
     __primary_key__ = 'user_id'
     group_id = Column(BINARY(16), ForeignKey('Group.group_id'), primary_key=True)

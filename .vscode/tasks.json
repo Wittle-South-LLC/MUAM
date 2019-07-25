@@ -1,0 +1,51 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Clean Dist",
+            "options": {
+               "cwd": "server"
+            },
+            "type": "shell",
+            "command": "rm",
+            "args": ["dist/*"],
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "Build PyPi Package",
+            "options": {
+                "cwd": "server"
+            },
+            "type": "shell",
+            "command": "../${config:python.pythonPath}",
+            "args": ["setup.py", "sdist", "bdist_wheel"],
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "Publish PyPi Package to wittlesouth",
+            "options": {
+                "cwd": "server"
+            },
+            "type": "shell",
+            "command": "../${config:python.pythonPath}",
+            "args": ["-m", "twine", "upload", "-r", "wittlesouth", "dist/*"],
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "Build and Publish PyPi",
+            "dependsOn": ["Clean Dist", "Build PyPi Package", "Publish PyPi Package to wittlesouth"],
+            "dependsOrder": "sequence",
+            "presentation": {
+                "reveal": "always"
+            }
+        }
+    ]
+}
