@@ -15,6 +15,7 @@ class SB_Group(Base):
     __primary_key__ = 'group_id'
     description = Column(String(3000))
     source = Column(String(80))
+    profiles = Column(JSON)
     group_id = Column(BINARY(16), primary_key=True)
     gid = Column(Integer)
     name = Column(String(80))

@@ -25,6 +25,7 @@ def test_user_create():
     test_obj.full_name = 'Tester, Unit X'
     test_obj.last_name = 'Unit'
     test_obj.phone = '+1 (919) 999-9999'
+    test_obj.profiles = {"muam": {"test": "value"}}
     test_obj.create_users = False
     test_obj.create_groups = True
     test_obj.grant_privs = False
@@ -48,6 +49,7 @@ def test_user_get():
     assert resp.full_name == 'Tester, Unit X'
     assert resp.last_name == 'Unit'
     assert resp.phone == '+1 (919) 999-9999'
+    assert resp.profiles == {"muam": {"test": "value"}}
     assert resp.create_users == False
     assert resp.create_groups == True
     assert resp.grant_privs == False
@@ -67,6 +69,7 @@ def test_user_search():
     assert resp.full_name == 'Tester, Unit X'
     assert resp.last_name == 'Unit'
     assert resp.phone == '+1 (919) 999-9999'
+    assert resp.profiles == {"muam": {"test": "value"}}
     assert resp.create_users == False
     assert resp.create_groups == True
     assert resp.grant_privs == False

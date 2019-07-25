@@ -287,6 +287,11 @@ components:
                 - LDAP
               readOnly: true
               example: LDAP
+            profiles:
+              type: object
+              nullable: true
+              description: JSON object for application profile data for the group
+              example: {'muam': {'test': 'value'}}
             record_created:
               type: string
               format: date
@@ -464,6 +469,11 @@ components:
             - Facebook
           readOnly: true
           example: LDAP
+        profiles:
+          type: object
+          nullable: true
+          description: JSON object for application profile data for the group
+          example: {'muam': {'test': 'value'}}
         create_users:
           type: boolean
           default: false

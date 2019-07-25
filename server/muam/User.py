@@ -17,6 +17,7 @@ class User (ApiClientBase):
         self.last_name = kwargs['last_name'] if 'last_name' in kwargs else None
         self.phone = kwargs['phone'] if 'phone' in kwargs else None
         self.source = kwargs['source'] if 'source' in kwargs else None
+        self.profiles = kwargs['profiles'] if 'profiles' in kwargs else None
         self.create_users = kwargs['create_users'] if 'create_users' in kwargs else None
         self.create_groups = kwargs['create_groups'] if 'create_groups' in kwargs else None
         self.grant_privs = kwargs['grant_privs'] if 'grant_privs' in kwargs else None

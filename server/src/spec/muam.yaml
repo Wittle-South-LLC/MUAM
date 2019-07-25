@@ -40,6 +40,13 @@ components:
             minLength: 20
             nullable: true
             type: string
+          profiles:
+            description: JSON object for application profile data for the group
+            example:
+              muam:
+                test: value
+            nullable: true
+            type: object
           record_created:
             description: Record creation date
             example: '1995-08-19T00:00:00.000Z'
@@ -283,6 +290,13 @@ components:
           minLength: 10
           nullable: true
           type: string
+        profiles:
+          description: JSON object for application profile data for the group
+          example:
+            muam:
+              test: value
+          nullable: true
+          type: object
         record_created:
           description: Record creation date
           example: '1995-08-19T00:00:00.002Z'

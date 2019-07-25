@@ -21,6 +21,7 @@ class SB_User(Base):
     last_name = Column(String(80))
     phone = Column(String(20))
     source = Column(String(80))
+    profiles = Column(JSON)
     create_users = Column(Boolean)
     create_groups = Column(Boolean)
     grant_privs = Column(Boolean)

@@ -19,6 +19,7 @@ def test_group_create():
     global added_obj
     test_obj = Group()
     test_obj.description = 'This is a really long description of a group'
+    test_obj.profiles = {"muam": {"test": "value"}}
     test_obj.gid = 104
     test_obj.name = 'app-users'
     
@@ -36,6 +37,7 @@ def test_group_get():
     if not success: log_response_error(resp)
     assert success
     assert resp.description == 'This is a really long description of a group'
+    assert resp.profiles == {"muam": {"test": "value"}}
     assert resp.gid == 104
     assert resp.name == 'app-users'
     
@@ -49,6 +51,7 @@ def test_group_search():
     assert len(resp_list) == 1
     resp = resp_list[0]
     assert resp.description == 'This is a really long description of a group'
+    assert resp.profiles == {"muam": {"test": "value"}}
     assert resp.gid == 104
     assert resp.name == 'app-users'
     

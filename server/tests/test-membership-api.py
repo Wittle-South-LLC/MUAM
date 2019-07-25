@@ -22,13 +22,13 @@ added_user = None
 def setUp():
     
     global added_group
-    added_group = Group(**{'description': 'This is a really long description of a group', 'gid': 104, 'name': 'app-users'})
+    added_group = Group(**{'description': 'This is a really long description of a group', 'profiles': {'muam': {'test': 'value'}}, 'gid': 104, 'name': 'app-users'})
     success, resp = added_group.save_new(TEST_SESSION)
     if not success: log_response_error(resp)
     assert success
     
     global added_user
-    added_user = User(**{'username': 'testing', 'email': 'testing@wittlesouth.com', 'password': 'MyPassword.ResetMe', 'first_name': 'Tester', 'full_name': 'Tester, Unit X', 'last_name': 'Unit', 'phone': '+1 (919) 999-9999', 'create_users': False, 'create_groups': True, 'grant_privs': False})
+    added_user = User(**{'username': 'testing', 'email': 'testing@wittlesouth.com', 'password': 'MyPassword.ResetMe', 'first_name': 'Tester', 'full_name': 'Tester, Unit X', 'last_name': 'Unit', 'phone': '+1 (919) 999-9999', 'profiles': {'muam': {'test': 'value'}}, 'create_users': False, 'create_groups': True, 'grant_privs': False})
     success, resp = added_user.save_new(TEST_SESSION)
     if not success: log_response_error(resp)
     assert success
