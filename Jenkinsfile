@@ -14,7 +14,7 @@ pipeline {
     }
     stage ('Ensure database is up to date') {
       steps {
-        sh "cd server && alembic upgrade head"
+        sh ". server/bin/activate && cd server && alembic upgrade head"
       }
     }
     stage ('Build server image for test') {
