@@ -4,6 +4,8 @@
 #           where mode is one of 'development', 'test', 'production'
 #
 # Variables with values that are independent of mode
+# Hopefully this will work
+
 export APP_DB_NAME="muam"
 export APP_DB_SNAME=$MY_KUBE_SERVER
 export APP_DB_CPORT=3306

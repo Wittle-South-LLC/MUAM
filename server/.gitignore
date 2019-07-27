@@ -1,8 +1,8 @@
 # Ignore virtualenv artifacts
-bin/**
-!bin/testme
-!bin/app-env
-!bin/local-env
+/bin/**
+!/bin/testme
+!/bin/app-env
+!/bin/local-env
 coverage/**
 include/**
 lib/**
