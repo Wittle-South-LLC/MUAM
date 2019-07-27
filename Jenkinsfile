@@ -14,7 +14,7 @@ pipeline {
     }
     stage ('Ensure database is up to date') {
       steps {
-        sh ". server/bin/activate && cd server && MUAM_MODE=jenkins . bin/app-env && PYTHONPATH=./src alembic upgrade head"
+        sh ". server/bin/activate && cd server && MUAM_MODE=jenkins && . bin/app-env && PYTHONPATH=./src alembic upgrade head"
       }
     }
     stage ('Build server image for test') {
