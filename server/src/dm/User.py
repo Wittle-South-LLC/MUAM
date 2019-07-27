@@ -5,6 +5,7 @@ from .smoacks.SB_User import SB_User
 
 class User(SB_User):
     __table_args__ = {'extend_existing': True}
+    __wo_fields__ = {'reset_code', 'reset_expires', 'password_hash'}
     reset_code = Column(String(6)) # Code for resetting password
     reset_expires = Column(DateTime) # Expiration timestamp for refresh code
     password_hash = Column(String(128)) # Persistent encrypted password
